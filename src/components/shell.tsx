@@ -19,9 +19,7 @@ export function AppHeader() {
   const [open, setOpen] = useState(false);
   useEffect(() => {
     const saved = window.localStorage.getItem("tajwidlens-theme");
-    const isDark =
-      saved === "dark" ||
-      (!saved && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    const isDark = saved === "dark";
     document.documentElement.dataset.theme = isDark ? "dark" : "light";
   }, []);
 
