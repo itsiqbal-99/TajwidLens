@@ -2,134 +2,51 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, Moon, Sun, X, ArrowUpRight } from "lucide-react";
+import { Menu, Moon, Sun, X, ArrowUpRight, BookOpen, Compass, GraduationCap, ScanText, AudioLines, Library, ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const nav = [
-  { href: "/", label: "Beranda" },
-  { href: "/learn/", label: "Belajar Tajwid" },
-  { href: "/explore/", label: "Jelajahi Al-Qur'an" },
-  { href: "/reading-guide/", label: "Panduan Bacaan" },
-  { href: "/pronunciation/", label: "Pelafalan" },
-  { href: "/reference/", label: "Referensi" },
+  { href: "/", label: "Beranda", icon: Compass },
+  { href: "/learn/", label: "Belajar Tajwid", icon: GraduationCap },
+  { href: "/explore/", label: "Jelajahi Al-Qur'an", icon: BookOpen },
+  { href: "/reading-guide/", label: "Panduan Bacaan", icon: ScanText },
+  { href: "/pronunciation/", label: "Pelafalan", icon: AudioLines },
+  { href: "/reference/", label: "Referensi", icon: Library },
 ];
+
+function BrandIcon() {
+  return <span className="brand-mark" aria-hidden="true"><svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 12.5c4.7-1.9 8.6-1.2 12 1.6 3.4-2.8 7.3-3.5 12-1.6v16.2c-4.7-1.9-8.6-1.3-12 1.5-3.4-2.8-7.3-3.4-12-1.5V12.5Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/><path d="M20 14.2v15.3" stroke="currentColor" strokeWidth="2"/><circle cx="27.7" cy="20.8" r="4.6" fill="var(--brand-mark-bg)" stroke="var(--brand-mark-accent)" strokeWidth="2"/><path d="m31.2 24.3 3.5 3.5" stroke="var(--brand-mark-accent)" strokeWidth="2" strokeLinecap="round"/></svg></span>;
+}
 
 export function AppHeader() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [dark, setDark] = useState(false);
   useEffect(() => {
     const saved = window.localStorage.getItem("tajwidlens-theme");
     const isDark = saved === "dark";
     document.documentElement.dataset.theme = isDark ? "dark" : "light";
+    queueMicrotask(() => setDark(isDark));
   }, []);
-
   function toggleTheme() {
-    const next = document.documentElement.dataset.theme !== "dark";
+    const next = !dark;
+    setDark(next);
     document.documentElement.dataset.theme = next ? "dark" : "light";
     window.localStorage.setItem("tajwidlens-theme", next ? "dark" : "light");
   }
+  useEffect(() => { queueMicrotask(() => setOpen(false)); }, [pathname]);
+  useEffect(() => { if (!open) return; const handle = (event: KeyboardEvent) => { if (event.key === "Escape") setOpen(false); }; window.addEventListener("keydown", handle); return () => window.removeEventListener("keydown", handle); }, [open]);
 
-  return (
-    <>
-      <a className="skip-link" href="#main-content">
-        Lewati ke konten
-      </a>
-      <header className="site-header">
-        <div className="header-inner">
-          <Link className="brand" href="/" aria-label="TajwidLens, ke beranda">
-            <span className="brand-mark" aria-hidden="true">
-              ت
-            </span>
-            <span>
-              Tajwid<span className="brand-accent">Lens</span>
-            </span>
-          </Link>
-          <nav className="desktop-nav" aria-label="Navigasi utama">
-            {nav.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`${pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href)) ? "nav-active" : ""} ${item.href === "/reading-guide/" ? "nav-feature" : ""}`}
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-          <div className="header-actions">
-            <button
-              className="icon-button theme-button"
-              type="button"
-              onClick={toggleTheme}
-              aria-label="Ganti tema terang atau gelap"
-              title="Ganti tema"
-            >
-              <Sun className="theme-icon-sun" size={19} />
-              <Moon className="theme-icon-moon" size={19} />
-            </button>
-            <button
-              className="icon-button mobile-menu-button"
-              type="button"
-              onClick={() => setOpen(!open)}
-              aria-expanded={open}
-              aria-controls="mobile-nav"
-              aria-label={open ? "Tutup menu" : "Buka menu"}
-            >
-              {open ? <X size={21} /> : <Menu size={21} />}
-            </button>
-          </div>
-        </div>
-        {open && (
-          <nav
-            id="mobile-nav"
-            className="mobile-nav"
-            aria-label="Navigasi seluler"
-          >
-            {nav.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={pathname === item.href ? "nav-active" : ""}
-                onClick={() => setOpen(false)}
-              >
-                {item.label}
-                <ArrowUpRight size={16} />
-              </Link>
-            ))}
-          </nav>
-        )}
-      </header>
-    </>
-  );
+  return <>
+    <a className="skip-link" href="#main-content">Lewati ke konten</a>
+    <header className="site-header"><div className="header-inner">
+      <Link className="brand" href="/" aria-label="TajwidLens, kembali ke beranda"><BrandIcon/><span>Tajwid<span className="brand-accent">Lens</span></span><span className="brand-separator" aria-hidden="true"/><span className="brand-descriptor">THE READING COMPANION</span></Link>
+      <nav className="desktop-nav" aria-label="Navigasi utama">{nav.filter((item) => item.href !== "/reading-guide/").map((item) => <Link key={item.href} href={item.href} className={pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href)) ? "nav-active" : ""}>{item.label}</Link>)}</nav>
+      <div className="header-actions"><button className="icon-button theme-button" type="button" onClick={toggleTheme} aria-label={dark ? "Aktifkan tema terang" : "Aktifkan tema gelap"} title={dark ? "Tema terang" : "Tema gelap"}>{dark ? <Sun size={18}/> : <Moon size={18}/>}</button><Link className={`header-cta ${pathname.startsWith("/reading-guide/") ? "header-cta-active" : ""}`} href="/reading-guide/">Panduan Bacaan <ArrowUpRight size={15}/></Link><button className="icon-button mobile-menu-button" type="button" onClick={() => setOpen(!open)} aria-expanded={open} aria-controls="mobile-nav" aria-label={open ? "Tutup menu" : "Buka menu"}>{open ? <X size={21}/> : <Menu size={21}/>}</button></div>
+    </div>{open && <nav className="mobile-nav" id="mobile-nav" aria-label="Navigasi seluler">{nav.map(({href, label, icon: Icon}) => <Link href={href} key={href} className={pathname === href || (href !== "/" && pathname.startsWith(href)) ? "nav-active" : ""} onClick={() => setOpen(false)}><Icon size={18}/><span>{label}</span><ArrowUpRight size={15}/></Link>)}</nav>}</header>
+  </>;
 }
 
 export function AppFooter() {
-  return (
-    <footer className="site-footer">
-      <div className="footer-inner">
-        <div>
-          <Link className="brand footer-brand" href="/">
-            <span className="brand-mark" aria-hidden="true">
-              ت
-            </span>
-            <span>
-              Tajwid<span className="brand-accent">Lens</span>
-            </span>
-          </Link>
-          <p className="footer-tagline">
-            Understand Every Rule. Read with Confidence.
-          </p>
-          <p>
-            Pendamping belajar bacaan Al-Qur&apos;an. Tidak menggantikan talaqqi
-            bersama guru.
-          </p>
-        </div>
-        <div className="footer-links">
-          <Link href="/reference/">Sumber &amp; batasan</Link>
-          <Link href="/learn/">Materi tajwid</Link>
-          <Link href="/reading-guide/">Panduan bacaan</Link>
-        </div>
-        <small>© {new Date().getFullYear()} TajwidLens </small>
-      </div>
-    </footer>
-  );
+  return <footer className="site-footer"><div className="footer-inner"><div className="footer-main"><Link className="brand footer-brand" href="/"><BrandIcon/><span>Tajwid<span className="brand-accent">Lens</span></span></Link><p>Panduan memahami bacaan Al-Qur'an, berangkat dari ayatnya.</p><span className="footer-note">Pendamping pembelajaran digital, bukan pengganti talaqqi bersama guru.</span></div><div className="footer-navigation"><div><span>JELAJAHI</span><Link href="/explore/">Al-Qur'an</Link><Link href="/reading-guide/">Panduan bacaan</Link><Link href="/learn/">Materi tajwid</Link></div><div><span>PELAJARI</span><Link href="/pronunciation/">Pelafalan</Link><Link href="/reference/">Sumber &amp; referensi</Link><Link href="/reading-guide/?surah=113&ayah=2&annotation=113-2-0-1-ikhfa-haqiqi">Contoh bacaan <ArrowRight size={13}/></Link></div></div><div className="footer-bottom"><span>© {new Date().getFullYear()} TajwidLens</span><span>Understand Every Rule. Read with Confidence.</span></div></div></footer>;
 }

@@ -4,6 +4,7 @@ import "@fontsource/noto-naskh-arabic/400.css";
 import "@fontsource/noto-naskh-arabic/500.css";
 import "@fontsource/noto-naskh-arabic/600.css";
 import "./globals.css";
+import "./reading-first.css";
 import { AppHeader, AppFooter } from "@/components/shell";
 import { assetPath } from "@/lib/asset-path";
 

@@ -2,6 +2,10 @@
 
 TajwidLens adalah pendamping belajar tajwid Al-Qur'an berbahasa Indonesia. Aplikasi Next.js ini berjalan sebagai situs statis tanpa akun, server API, atau panggilan API Al-Qur'an saat digunakan.
 
+## Desain baru — Reading-first (2026)
+
+Redesign visual editorial yang konsisten untuk seluruh halaman. Beranda dan shell navigasi ditulis ulang; detail ada di [DESIGN_NOTES.md](DESIGN_NOTES.md). Aset favicon flat bisa diregenerasi dengan `python scripts/generate-brand-icons.py`.
+
 ## Cakupan
 
 - Seluruh **114 surah dan 6.236 ayat** tersedia untuk dibaca dan dipilih per ayat.
