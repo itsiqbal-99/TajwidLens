@@ -19,7 +19,7 @@ export type Annotation = {
   reviewStatus: "editorial-unreviewed" | "automatic-unreviewed";
 };
 
-const sourceReferences = ["Tanzil Quran Text v1.0.2", "Understand Quran Academy, Reach the Goal via Tajweed Rule (1st ed.)"] as const;
+const sourceReferences = ["Tanzil Quran Text v1.0.2", "KDN Malaysia, Garis Panduan Al-Quran Tajwid Berwarna Berserta Waqaf dan Ibtida' (2020)", "Understand Quran Academy, Reach the Goal via Tajweed Rule (1st ed.)"] as const;
 const note = (surahNumber: number, ayahNumber: number, wordIndices: number[], ruleIds: string[], title: string, triggerLetters: string, explanation: string, pronunciationGuide: string, commonMistake: string, variants?: { waqafVariant?: ReadingVariant; wasalVariant?: ReadingVariant }): Annotation => ({
   id: `${surahNumber}-${ayahNumber}-${wordIndices.join("-")}-${ruleIds[0]}`,
   surahNumber, ayahNumber, wordIndices, ruleIds, title, triggerLetters, explanation, pronunciationGuide, commonMistake,

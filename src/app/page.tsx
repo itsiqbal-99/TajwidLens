@@ -13,7 +13,7 @@ export default function HomePage() {
   return <>
     <section className="new-hero page-container">
       <div className="new-hero-copy">
-        <div className="hero-overline"><span className="tiny-square"/> PENDAMPING MEMBACA AL-QUR'AN <span className="overline-count">/ 01</span></div>
+        <div className="hero-overline"><span className="tiny-square"/> PENDAMPING MEMBACA AL-QUR&apos;AN <span className="overline-count">/ 01</span></div>
         <h1>Baca Al-Qur&apos;an, <span>pahami setiap bacaannya.</span></h1>
         <p className="new-hero-lead">Saat sebuah kata terasa sulit, temukan bagaimana membacanya dan mengapa hukumnya berlaku—langsung dari konteks ayat.</p>
         <div className="new-hero-actions"><Link className="button button-primary" href="/reading-guide/?surah=113&ayah=2">Mulai dari satu ayat <ArrowUpRight size={17}/></Link><Link className="understated-link" href="/explore/">Jelajahi Al-Qur&apos;an <ArrowRight size={16}/></Link></div>

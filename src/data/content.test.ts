@@ -4,6 +4,16 @@ import { annotations, getAnnotation, getAnnotationText, getAnnotations, getRelat
 import { lessons } from "./lessons";
 import { getVerse, getWords, surahs } from "./quran";
 import { searchContent } from "../lib/search";
+import {
+  IDGHAM_BIGHUNNAH_LETTERS,
+  IDGHAM_BILAGHUNNAH_LETTERS,
+  IKHFA_HAQIQI_LETTERS,
+  IQLAB_LETTERS,
+  IZHAR_HALQI_LETTERS,
+  MOON_LETTERS,
+  QALQALAH_LETTERS,
+  SUN_LETTERS,
+} from "./tajwid-rules";
 
 describe("konten bacaan", () => {
   it("menyimpan 114 surah dan 6.236 ayat sesuai sumber Tanzil", () => {
@@ -30,6 +40,42 @@ describe("konten bacaan", () => {
       expect(getAnnotationText(item)).toBe(item.wordIndices.map((index) => words[index]).join(" "));
       for (const rule of item.ruleIds) expect(lessons.some((lesson) => lesson.id === rule), `${item.id}: ${rule}`).toBe(true);
     }
+  });
+
+  it("memberi setiap materi pola, huruf, contoh, dan sorotan ayat yang valid", () => {
+    expect(lessons).toHaveLength(24);
+    for (const lesson of lessons) {
+      expect(lesson.focus.label.trim(), lesson.id).not.toBe("");
+      expect(lesson.focus.formula.trim(), lesson.id).not.toBe("");
+      expect(lesson.focus.letters.length, lesson.id).toBeGreaterThan(0);
+      expect(lesson.focus.sample.trim(), lesson.id).not.toBe("");
+      expect(lesson.focus.explanation.trim(), lesson.id).not.toBe("");
+      const verse = getVerse(lesson.example.surah, lesson.example.ayah);
+      expect(verse, lesson.id).toBeDefined();
+      const words = getWords(verse!.text);
+      expect(lesson.focus.wordIndices.length, lesson.id).toBeGreaterThan(0);
+      for (const index of lesson.focus.wordIndices) {
+        expect(index, lesson.id).toBeGreaterThanOrEqual(0);
+        expect(index, lesson.id).toBeLessThan(words.length);
+      }
+    }
+  });
+
+  it("menjaga kelompok huruf utama sesuai pembagian tajwid", () => {
+    const nunAndTanwinGroups = [
+      ...IZHAR_HALQI_LETTERS,
+      ...IDGHAM_BIGHUNNAH_LETTERS,
+      ...IDGHAM_BILAGHUNNAH_LETTERS,
+      ...IQLAB_LETTERS,
+      ...IKHFA_HAQIQI_LETTERS,
+    ];
+    expect(nunAndTanwinGroups).toHaveLength(28);
+    expect(new Set(nunAndTanwinGroups).size).toBe(28);
+    expect(IKHFA_HAQIQI_LETTERS).toHaveLength(15);
+    expect(QALQALAH_LETTERS).toEqual(["ق", "ط", "ب", "ج", "د"]);
+    expect(SUN_LETTERS).toHaveLength(14);
+    expect(MOON_LETTERS).toHaveLength(14);
+    expect(new Set([...SUN_LETTERS, ...MOON_LETTERS]).size).toBe(28);
   });
 
   it("menemukan contoh inti dan pencarian bahasa sehari-hari", () => {

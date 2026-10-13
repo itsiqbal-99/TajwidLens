@@ -200,11 +200,9 @@ body { font-size: 14px; line-height: 1.65; }
 .reader { padding: 31px 37px 29px; }
 .reader-topline h2 { font-size: 26px; }
 .verse-box { background: var(--bg); border-radius: 4px; border-color: var(--border); }
-.arabic-word { transition: background .17s ease, box-shadow .17s ease, color .17s ease; }
-.arabic-word.word-marked { background: var(--green-tint); box-shadow: inset 0 -2px var(--meeting-accent); }
-.arabic-word.rule-mad-tabii, .arabic-word.rule-mad-arid, .arabic-word.rule-mad-lazim { background: #f5ecd8; box-shadow: inset 0 -2px #b69754; }
-.arabic-word.rule-qalqalah, .arabic-word.rule-waqaf-ibtida { background: var(--blue-tint); box-shadow: inset 0 -2px var(--waqaf-accent); }
-.arabic-word.word-selected, .arabic-word.word-marked.word-selected { background: var(--clay-tint); box-shadow: inset 0 -3px var(--emerald); color: var(--text); }
+.arabic-word { transition: background .17s ease, color .17s ease; }
+.arabic-word.word-marked { background: color-mix(in srgb, var(--word-rule-accent) 10%, var(--surface)); }
+.arabic-word.word-selected, .arabic-word.word-marked.word-selected { background: var(--clay-tint); color: var(--text); }
 .verse-rule-overview { background: color-mix(in srgb, var(--surface-muted) 74%, var(--surface)); border-radius: 5px; }
 .verse-rule-chips button { border-radius: 4px; }
 .verse-rule-chips button:hover { transform: none; border-color: var(--rule-accent); }
@@ -252,9 +250,7 @@ body { font-size: 14px; line-height: 1.65; }
 [data-theme="dark"] .demo-switch button.is-active { background: #36434a; color: white; }
 [data-theme="dark"] .demo-guide p { color: #c5d9c9; }
 [data-theme="dark"] .demo-reference { color: #bad2bf; }
-[data-theme="dark"] .arabic-word.word-marked { background: var(--green-tint); color: var(--text); }
-[data-theme="dark"] .arabic-word.rule-mad-tabii, [data-theme="dark"] .arabic-word.rule-mad-arid, [data-theme="dark"] .arabic-word.rule-mad-lazim { background: #4f422c; color: var(--text); }
-[data-theme="dark"] .arabic-word.rule-qalqalah, [data-theme="dark"] .arabic-word.rule-waqaf-ibtida { background: #2d4950; color: var(--text); }
+[data-theme="dark"] .arabic-word.word-marked { background: color-mix(in srgb, var(--word-rule-accent) 14%, var(--surface)); color: var(--text); }
 [data-theme="dark"] .arabic-word.word-selected { background: var(--clay-tint); color: var(--text); }
 [data-theme="dark"] .coverage > div, [data-theme="dark"] .lesson-example { border-color: var(--border); }
 

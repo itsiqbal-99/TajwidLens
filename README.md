@@ -6,6 +6,20 @@ TajwidLens is an Indonesian-language companion for learning Quranic tajwid. This
 
 The current interface uses a consistent editorial visual system across the application. The home page and navigation shell were rebuilt around a reading-first experience; see [DESIGN_NOTES.md](DESIGN_NOTES.md) for details. The flat favicon assets can be regenerated with `python scripts/generate-brand-icons.py`.
 
+## Available features
+
+- A complete Quran reader with all 114 surahs and 6,236 ayahs from the Tanzil Uthmani text.
+- Searchable Surah and Ayah selectors, so readers can jump directly to a destination instead of scrolling through long lists.
+- Local content search across lessons, tajwid terms, surahs, and prepared examples.
+- An ayah-level tajwid map with a distinct accent color for each rule. A word that contains several findings receives a segmented, multi-color underline.
+- A contextual reading panel that explains the active rule, how to pronounce it, common mistakes, related examples, and prepared waqaf/wasal comparisons.
+- Twenty-four beginner-oriented tajwid lessons with plain-language summaries, trigger formulas, letter sets, prominent Arabic examples, and highlighted examples in Quranic context.
+- Previous/next ayah controls on every screen, plus horizontal swipe navigation on mobile devices.
+- A hijaiyah pronunciation explorer for reviewing letter names, articulation points, and commonly confused sounds.
+- Responsive light and dark themes with keyboard focus states and reduced-motion support.
+- A privacy-friendly static build: no account, API server, analytics requirement, or runtime Quran API call.
+- Transparent review labels that distinguish manually prepared examples from limited automatic scanning results.
+
 ## Scope
 
 - All **114 surahs and 6,236 ayahs** are available to read, with verse-by-verse selection.
@@ -57,4 +71,4 @@ npm run build
 
 ## Sources and licensing
 
-Arabic text: [Tanzil Quran Text](https://tanzil.net/docs/download) (Uthmani v1.0.2), © 2008–2010 Tanzil.net, licensed under CC BY 3.0. The source file was obtained from a [Tanzil distribution mirror](https://github.com/gptforjoomla/Tanzil/blob/master/Packages/com_tanzil/site/resources/quran/quran-uthmani.txt). See the [Tanzil text license](https://tanzil.net/docs/text_license) and `THIRD_PARTY_NOTICES.md`. Tajwid explanations were editorially prepared with reference to *Reach the Goal via Tajweed Rule* by Understand Quran Academy ([PDF](https://download.understandquran.com/fileadmin/user_upload/extras/tajweed/Tajweed_Rules.pdf)). The Indonesian explanations and detection results have not received an independent expert review.
+Arabic text: [Tanzil Quran Text](https://tanzil.net/docs/download) (Uthmani v1.0.2), © 2008–2010 Tanzil.net, licensed under CC BY 3.0. The source file was obtained from a [Tanzil distribution mirror](https://github.com/gptforjoomla/Tanzil/blob/master/Packages/com_tanzil/site/resources/quran/quran-uthmani.txt). See the [Tanzil text license](https://tanzil.net/docs/text_license) and `THIRD_PARTY_NOTICES.md`. Tajwid explanations were editorially cross-checked against the Malaysian Ministry of Home Affairs' *Garis Panduan Al-Quran Tajwid Berwarna Berserta Waqaf dan Ibtida' (2020)* ([PDF](https://www.moha.gov.my/utama/images/Akta%20Perundangan/GARIS%20PANDUAN%20TEKS%20Al-QURAN/GP_Kaedah_Hukum_Tajwid_dan_Waqaf_IBTIDA_2020.pdf)) and *Reach the Goal via Tajweed Rule* by Understand Quran Academy ([PDF](https://download.understandquran.com/fileadmin/user_upload/extras/tajweed/Tajweed_Rules.pdf)). The Indonesian explanations and detection results have not received an independent expert review and do not replace talaqqi with a qualified teacher.

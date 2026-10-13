@@ -1,3 +1,25 @@
+import {
+  COMMON_WAQF_SIGNS,
+  IDGHAM_BIGHUNNAH_LETTERS,
+  IDGHAM_BILAGHUNNAH_LETTERS,
+  IKHFA_HAQIQI_LETTERS,
+  ISTILA_LETTERS,
+  IZHAR_HALQI_LETTERS,
+  MADD_LETTERS,
+  MOON_LETTERS,
+  QALQALAH_LETTERS,
+  SUN_LETTERS,
+} from "./tajwid-rules";
+
+export type LessonFocus = {
+  label: string;
+  formula: string;
+  letters: readonly string[];
+  sample: string;
+  explanation: string;
+  wordIndices: readonly number[];
+};
+
 export type Lesson = {
   id: string;
   title: string;
@@ -7,11 +29,14 @@ export type Lesson = {
   condition: string;
   pronunciation: string;
   commonMistake: string;
-  keywords: string[];
+  keywords: readonly string[];
   example: { surah: number; ayah: number; note: string };
+  focus: LessonFocus;
 };
 
-export const lessons: readonly Lesson[] = [
+type LessonCore = Omit<Lesson, "focus">;
+
+const lessonContent = [
   { id: "pengantar", title: "Pengantar ilmu tajwid", category: "Dasar", summary: "Tajwid membantu setiap huruf dibaca dari tempat keluarnya dan sesuai sifatnya.", detail: "Belajar tajwid dimulai dari mendengar, menirukan, lalu memperhatikan huruf, harakat, panjang bacaan, dan hubungan antarkata. Panduan digital membantu mengenali kaidah, tetapi koreksi bacaan langsung tetap memerlukan guru yang kompeten.", condition: "Berlaku sepanjang bacaan Al-Qur'an; detail hukum muncul sesuai huruf dan konteksnya.", pronunciation: "Baca perlahan, jaga kejelasan huruf, dan bandingkan dengan bacaan guru atau qari yang tepercaya.", commonMistake: "Mengejar cepat dan lancar sebelum makhraj dan panjang bacaan stabil.", keywords: ["dasar", "belajar", "cara membaca"], example: { surah: 113, ayah: 2, note: "Satu frasa pendek memperlihatkan hubungan antara dua kata." } },
   { id: "huruf-hijaiyah", title: "Huruf hijaiyah", category: "Dasar", summary: "Huruf Arab memiliki bentuk, nama, dan tempat keluar bunyi yang perlu dibedakan.", detail: "Bentuk sebuah huruf berubah ketika tersambung, sedangkan identitas dan bunyinya tetap. Kenali huruf bersama harakatnya; nama huruf bukan selalu bunyi yang muncul dalam kata. Beberapa pasangan terdengar mirip bagi penutur Indonesia, tetapi makhrajnya berbeda.", condition: "Perhatikan huruf yang tertulis serta harakat dan huruf tetangganya.", pronunciation: "Mulai dari bunyi pendek berharakat, lalu latih dalam kata Al-Qur'an tanpa menambah vokal baru.", commonMistake: "Menyamakan ح dengan ه atau ص dengan س.", keywords: ["abjad arab", "huruf arab"], example: { surah: 112, ayah: 1, note: "Amati bentuk dan bunyi ق، ل، ه، و dalam ayat ini." } },
   { id: "harakat", title: "Harakat dan tanda baca", category: "Dasar", summary: "Fathah, kasrah, dammah, sukun, dan tasydid mengubah cara bunyi huruf.", detail: "Fathah memberi bunyi a pendek, kasrah i pendek, dan dammah u pendek. Sukun berarti huruf tidak mempunyai vokal sesudahnya; tasydid menandai huruf rangkap yang pertama mati dan kedua berharakat. Tanwin memberi bunyi n pada akhir kata saat disambung.", condition: "Baca tanda yang melekat pada huruf sebelum memutuskan cara pengucapannya.", pronunciation: "Jaga vokal pendek tetap singkat; jangan menambah bunyi e atau o pada huruf sukun.", commonMistake: "Memanjangkan semua fathah atau membaca huruf bertasydid seperti huruf biasa.", keywords: ["fathah", "kasrah", "dammah", "sukun", "tasydid", "tanwin"], example: { surah: 112, ayah: 3, note: "Perhatikan sukun pada mim dan dal." } },
@@ -36,6 +61,37 @@ export const lessons: readonly Lesson[] = [
   { id: "waqaf-ibtida", title: "Waqaf, wasal, dan ibtida", category: "Konteks bacaan", summary: "Berhenti, menyambung, dan memulai kembali dapat memengaruhi bunyi serta makna.", detail: "Waqaf membuat huruf akhir umumnya bersukun; wasal mempertahankan hubungan dengan kata berikutnya. Ibtida berarti memulai bacaan dari tempat yang sesuai. Pilih tempat berhenti dengan memperhatikan makna dan tanda mushaf, bukan semata-mata kemudahan napas.", condition: "Keputusan berhenti atau menyambung dibuat pada batas kata atau ayat yang layak.", pronunciation: "Perhatikan harakat akhir dan hukum yang muncul karena sukun sementara saat waqaf.", commonMistake: "Menganggap setiap kata aman dijadikan tempat berhenti tanpa melihat makna.", keywords: ["berhenti", "menyambung", "memulai bacaan", "waqaf", "wasal"], example: { surah: 113, ayah: 1, note: "Akhir ayat menjadi sukun saat waqaf." } },
   { id: "hamzatul-wasl", title: "Hamzatul wasl", category: "Konteks bacaan", summary: "Hamzah sambung dibaca saat memulai dan gugur bunyinya ketika disambung dari kata sebelumnya.", detail: "Tanda ٱ pada awal beberapa kata, termasuk ال pengenal, menunjukkan hamzatul wasl. Pada ٱلنَّاسِ, pembaca yang memulai dari kata itu mengucapkan hamzah awal, sedangkan ketika tersambung dari kata sebelumnya, bunyi hamzah tidak diucapkan. Cara memulai kata kerja mempunyai rincian tersendiri.", condition: "Kata dimulai dengan hamzatul wasl dan dibaca pada awal atau dalam sambungan.", pronunciation: "Bedakan posisi mulai dari posisi sambung; jangan menyisipkan hentian hamzah di tengah wasal.", commonMistake: "Selalu mengucapkan hamzah pada ٱ ketika menyambung bacaan.", keywords: ["hamzah wasal", "hamzatul wasl", "huruf tidak dibaca"], example: { surah: 114, ayah: 1, note: "ٱلنَّاسِ mengandung hamzatul wasl pada ال." } },
   { id: "tafkhim-tarqiq", title: "Tafkhim dan tarqiq", category: "Sifat bunyi", summary: "Beberapa huruf dibaca tebal atau tipis sesuai sifat dan konteksnya.", detail: "Huruf isti'la dibaca tebal. Ra memiliki aturan tebal dan tipis yang dipengaruhi harakat serta lingkungan huruf; rincian pengecualian perlu dipelajari bertahap. Pada شَرِّ, ra berkasrah dibaca tipis. Pada رَبِّ, ra berfathah dibaca tebal.", condition: "Periksa huruf dan harakat yang relevan, terutama pada ra dan lam lafaz Allah.", pronunciation: "Jaga posisi lidah sesuai kualitas tebal atau tipis tanpa mengubah vokal.", commonMistake: "Membaca semua ra dengan ketebalan yang sama.", keywords: ["ra tebal", "ra tipis", "tafkhim", "tarqiq"], example: { surah: 113, ayah: 2, note: "Ra pada شَرِّ berkasrah dan dibaca tipis." } },
-];
+] as const satisfies readonly LessonCore[];
+
+type LessonId = (typeof lessonContent)[number]["id"];
+
+const lessonFocus = {
+  "pengantar": { label: "Hubungan antarkata", formula: "نْ + ش = ikhfa", letters: ["نْ", "ش"], sample: "مِنْ شَرِّ", explanation: "Contoh singkat ini menunjukkan bahwa hukum ditentukan oleh huruf dan konteks sesudahnya, bukan oleh satu huruf yang berdiri sendiri.", wordIndices: [0, 1] },
+  "huruf-hijaiyah": { label: "Huruf dalam konteks", formula: "Nama huruf ≠ bunyi berharakat", letters: ["ق", "ل", "ه", "و"], sample: "قُلْ هُوَ ٱللَّهُ أَحَدٌ", explanation: "Kenali bentuk huruf, lalu baca bunyinya sesuai harakat dan posisinya di dalam kata.", wordIndices: [0, 1, 2, 3] },
+  "harakat": { label: "Tanda dasar", formula: "pendek · mati · rangkap · tanwin", letters: ["بَ", "بِ", "بُ", "بْ", "بّ", "بٌ"], sample: "لَمْ يَلِدْ", explanation: "Mim dan dal pada contoh bersukun; keduanya berhenti tanpa tambahan vokal.", wordIndices: [0, 1] },
+  "makhraj": { label: "Pasangan yang perlu dibedakan", formula: "tempat keluar menentukan bunyi", letters: ["ق", "ك", "ح", "ه"], sample: "قُلْ أَعُوذُ بِرَبِّ ٱلْفَلَقِ", explanation: "Qaf keluar dari bagian belakang lidah dan tidak boleh diratakan menjadi kaf; ha tenggorokan juga berbeda dari ha ringan.", wordIndices: [0, 3] },
+  "sifat-huruf": { label: "Contoh sifat qalqalah", formula: "ق ط ب ج د + sukun", letters: QALQALAH_LETTERS, sample: "ٱلْفَلَقْ", explanation: "Qaf yang menjadi sukun saat berhenti dipantulkan singkat tanpa menghasilkan vokal baru.", wordIndices: [3] },
+  "nun-tanwin": { label: "Pemicu utama", formula: "نْ / tanwin + huruf berikutnya", letters: ["نْ", "ـً", "ـٍ", "ـٌ"], sample: "مِنْ شَرِّ", explanation: "Bunyi n mati diperiksa bersama huruf sesudahnya untuk menentukan izhar, idgham, iqlab, atau ikhfa.", wordIndices: [0, 1] },
+  "ikhfa-haqiqi": { label: "15 huruf ikhfa", formula: "نْ / tanwin + salah satu huruf berikut", letters: IKHFA_HAQIQI_LETTERS, sample: "مِنْ شَرِّ", explanation: "Nun sukun bertemu syin. Bunyi nun disamarkan dengan ghunnah sekitar dua harakat sebelum masuk ke syin.", wordIndices: [0, 1] },
+  "izhar-halqi": { label: "6 huruf tenggorokan", formula: "نْ / tanwin + ء هـ ع ح غ خ", letters: IZHAR_HALQI_LETTERS, sample: "غَاسِقٍ إِذَا", explanation: "Tanwin bertemu hamzah sehingga bunyi n dibaca jelas tanpa ghunnah tambahan.", wordIndices: [2, 3] },
+  "idgham-bilaghunnah": { label: "2 huruf tanpa ghunnah", formula: "نْ / tanwin + ل ر", letters: IDGHAM_BILAGHUNNAH_LETTERS, sample: "يَكُن لَّهُۥ", explanation: "Nun sukun melebur ke lam tanpa menahan ghunnah dua harakat.", wordIndices: [1, 2] },
+  "idgham-bighunnah": { label: "4 huruf ينمو", formula: "نْ / tanwin + ي ن م و", letters: IDGHAM_BIGHUNNAH_LETTERS, sample: "مَن يَقُولُ", explanation: "Nun sukun melebur ke ya dengan ghunnah sekitar dua harakat. Empat kata pengecualian satu-kata dibaca izhar mutlak: دُنْيَا، بُنْيَانٌ، صِنْوَانٌ، قِنْوَانٌ.", wordIndices: [2, 3] },
+  "iqlab": { label: "1 huruf iqlab", formula: "نْ / tanwin + ب → mim samar", letters: ["ب"], sample: "مُحِيطٌۢ بِٱلْكَٰفِرِينَ", explanation: "Bunyi n pada tanwin berubah menjadi mim samar dengan ghunnah sekitar dua harakat sebelum ba.", wordIndices: [18, 19] },
+  "mim-sukun": { label: "Tiga kemungkinan", formula: "مْ + ب / م / huruf lain", letters: ["مْ", "ب", "م"], sample: "لَمْ يَلِدْ", explanation: "Huruf setelah mim sukun menentukan ikhfa syafawi, idgham mimi, atau izhar syafawi.", wordIndices: [0, 1] },
+  "ikhfa-syafawi": { label: "Pemicu ikhfa syafawi", formula: "مْ + ب", letters: ["مْ", "ب"], sample: "هُم بِمُؤْمِنِينَ", explanation: "Mim sukun disamarkan dengan ghunnah sekitar dua harakat; bibir tidak ditekan menutup penuh sebelum ba.", wordIndices: [9, 10] },
+  "idgham-mimi": { label: "Dua mim bertemu", formula: "مْ + م → مّ", letters: ["مْ", "م", "مّ"], sample: "قُلُوبِهِم مَّرَضٌ", explanation: "Mim pertama melebur ke mim berikutnya dan dibaca sebagai mim bertasydid dengan ghunnah dua harakat.", wordIndices: [1, 2] },
+  "izhar-shafawi": { label: "Selain mim dan ba", formula: "مْ + selain ب dan م", letters: ["مْ", "ي"], sample: "لَمْ يَلِدْ", explanation: "Mim sukun bertemu ya, sehingga mim dijelaskan dengan kedua bibir sebelum berpindah ke ya.", wordIndices: [0, 1] },
+  "ghunnah": { label: "Huruf bertasydid", formula: "نّ / مّ = ghunnah 2 harakat", letters: ["نّ", "مّ"], sample: "ٱلْخَنَّاسِ", explanation: "Nun bertasydid ditahan dengan dengung stabil melalui rongga hidung sekitar dua harakat.", wordIndices: [3] },
+  "qalqalah": { label: "5 huruf قطب جد", formula: "ق ط ب ج د + sukun", letters: QALQALAH_LETTERS, sample: "ٱلْفَلَقْ", explanation: "Saat waqaf, qaf akhir menjadi sukun dan dipantulkan tanpa tambahan bunyi a, i, atau u.", wordIndices: [3] },
+  "lam-tarif": { label: "Huruf syamsiyah dan qamariyah", formula: "ال + huruf berikutnya", letters: [...SUN_LETTERS, ...MOON_LETTERS], sample: "ٱلنَّاسِ · ٱلْفَلَقِ", explanation: "Lam melebur sebelum huruf syamsiyah seperti nun, dan dibaca jelas sebelum huruf qamariyah seperti fa.", wordIndices: [3] },
+  "mad-tabii": { label: "3 huruf mad", formula: "fathah + ا · dammah + وْ · kasrah + يْ", letters: MADD_LETTERS, sample: "مَٰلِكِ", explanation: "Alif kecil setelah mim menunjukkan vokal a panjang alami selama dua harakat.", wordIndices: [0] },
+  "mad-arid": { label: "Sukun sementara karena waqaf", formula: "huruf mad + huruf akhir yang diwaqafkan", letters: MADD_LETTERS, sample: "ٱلرَّحِيمْ", explanation: "Saat berhenti, mim akhir menjadi sukun dan ya mad sebelumnya boleh dibaca 2, 4, atau 6 harakat; saat wasal kembali dua harakat.", wordIndices: [1] },
+  "mad-lazim": { label: "Mad lazim kalimi mutsaqqal", formula: "huruf mad + huruf bertasydid dalam satu kata", letters: MADD_LETTERS, sample: "ٱلضَّآلِّينَ", explanation: "Alif mad bertemu lam bertasydid dalam satu kata dan wajib dipanjangkan enam harakat.", wordIndices: [8] },
+  "waqaf-ibtida": { label: "Tanda waqaf umum", formula: "berhenti atau sambung sesuai tanda dan makna", letters: COMMON_WAQF_SIGNS, sample: "ٱلْفَلَقِ ← ٱلْفَلَقْ", explanation: "Waqaf umumnya mensukunkan huruf akhir, tetapi terdapat rincian dan pengecualian; tempat berhenti juga harus menjaga makna.", wordIndices: [3] },
+  "hamzatul-wasl": { label: "Tanda hamzatul wasl", formula: "dibaca saat mulai · gugur saat disambung", letters: ["ٱ"], sample: "ٱلنَّاسِ", explanation: "Hamzah awal dibunyikan ketika memulai dari kata ini dan tidak dibunyikan ketika kata disambung dari sebelumnya.", wordIndices: [3] },
+  "tafkhim-tarqiq": { label: "Tebal dan tipis", formula: "huruf isti'la selalu tebal; ra dan lam Allah bergantung konteks", letters: [...ISTILA_LETTERS, "ر", "ل"], sample: "شَرِّ · رَبِّ", explanation: "Ra berkasrah pada شَرِّ dibaca tipis. Ra berfathah pada رَبِّ dibaca tebal; aturan ra memiliki rincian dan pengecualian lanjutan.", wordIndices: [1] },
+} satisfies Record<LessonId, LessonFocus>;
+
+export const lessons: readonly Lesson[] = lessonContent.map((lesson) => ({ ...lesson, focus: lessonFocus[lesson.id] }));
 
 export const getLesson = (id: string) => lessons.find((lesson) => lesson.id === id);

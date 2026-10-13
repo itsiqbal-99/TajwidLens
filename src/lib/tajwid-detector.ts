@@ -1,5 +1,13 @@
 import type { Annotation } from "@/data/annotations";
 import { getVerse, getWords } from "@/data/quran";
+import {
+  IDGHAM_BIGHUNNAH_LETTERS,
+  IDGHAM_BILAGHUNNAH_LETTERS,
+  IKHFA_HAQIQI_LETTERS,
+  IZHAR_HALQI_LETTERS,
+  QALQALAH_LETTERS,
+  SUN_LETTERS,
+} from "@/data/tajwid-rules";
 
 /** A deliberately limited, explainable scan of visible Uthmani signs (Hafs). */
 type Letter = { base: string; marks: string };
@@ -10,10 +18,10 @@ const hasVowel = (marks: string) => /[ًٌٍَُِ]/u.test(marks);
 const hasShadda = (marks: string) => marks.includes("ّ");
 const tanwin = (marks: string) => /[ًٌٍ]/u.test(marks);
 const pause = /[ۖۗۚۛۜۘۙ۞]/u;
-const sun = new Set([..."تثدذرزسشصضطظلن"]);
-const halqi = new Set([..."ءأإهعحغخ"]);
-const ikhfa = new Set([..."تثجدذزسشصضطظفقك"]);
-const qalqalah = new Set([..."قطبجد"]);
+const sun = new Set<string>(SUN_LETTERS);
+const halqi = new Set<string>([...IZHAR_HALQI_LETTERS, "أ", "إ"]);
+const ikhfa = new Set<string>(IKHFA_HAQIQI_LETTERS);
+const qalqalah = new Set<string>(QALQALAH_LETTERS);
 const hamza = new Set([..."ءأإؤئآ"]);
 
 function letters(word: string): Letter[] {
@@ -38,8 +46,8 @@ function nextLetter(groups: Letter[][], words: string[], wordIndex: number, lett
 function ruleForNun(next: string) {
   if (halqi.has(next)) return { id: "izhar-halqi", title: "Izhar halqi", action: "Baca bunyi n dengan jelas dari makhrajnya, tanpa menyamarkannya.", mistake: "Menyamarkan atau melebur bunyi n." };
   if (next === "ب") return { id: "iqlab", title: "Iqlab", action: "Ubah bunyi n menjadi mim samar dengan ghunnah sekitar dua harakat.", mistake: "Tetap mengucapkan n secara jelas sebelum ba." };
-  if ("ينمو".includes(next)) return { id: "idgham-bighunnah", title: "Idgham bighunnah", action: "Leburkan bunyi n ke huruf berikutnya sambil berdengung sekitar dua harakat.", mistake: "Membaca n terpisah tanpa peleburan." };
-  if ("لر".includes(next)) return { id: "idgham-bilaghunnah", title: "Idgham bila ghunnah", action: "Leburkan bunyi n ke lam atau ra tanpa menahan dengung.", mistake: "Menahan dengung sebelum lam atau ra." };
+  if (IDGHAM_BIGHUNNAH_LETTERS.includes(next as (typeof IDGHAM_BIGHUNNAH_LETTERS)[number])) return { id: "idgham-bighunnah", title: "Idgham bighunnah", action: "Leburkan bunyi n ke huruf berikutnya sambil berdengung sekitar dua harakat.", mistake: "Membaca n terpisah tanpa peleburan." };
+  if (IDGHAM_BILAGHUNNAH_LETTERS.includes(next as (typeof IDGHAM_BILAGHUNNAH_LETTERS)[number])) return { id: "idgham-bilaghunnah", title: "Idgham bila ghunnah", action: "Leburkan bunyi n ke lam atau ra tanpa menahan dengung.", mistake: "Menahan dengung sebelum lam atau ra." };
   if (ikhfa.has(next)) return { id: "ikhfa-haqiqi", title: "Ikhfa haqiqi", action: "Samarkan bunyi n dengan ghunnah sekitar dua harakat sebelum huruf berikutnya.", mistake: "Mengucapkan n terlalu jelas atau menghilangkan dengung." };
   return null;
 }
@@ -55,7 +63,7 @@ function makeAnnotation(surah: number, ayah: number, index: number, occurrence: 
     id: `auto-${surah}-${ayah}-${index}-${occurrence}-${ruleId}`,
     surahNumber: surah, ayahNumber: ayah, wordIndices, ruleIds: [ruleId], title,
     triggerLetters: trigger, explanation, pronunciationGuide: guide, commonMistake: mistake,
-    sourceReferences: ["Pemindaian tanda teks Utsmani Tanzil v1.0.2", "Understand Quran Academy, Reach the Goal via Tajweed Rule (1st ed.)"],
+    sourceReferences: ["Pemindaian tanda teks Utsmani Tanzil v1.0.2", "KDN Malaysia, Garis Panduan Al-Quran Tajwid Berwarna Berserta Waqaf dan Ibtida' (2020)", "Understand Quran Academy, Reach the Goal via Tajweed Rule (1st ed.)"],
     reviewStatus: "automatic-unreviewed",
   };
 }
@@ -83,7 +91,8 @@ export function detectTajwid(surah: number, ayah: number): Annotation[] {
       }
       if ((nSukun || isTanwin || mSukun) && next) {
         const rule = mSukun ? ruleForMim(next.letter.base) : ruleForNun(next.letter.base);
-        if (rule && !(next.wordIndex === wordIndex && rule.id.startsWith("idgham-"))) {
+        const sameWordNunIdgham = !mSukun && next.wordIndex === wordIndex && rule?.id.startsWith("idgham-");
+        if (rule && !sameWordNunIdgham) {
           const context = next.wordIndex === wordIndex ? "dalam kata ini" : "ketika disambung dengan kata berikutnya";
           const trigger = `${nSukun ? "نْ" : mSukun ? "مْ" : "tanwin"} + ${next.letter.base}`;
           result.push(makeAnnotation(surah, ayah, wordIndex, letterIndex, rule.id, rule.title, trigger,
@@ -125,7 +134,8 @@ export function detectTajwid(surah: number, ayah: number): Annotation[] {
       const previous = group[index - 1];
       const following = group[index + 1];
       const dagger = current.marks.includes("ٰ");
-      const regular = previous && ((current.base === "ا" && previous.marks.includes("َ")) || (current.base === "و" && previous.marks.includes("ُ")) || ("يى".includes(current.base) && previous.marks.includes("ِ")));
+      const unvowelledMadLetter = !hasVowel(current.marks) && !hasShadda(current.marks);
+      const regular = previous && unvowelledMadLetter && ((current.base === "ا" && previous.marks.includes("َ")) || (current.base === "و" && previous.marks.includes("ُ")) || ("يى".includes(current.base) && previous.marks.includes("ِ")));
       if (!dagger && !regular) continue;
       if (current.marks.includes("ٓ") || previous?.marks.includes("ٓ") || (following && (hamza.has(following.base) || hasSukun(following.marks) || hasShadda(following.marks)))) continue;
       const after = nextLetter(groups, words, wordIndex, index);

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ArrowLeft, ArrowRight, BookOpenText, Check, ChevronDown, Minus, Plus, Search, X } from "lucide-react";
-import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState, type CSSProperties } from "react";
 import { annotations, getAnnotation, getAnnotations, getAnnotationText, getRelatedAnnotations, type Annotation } from "@/data/annotations";
 import { getLesson } from "@/data/lessons";
 import { getSurah, getVerse, getWords, surahs } from "@/data/quran";
@@ -14,6 +14,27 @@ type Selection = { ayah: number; word: number };
 type WorkspaceProps = { mode?: "explore" | "guide" };
 type RuleTone = "meeting" | "length" | "waqaf";
 type SearchOption = { value: number; label: string; subtitle?: string; keywords?: string };
+type RuleStyle = CSSProperties & { "--rule-accent"?: string; "--word-rule-accent"?: string; "--word-rule-gradient"?: string };
+
+const ruleAccents: Record<string, string> = {
+  "ikhfa-haqiqi": "var(--tajwid-ikhfa)",
+  "izhar-halqi": "var(--tajwid-izhar)",
+  "idgham-bighunnah": "var(--tajwid-idgham-ghunnah)",
+  "idgham-bilaghunnah": "var(--tajwid-idgham-clear)",
+  iqlab: "var(--tajwid-iqlab)",
+  "ikhfa-syafawi": "var(--tajwid-ikhfa-syafawi)",
+  "idgham-mimi": "var(--tajwid-idgham-mimi)",
+  "izhar-shafawi": "var(--tajwid-izhar-syafawi)",
+  ghunnah: "var(--tajwid-ghunnah)",
+  qalqalah: "var(--tajwid-qalqalah)",
+  "lam-tarif": "var(--tajwid-lam)",
+  "mad-tabii": "var(--tajwid-mad-tabii)",
+  "mad-arid": "var(--tajwid-mad-arid)",
+  "mad-lazim": "var(--tajwid-mad-lazim)",
+  "waqaf-ibtida": "var(--tajwid-waqaf)",
+  "hamzatul-wasl": "var(--tajwid-hamzatul)",
+  "tafkhim-tarqiq": "var(--tajwid-tafkhim)",
+};
 
 const surahSearchOptions: readonly SearchOption[] = surahs.map((item) => ({
   value: item.number,
@@ -61,7 +82,6 @@ function SearchPicker({ label, value, options, placeholder, compact = false, onS
 
   useEffect(() => {
     if (!open) return;
-    setActiveIndex(0);
     requestAnimationFrame(() => inputRef.current?.focus());
   }, [open]);
 
@@ -103,7 +123,7 @@ function SearchPicker({ label, value, options, placeholder, compact = false, onS
     <div ref={rootRef} className={`search-picker ${open ? "is-open" : ""}`} onBlur={(event) => {
       if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setOpen(false);
     }}>
-      <button ref={triggerRef} type="button" className="search-picker-trigger" aria-haspopup="listbox" aria-expanded={open} aria-controls={open ? listboxId : undefined} onClick={() => setOpen((current) => !current)}>
+      <button ref={triggerRef} type="button" className="search-picker-trigger" aria-haspopup="listbox" aria-expanded={open} aria-controls={open ? listboxId : undefined} onClick={() => { if (!open) setActiveIndex(0); setOpen(!open); }}>
         <span>{selected?.label}</span><ChevronDown size={16} aria-hidden="true" />
       </button>
       {open && <div className="search-picker-popover">
@@ -124,6 +144,25 @@ function getRuleTone(item: Annotation): RuleTone {
   return "meeting";
 }
 
+function getRuleAccent(item: Annotation) {
+  return ruleAccents[item.ruleIds[0]] ?? "var(--tajwid-default)";
+}
+
+function getRuleStyle(item: Annotation): RuleStyle {
+  return { "--rule-accent": getRuleAccent(item) };
+}
+
+function getWordRuleStyle(items: Annotation[]): RuleStyle | undefined {
+  const accents = [...new Set(items.map(getRuleAccent))];
+  if (!accents.length) return undefined;
+  const stops = accents.flatMap((accent, index) => {
+    const start = (index / accents.length) * 100;
+    const end = ((index + 1) / accents.length) * 100;
+    return [`${accent} ${start}%`, `${accent} ${end}%`];
+  });
+  return { "--word-rule-accent": accents[0], "--word-rule-gradient": `linear-gradient(90deg, ${stops.join(", ")})` };
+}
+
 export function QuranWorkspace({ mode = "explore" }: WorkspaceProps) {
   const searchParams = useSearchParams();
   const defaultSurah = mode === "guide" ? 113 : 1;
@@ -140,6 +179,7 @@ export function QuranWorkspace({ mode = "explore" }: WorkspaceProps) {
   const closeRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLElement>(null);
   const lastWordRef = useRef<HTMLButtonElement | null>(null);
+  const swipeStartRef = useRef<{ x: number; y: number } | null>(null);
   const reducedMotion = useReducedMotion();
 
   const surah = getSurah(surahNumber) ?? surahs[0];
@@ -149,7 +189,7 @@ export function QuranWorkspace({ mode = "explore" }: WorkspaceProps) {
   const ruleOverview = [...new Map(verseAnnotations.map((item) => [item.title, item])).values()];
   const matches = selection?.ayah === verse.number ? verseAnnotations.filter((item) => item.wordIndices.includes(selection.word)) : [];
   const active = matches.find((item) => item.id === activeId) ?? matches[0] ?? null;
-  const ayahSearchOptions = useMemo<readonly SearchOption[]>(() => surah.verses.map((item) => ({ value: item.number, label: `Ayat ${item.number}`, keywords: String(item.number) })), [surah]);
+  const ayahSearchOptions: readonly SearchOption[] = surah.verses.map((item) => ({ value: item.number, label: `Ayat ${item.number}`, keywords: String(item.number) }));
 
   useEffect(() => {
     const update = () => setMobile(window.matchMedia("(max-width: 900px)").matches);
@@ -168,13 +208,15 @@ export function QuranWorkspace({ mode = "explore" }: WorkspaceProps) {
       const requestedAyah = Number(params.get("ayah"));
       const foundVerse = foundSurah.verses.find((item) => item.number === requestedAyah) ?? foundSurah.verses[0];
       setSurahNumber(foundSurah.number); setAyahNumber(foundVerse.number);
+      const wordValue = params.get("word");
+      const word = wordValue === null ? NaN : Number(wordValue);
+      const validWord = Number.isInteger(word) && word >= 0 && word < getWords(foundVerse.text).length;
       const annotation = getAnnotation(params.get("annotation") ?? "");
       if (annotation && annotation.surahNumber === foundSurah.number && annotation.ayahNumber === foundVerse.number) {
-        setSelection({ ayah: foundVerse.number, word: annotation.wordIndices[0] }); setActiveId(annotation.id);
+        const selectedWord = validWord && annotation.wordIndices.includes(word) ? word : annotation.wordIndices[0];
+        setSelection({ ayah: foundVerse.number, word: selectedWord }); setActiveId(annotation.id);
       } else {
-        const wordValue = params.get("word");
-        const word = wordValue === null ? NaN : Number(wordValue);
-        setSelection(Number.isInteger(word) && word >= 0 && word < getWords(foundVerse.text).length ? { ayah: foundVerse.number, word } : null);
+        setSelection(validWord ? { ayah: foundVerse.number, word } : null);
         setActiveId(null);
       }
       setReady(true);
@@ -204,7 +246,7 @@ export function QuranWorkspace({ mode = "explore" }: WorkspaceProps) {
     lastWordRef.current = element;
     const item = verseAnnotations.find((annotation) => annotation.wordIndices.includes(index));
     setSelection({ ayah: verse.number, word: index }); setActiveId(item?.id ?? null); setReadingMode("waqaf");
-    writeUrl(surah.number, verse.number, item?.id, false, item ? undefined : index);
+    writeUrl(surah.number, verse.number, item?.id, false, index);
   }
 
   function chooseAnnotation(item: Annotation) {
@@ -218,6 +260,27 @@ export function QuranWorkspace({ mode = "explore" }: WorkspaceProps) {
     const target = lastWordRef.current ?? document.querySelector<HTMLButtonElement>(".arabic-word.word-selected");
     setSelection(null); setActiveId(null); writeUrl(surah.number, verse.number);
     requestAnimationFrame(() => target?.focus());
+  }
+
+  function handleTouchStart(event: React.TouchEvent<HTMLElement>) {
+    if (!mobile || event.touches.length !== 1) { swipeStartRef.current = null; return; }
+    swipeStartRef.current = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+  }
+
+  function handleTouchEnd(event: React.TouchEvent<HTMLElement>) {
+    const start = swipeStartRef.current;
+    swipeStartRef.current = null;
+    if (!mobile || !start || event.changedTouches.length !== 1) return;
+    const deltaX = event.changedTouches[0].clientX - start.x;
+    const deltaY = event.changedTouches[0].clientY - start.y;
+    if (Math.abs(deltaX) < 64 || Math.abs(deltaX) < Math.abs(deltaY) * 1.25) return;
+    if (deltaX < 0 && verse.number < surah.verses.length) {
+      event.preventDefault();
+      changeLocation(surah.number, verse.number + 1);
+    } else if (deltaX > 0 && verse.number > 1) {
+      event.preventDefault();
+      changeLocation(surah.number, verse.number - 1);
+    }
   }
   useEffect(() => { if (mobile && selection) closeRef.current?.focus(); }, [mobile, selection]);
   useEffect(() => {
@@ -239,7 +302,7 @@ export function QuranWorkspace({ mode = "explore" }: WorkspaceProps) {
       <div className="reading-controls"><label className="highlight-toggle"><input type="checkbox" checked={showHighlights} onChange={(event) => setShowHighlights(event.target.checked)} /><span className="toggle-track" aria-hidden="true"><span /></span> Warna tajwid</label><div className="font-controls" aria-label="Ukuran teks Arab"><button type="button" onClick={() => updateSize(Math.max(30, fontSize - 4))} disabled={fontSize <= 30} aria-label="Perkecil teks Arab"><Minus size={16} /></button><span>Aa</span><button type="button" onClick={() => updateSize(Math.min(50, fontSize + 4))} disabled={fontSize >= 50} aria-label="Perbesar teks Arab"><Plus size={16} /></button></div></div>
     </div>
     <div className="workspace-grid">
-      <section className="reader" aria-label={`Surah ${surah.name} ayat ${verse.number}`}>
+      <section className="reader" aria-label={`Surah ${surah.name} ayat ${verse.number}`} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} onTouchCancel={() => { swipeStartRef.current = null; }}>
         <div className="reader-topline"><div><span className="eyebrow">{String(surah.number).padStart(3, "0")} / {surah.meaning}</span><h2>{surah.name} <span className="surah-arabic" lang="ar">{surah.arabicName}</span></h2></div><span className="reader-counter">{verse.number} / {surah.verses.length}</span></div>
         {surah.basmala && <p className="basmala" lang="ar" dir="rtl">{surah.basmala}</p>}
         <div className="verse-box"><span className="verse-label">AYAT {String(verse.number).padStart(2, "0")}</span><div className="arabic-verse" dir="rtl" lang="ar" style={{ fontSize: `${fontSize}px` }}>{words.map((word, index) => {
@@ -247,11 +310,12 @@ export function QuranWorkspace({ mode = "explore" }: WorkspaceProps) {
           const items = verseAnnotations.filter((item) => item.wordIndices.includes(index));
           const marked = showHighlights && items.length > 0;
           const selected = selection?.ayah === verse.number && (active?.wordIndices.includes(index) ?? selection.word === index);
-          return <button key={`${verse.number}-${index}`} data-word-index={index} type="button" className={`arabic-word ${marked ? `word-marked rule-${items[0].ruleIds[0]}` : ""} ${selected ? "word-selected" : ""}`} onClick={(event) => chooseWord(index, event.currentTarget)} aria-label={`${word}, ${items.length ? items.map((item) => item.title).join(", ") : "panduan detail belum tersedia"}`} aria-pressed={selected}>{word}</button>;
+          return <button key={`${verse.number}-${index}`} data-word-index={index} type="button" className={`arabic-word ${marked ? "word-marked" : ""} ${items.length > 1 ? "word-multi-rule" : ""} ${selected ? "word-selected" : ""}`} style={marked ? getWordRuleStyle(items) : undefined} onClick={(event) => chooseWord(index, event.currentTarget)} aria-label={`${word}, ${items.length ? items.map((item) => item.title).join(", ") : "panduan detail belum tersedia"}`} aria-pressed={selected}>{word}</button>;
         })}</div><p className="verse-hint">Ketuk kata berwarna atau kata lain untuk melihat panduan yang tersedia.</p></div>
-        <div className="verse-rule-overview"><div className="verse-rule-heading"><span className="section-kicker">PETA TAJWID AYAT</span><strong>{verseAnnotations.length} temuan</strong></div>{ruleOverview.length ? <div className="verse-rule-chips">{ruleOverview.map((item) => <button key={item.id} type="button" className={`rule-tone-${getRuleTone(item)}`} onClick={() => chooseAnnotation(item)}><i className={item.reviewStatus === "automatic-unreviewed" ? "auto-dot" : "curated-dot"} />{item.title}</button>)}</div> : <p>Belum ada hukum yang terdeteksi oleh aturan terbatas kami pada ayat ini. Baca bersama guru untuk pemeriksaan menyeluruh.</p>}<small>Titik hijau: contoh disusun manual. Titik emas: hasil pemindaian otomatis, perlu verifikasi guru. Daftar ini belum mencakup seluruh hukum tajwid.</small></div>
+        <div className="verse-rule-overview"><div className="verse-rule-heading"><span className="section-kicker">PETA TAJWID AYAT</span><strong>{verseAnnotations.length} temuan</strong></div>{ruleOverview.length ? <div className="verse-rule-chips">{ruleOverview.map((item) => <button key={item.id} type="button" className={`rule-tone-${getRuleTone(item)}`} style={getRuleStyle(item)} onClick={() => chooseAnnotation(item)}><i className={item.reviewStatus === "automatic-unreviewed" ? "auto-dot" : "curated-dot"} />{item.title}</button>)}</div> : <p>Belum ada hukum yang terdeteksi oleh aturan terbatas kami pada ayat ini. Baca bersama guru untuk pemeriksaan menyeluruh.</p>}<small>Titik hijau: contoh disusun manual. Titik emas: hasil pemindaian otomatis, perlu verifikasi guru. Daftar ini belum mencakup seluruh hukum tajwid.</small></div>
         <div className="verse-nav"><button type="button" onClick={() => changeLocation(surah.number, verse.number - 1)} disabled={verse.number === 1}><ArrowLeft size={17} /> Ayat sebelumnya</button><span className="verse-nav-current">{surah.name} · {verse.number}</span><button type="button" onClick={() => changeLocation(surah.number, verse.number + 1)} disabled={verse.number === surah.verses.length}>Ayat berikutnya <ArrowRight size={17} /></button></div>
-        <div className="legend"><span className="legend-title">Penanda bacaan</span><span><i className="legend-dot legend-green" /> Pertemuan huruf</span><span><i className="legend-dot legend-gold" /> Panjang bacaan</span><span><i className="legend-dot legend-blue" /> Waqaf &amp; sifat</span><small>Warna adalah bantuan visual; label hukum tetap tersedia dalam panel.</small></div>
+        <p className="mobile-swipe-hint"><ArrowLeft size={14} /> Geser untuk berpindah ayat <ArrowRight size={14} /></p>
+        <div className="legend"><span className="legend-title">Penanda bacaan</span><span><i className="legend-line legend-single" /> Satu hukum</span><span><i className="legend-line legend-multiple" /> Beberapa hukum dalam satu kata</span><small>Setiap hukum memiliki warna aksen sendiri. Garis bersegmen menandai lebih dari satu hukum; label lengkap tetap tersedia di panel.</small></div>
         <p className="editorial-note">Teks ayat: Tanzil Project. Pemindaian tajwid otomatis bersifat terbatas dan belum ditinjau ahli independen.</p>
       </section>
       {mobile && selection && <button type="button" className="sheet-backdrop" onClick={closePanel} tabIndex={-1} aria-label="Tutup panel panduan" />}
@@ -273,11 +337,11 @@ function InsightContent({ item, matches, onSelect, selectedText, readingMode, on
   const variant = readingMode === "waqaf" ? item.waqafVariant : item.wasalVariant;
   const activeTone = getRuleTone(item);
   return <div className="insight-content">
-    <span className={`selected-arabic rule-tone-${activeTone}`} dir="rtl" lang="ar">{selectedText}</span>
-    <div className="insight-title"><span className={`rule-chip rule-tone-${activeTone}`}>{item.reviewStatus === "automatic-unreviewed" ? "Hasil pemindaian otomatis" : lesson?.category ?? "Kaidah bacaan"}</span><h3>{item.title}</h3><p>{item.explanation}</p></div>
+    <span className={`selected-arabic rule-tone-${activeTone}`} style={getRuleStyle(item)} dir="rtl" lang="ar">{selectedText}</span>
+    <div className="insight-title"><span className={`rule-chip rule-tone-${activeTone}`} style={getRuleStyle(item)}>{item.reviewStatus === "automatic-unreviewed" ? "Hasil pemindaian otomatis" : lesson?.category ?? "Kaidah bacaan"}</span><h3>{item.title}</h3><p>{item.explanation}</p></div>
     {matches.length > 1 && <div className="other-rules"><span>Aspek lain pada bagian ini</span><div>{matches.map((match) => {
       const isActive = match.id === item.id;
-      return <button key={match.id} type="button" className={`rule-option rule-tone-${getRuleTone(match)} ${isActive ? "active" : ""}`} aria-pressed={isActive} onClick={() => onSelect(match.id)}><i className="rule-option-dot" aria-hidden="true" />{match.title}{isActive && <span className="sr-only"> (dipilih)</span>}</button>;
+      return <button key={match.id} type="button" className={`rule-option rule-tone-${getRuleTone(match)} ${isActive ? "active" : ""}`} style={getRuleStyle(match)} aria-pressed={isActive} onClick={() => onSelect(match.id)}><i className="rule-option-dot" aria-hidden="true" />{match.title}{isActive && <span className="sr-only"> (dipilih)</span>}</button>;
     })}</div></div>}
     <div className="insight-section"><span className="section-kicker">01 / CARA MEMBACA</span><p>{item.pronunciationGuide}</p></div>
     <div className="insight-section"><span className="section-kicker">02 / MENGAPA DEMIKIAN?</span><p><strong>Pemicu: {item.triggerLetters}.</strong> {item.explanation}</p></div>
