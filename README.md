@@ -1,33 +1,33 @@
 # TajwidLens
 
-TajwidLens adalah pendamping belajar tajwid Al-Qur'an berbahasa Indonesia. Aplikasi Next.js ini berjalan sebagai situs statis tanpa akun, server API, atau panggilan API Al-Qur'an saat digunakan.
+TajwidLens is an Indonesian-language companion for learning Quranic tajwid. This Next.js application runs as a static site and requires no account, API server, or Quran API calls at runtime.
 
-## Desain baru — Reading-first (2026)
+## Reading-first redesign (2026)
 
-Redesign visual editorial yang konsisten untuk seluruh halaman. Beranda dan shell navigasi ditulis ulang; detail ada di [DESIGN_NOTES.md](DESIGN_NOTES.md). Aset favicon flat bisa diregenerasi dengan `python scripts/generate-brand-icons.py`.
+The current interface uses a consistent editorial visual system across the application. The home page and navigation shell were rebuilt around a reading-first experience; see [DESIGN_NOTES.md](DESIGN_NOTES.md) for details. The flat favicon assets can be regenerated with `python scripts/generate-brand-icons.py`.
 
-## Cakupan
+## Scope
 
-- Seluruh **114 surah dan 6.236 ayat** tersedia untuk dibaca dan dipilih per ayat.
-- Setiap ayat dapat dipindai untuk beberapa pola tajwid. Hasilnya diberi label **"Hasil pemindaian otomatis"** dan **"Perlu verifikasi guru"**; penjelasan dan penanda kata dapat dibuka dari peta tajwid ayat.
-- **39 anotasi yang disusun manual** untuk Al-Fatihah, Al-Ikhlas, Al-Falaq, dan An-Nas tetap tersedia dan didahulukan bila bertumpang tindih dengan hasil otomatis.
-- **24 materi** tajwid, pustaka rujukan, pencarian lokal, penjelajah huruf hijaiyah, dan perbandingan waqaf/wasal pada contoh yang disiapkan.
-- Tema terang/gelap dengan warna yang berbeda untuk jenis hukum, panel penjelasan, dan tata letak responsif.
+- All **114 surahs and 6,236 ayahs** are available to read, with verse-by-verse selection.
+- Each ayah can be scanned for a limited set of tajwid patterns. Results are clearly identified as automatic and as requiring teacher verification; explanations and word markers can be opened from the ayah tajwid map.
+- **39 manually authored annotations** for Al-Fatihah, Al-Ikhlas, Al-Falaq, and An-Nas remain available and take precedence when they overlap automatic results.
+- The application includes **24 tajwid lessons**, a reference library, local search, a hijaiyah letter explorer, and waqaf/wasal comparisons for prepared examples.
+- Light and dark themes, rule-category colors, an explanation panel, and responsive layouts are included. When one selection contains multiple rules, every rule is shown with its own category accent in the contextual panel, while the active rule receives stronger emphasis.
 
-Pemindai otomatis mengenali sebagian pola nun sukun/tanwin, mim sukun, ghunnah pada nun/mim bertasydid, qalqalah bertanda sukun, lam ta'rif, sebagian mad tabi'i, dan mad iwadh pada akhir ayat. **Ini bukan penetapan lengkap semua hukum pada setiap ayat.** Hasilnya belum ditinjau ahli, dan keputusan bacaan yang bergantung pada waqaf, riwayat, atau konteks tetap perlu diperiksa bersama guru. Jika tidak ada temuan, aplikasi menyatakan hal itu tanpa menganggap ayat bebas dari hukum tajwid.
+The automatic scanner recognizes a subset of nun sakinah/tanwin, mim sakinah, ghunnah on nun or mim with shadda, qalqalah with a visible sukun, lam ta'rif, some mad tabi'i patterns, and mad iwadh at the end of an ayah. **It does not provide a complete ruling for every tajwid occurrence in every ayah.** Results have not been reviewed by a qualified expert, and readings that depend on waqaf, recitation tradition, or wider context must still be checked with a teacher. When the scanner finds nothing, the application says so without implying that the ayah contains no tajwid rules.
 
-## Menjalankan aplikasi
+## Run locally
 
-Memerlukan Node.js 22.13 atau lebih baru dan npm.
+Node.js 22.13 or later and npm are required.
 
 ```bash
 npm install
 npm run dev
 ```
 
-Buka `http://localhost:3000`.
+Open `http://localhost:3000`.
 
-## Pemeriksaan dan build
+## Checks and production build
 
 ```bash
 npm run typecheck
@@ -36,25 +36,25 @@ npm run test
 npm run build
 ```
 
-`next build` menulis situs statis ke `out/`.
+`next build` writes the static site to `out/`.
 
-## Data dan arsitektur
+## Data and architecture
 
-Teks Uthmani v1.0.2 dari Tanzil disimpan verbatim di `sources/tanzil-uthmani-v1.0.2.txt`. Metadata surah ada di `sources/tanzil-quran-data.xml`. Jalankan `python scripts/generate-quran.py` untuk menghasilkan `src/data/quran-full.json`; skrip memeriksa urutan 114 surah, jumlah 6.236 ayat, dan bahwa teks yang ditampilkan, termasuk basmalah yang dipisah secara visual, dapat digabung kembali tepat seperti sumber.
+Tanzil Uthmani text v1.0.2 is stored verbatim in `sources/tanzil-uthmani-v1.0.2.txt`, and surah metadata is stored in `sources/tanzil-quran-data.xml`. Run `python scripts/generate-quran.py` to generate `src/data/quran-full.json`. The script verifies the order of all 114 surahs, the total of 6,236 ayahs, and that the displayed text—including basmalahs that are visually separated—can be recombined exactly as it appears in the source.
 
-`src/data/quran.ts` mengakses ayat. `src/data/annotations.ts` menyimpan anotasi terkurasi dan menggabungkan hasil dari `src/lib/tajwid-detector.ts`. Hukum otomatis dihasilkan dari pola huruf/harakat yang terbaca dan disimpan sementara per ayat selama sesi aplikasi. Sorotan tidak mengubah teks Al-Qur'an. Materi ada di `src/data/lessons.ts`, pencarian di `src/lib/search.ts`, dan antarmuka di `src/components/` serta `src/app/`.
+`src/data/quran.ts` provides ayah access. `src/data/annotations.ts` stores curated annotations and merges results from `src/lib/tajwid-detector.ts`. Automatic rules are derived from visible letters and diacritics and cached per ayah for the current application session. Highlighting never alters the Quran text. Lessons live in `src/data/lessons.ts`, search logic in `src/lib/search.ts`, and the interface in `src/components/` and `src/app/`.
 
-Tidak ada berkas audio tilawah berlisensi yang dibundel; kontrol audio menampilkan status belum tersedia. Komponen pemutar siap dipakai setelah sumber dan atribusi audio yang sah ditambahkan.
+No licensed recitation audio is bundled. Audio controls report that playback is unavailable and are ready to be connected after a properly licensed source and attribution are added.
 
-## Deploy statis
+## Static deployment
 
-Unggah isi `out/` ke host statis. Untuk GitHub Pages pada subpath repositori, atur `NEXT_PUBLIC_BASE_PATH` sebelum build, contohnya:
+Upload the contents of `out/` to any static host. For GitHub Pages under a repository subpath, set `NEXT_PUBLIC_BASE_PATH` before building, for example:
 
 ```powershell
 $env:NEXT_PUBLIC_BASE_PATH = '/TajwidLens'
 npm run build
 ```
 
-## Sumber dan lisensi
+## Sources and licensing
 
-Teks Arab: [Tanzil Quran Text](https://tanzil.net/docs/download) (Uthmani v1.0.2), © 2008–2010 Tanzil.net, CC BY 3.0. Berkas diambil dari [cermin distribusi Tanzil](https://github.com/gptforjoomla/Tanzil/blob/master/Packages/com_tanzil/site/resources/quran/quran-uthmani.txt). Lihat [ketentuan lisensi Tanzil](https://tanzil.net/docs/text_license) dan `THIRD_PARTY_NOTICES.md`. Penjelasan tajwid disusun dengan rujukan editorial *Reach the Goal via Tajweed Rule* dari Understand Quran Academy ([PDF](https://download.understandquran.com/fileadmin/user_upload/extras/tajweed/Tajweed_Rules.pdf)). Penjelasan bahasa Indonesia dan hasil deteksi belum mendapat telaah ahli independen.
+Arabic text: [Tanzil Quran Text](https://tanzil.net/docs/download) (Uthmani v1.0.2), © 2008–2010 Tanzil.net, licensed under CC BY 3.0. The source file was obtained from a [Tanzil distribution mirror](https://github.com/gptforjoomla/Tanzil/blob/master/Packages/com_tanzil/site/resources/quran/quran-uthmani.txt). See the [Tanzil text license](https://tanzil.net/docs/text_license) and `THIRD_PARTY_NOTICES.md`. Tajwid explanations were editorially prepared with reference to *Reach the Goal via Tajweed Rule* by Understand Quran Academy ([PDF](https://download.understandquran.com/fileadmin/user_upload/extras/tajweed/Tajweed_Rules.pdf)). The Indonesian explanations and detection results have not received an independent expert review.

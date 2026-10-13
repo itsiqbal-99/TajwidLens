@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { ArrowLeft, ArrowRight, BookOpenText, Check, ChevronDown, Minus, Plus, X } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { ArrowLeft, ArrowRight, BookOpenText, Check, ChevronDown, Minus, Plus, Search, X } from "lucide-react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { annotations, getAnnotation, getAnnotations, getAnnotationText, getRelatedAnnotations, type Annotation } from "@/data/annotations";
 import { getLesson } from "@/data/lessons";
 import { getSurah, getVerse, getWords, surahs } from "@/data/quran";
@@ -12,6 +12,117 @@ import { AudioPlayer } from "./audio-player";
 
 type Selection = { ayah: number; word: number };
 type WorkspaceProps = { mode?: "explore" | "guide" };
+type RuleTone = "meeting" | "length" | "waqaf";
+type SearchOption = { value: number; label: string; subtitle?: string; keywords?: string };
+
+const surahSearchOptions: readonly SearchOption[] = surahs.map((item) => ({
+  value: item.number,
+  label: `${item.number}. ${item.name}`,
+  subtitle: `${item.arabicName} · ${item.meaning}`,
+  keywords: `${item.number} ${item.name} ${item.arabicName} ${item.meaning}`,
+}));
+
+function normalizeSearch(value: string) {
+  return value.toLocaleLowerCase("id").normalize("NFD").replace(/\p{Diacritic}/gu, "").replace(/[^\p{Letter}\p{Number}]+/gu, " ").replace(/\s+/g, " ").trim();
+}
+
+function SearchPicker({ label, value, options, placeholder, compact = false, onSelect }: {
+  label: string;
+  value: number;
+  options: readonly SearchOption[];
+  placeholder: string;
+  compact?: boolean;
+  onSelect: (value: number) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [activeIndex, setActiveIndex] = useState(0);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const listboxId = useId();
+  const selected = options.find((option) => option.value === value) ?? options[0];
+  const filteredOptions = useMemo(() => {
+    const needle = normalizeSearch(query);
+    if (!needle) return options;
+    const compactNeedle = needle.replaceAll(" ", "");
+    return options
+      .map((option) => {
+        const searchable = normalizeSearch(option.keywords ?? `${option.value} ${option.label} ${option.subtitle ?? ""}`);
+        const compactSearchable = searchable.replaceAll(" ", "");
+        const number = String(option.value);
+        const score = number === needle ? 0 : number.startsWith(needle) ? 1 : searchable.startsWith(needle) || compactSearchable.startsWith(compactNeedle) ? 2 : 3;
+        return { option, matches: searchable.includes(needle) || compactSearchable.includes(compactNeedle), score };
+      })
+      .filter(({ matches }) => matches)
+      .sort((a, b) => a.score - b.score || a.option.value - b.option.value)
+      .map(({ option }) => option);
+  }, [options, query]);
+
+  useEffect(() => {
+    if (!open) return;
+    setActiveIndex(0);
+    requestAnimationFrame(() => inputRef.current?.focus());
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const closeOnOutsideClick = (event: PointerEvent) => {
+      if (!rootRef.current?.contains(event.target as Node)) setOpen(false);
+    };
+    document.addEventListener("pointerdown", closeOnOutsideClick);
+    return () => document.removeEventListener("pointerdown", closeOnOutsideClick);
+  }, [open]);
+
+  function choose(option: SearchOption) {
+    onSelect(option.value);
+    setQuery("");
+    setOpen(false);
+    requestAnimationFrame(() => triggerRef.current?.focus());
+  }
+
+  function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setActiveIndex((index) => Math.min(index + 1, filteredOptions.length - 1));
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      setActiveIndex((index) => Math.max(index - 1, 0));
+    } else if (event.key === "Enter" && filteredOptions[activeIndex]) {
+      event.preventDefault();
+      choose(filteredOptions[activeIndex]);
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      setOpen(false);
+      triggerRef.current?.focus();
+    }
+  }
+
+  return <div className={`search-picker-field ${compact ? "search-picker-compact" : ""}`}>
+    <span className="search-picker-label">{label}</span>
+    <div ref={rootRef} className={`search-picker ${open ? "is-open" : ""}`} onBlur={(event) => {
+      if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setOpen(false);
+    }}>
+      <button ref={triggerRef} type="button" className="search-picker-trigger" aria-haspopup="listbox" aria-expanded={open} aria-controls={open ? listboxId : undefined} onClick={() => setOpen((current) => !current)}>
+        <span>{selected?.label}</span><ChevronDown size={16} aria-hidden="true" />
+      </button>
+      {open && <div className="search-picker-popover">
+        <div className="search-picker-input-wrap"><Search size={15} aria-hidden="true" /><input ref={inputRef} type="search" role="combobox" aria-label={`Cari ${label.toLocaleLowerCase("id")}`} aria-autocomplete="list" aria-controls={listboxId} aria-expanded="true" aria-activedescendant={filteredOptions[activeIndex] ? `${listboxId}-${filteredOptions[activeIndex].value}` : undefined} value={query} placeholder={placeholder} autoComplete="off" onChange={(event) => { setQuery(event.target.value); setActiveIndex(0); }} onKeyDown={handleKeyDown} /></div>
+        <div id={listboxId} className="search-picker-options" role="listbox" aria-label={`Pilihan ${label.toLocaleLowerCase("id")}`}>
+          {filteredOptions.length ? filteredOptions.map((option, index) => <button id={`${listboxId}-${option.value}`} key={option.value} type="button" role="option" aria-selected={option.value === value} className={`search-picker-option ${index === activeIndex ? "keyboard-active" : ""}`} onMouseEnter={() => setActiveIndex(index)} onClick={() => choose(option)}>
+            <span><strong>{option.label}</strong>{option.subtitle && <small>{option.subtitle}</small>}</span>{option.value === value && <Check size={15} aria-hidden="true" />}
+          </button>) : <div className="search-picker-empty">Tidak ada hasil yang cocok.</div>}
+        </div>
+      </div>}
+    </div>
+  </div>;
+}
+
+function getRuleTone(item: Annotation): RuleTone {
+  if (item.ruleIds.some((ruleId) => ruleId.startsWith("mad-"))) return "length";
+  if (item.ruleIds.some((ruleId) => ruleId === "qalqalah" || ruleId === "waqaf-ibtida")) return "waqaf";
+  return "meeting";
+}
 
 export function QuranWorkspace({ mode = "explore" }: WorkspaceProps) {
   const searchParams = useSearchParams();
@@ -38,6 +149,7 @@ export function QuranWorkspace({ mode = "explore" }: WorkspaceProps) {
   const ruleOverview = [...new Map(verseAnnotations.map((item) => [item.title, item])).values()];
   const matches = selection?.ayah === verse.number ? verseAnnotations.filter((item) => item.wordIndices.includes(selection.word)) : [];
   const active = matches.find((item) => item.id === activeId) ?? matches[0] ?? null;
+  const ayahSearchOptions = useMemo<readonly SearchOption[]>(() => surah.verses.map((item) => ({ value: item.number, label: `Ayat ${item.number}`, keywords: String(item.number) })), [surah]);
 
   useEffect(() => {
     const update = () => setMobile(window.matchMedia("(max-width: 900px)").matches);
@@ -123,7 +235,7 @@ export function QuranWorkspace({ mode = "explore" }: WorkspaceProps) {
 
   return <div className="workspace">
     <div className="workspace-toolbar">
-      <div className="selectors"><label>Surah<span className="select-wrap"><select value={surah.number} onChange={(event) => changeLocation(Number(event.target.value), 1)}>{surahs.map((item) => <option key={item.number} value={item.number}>{item.number}. {item.name}</option>)}</select><ChevronDown size={16} aria-hidden="true" /></span></label><label>Ayat<span className="select-wrap"><select value={verse.number} onChange={(event) => changeLocation(surah.number, Number(event.target.value))}>{surah.verses.map((item) => <option key={item.number} value={item.number}>Ayat {item.number}</option>)}</select><ChevronDown size={16} aria-hidden="true" /></span></label></div>
+      <div className="selectors"><SearchPicker label="Surah" value={surah.number} options={surahSearchOptions} placeholder="Cari nama, arti, atau nomor…" onSelect={(number) => changeLocation(number, 1)} /><SearchPicker label="Ayat" value={verse.number} options={ayahSearchOptions} placeholder={`Cari 1–${surah.verses.length}…`} compact onSelect={(number) => changeLocation(surah.number, number)} /></div>
       <div className="reading-controls"><label className="highlight-toggle"><input type="checkbox" checked={showHighlights} onChange={(event) => setShowHighlights(event.target.checked)} /><span className="toggle-track" aria-hidden="true"><span /></span> Warna tajwid</label><div className="font-controls" aria-label="Ukuran teks Arab"><button type="button" onClick={() => updateSize(Math.max(30, fontSize - 4))} disabled={fontSize <= 30} aria-label="Perkecil teks Arab"><Minus size={16} /></button><span>Aa</span><button type="button" onClick={() => updateSize(Math.min(50, fontSize + 4))} disabled={fontSize >= 50} aria-label="Perbesar teks Arab"><Plus size={16} /></button></div></div>
     </div>
     <div className="workspace-grid">
@@ -137,7 +249,7 @@ export function QuranWorkspace({ mode = "explore" }: WorkspaceProps) {
           const selected = selection?.ayah === verse.number && (active?.wordIndices.includes(index) ?? selection.word === index);
           return <button key={`${verse.number}-${index}`} data-word-index={index} type="button" className={`arabic-word ${marked ? `word-marked rule-${items[0].ruleIds[0]}` : ""} ${selected ? "word-selected" : ""}`} onClick={(event) => chooseWord(index, event.currentTarget)} aria-label={`${word}, ${items.length ? items.map((item) => item.title).join(", ") : "panduan detail belum tersedia"}`} aria-pressed={selected}>{word}</button>;
         })}</div><p className="verse-hint">Ketuk kata berwarna atau kata lain untuk melihat panduan yang tersedia.</p></div>
-        <div className="verse-rule-overview"><div className="verse-rule-heading"><span className="section-kicker">PETA TAJWID AYAT</span><strong>{verseAnnotations.length} temuan</strong></div>{ruleOverview.length ? <div className="verse-rule-chips">{ruleOverview.map((item) => <button key={item.id} type="button" onClick={() => chooseAnnotation(item)}><i className={item.reviewStatus === "automatic-unreviewed" ? "auto-dot" : "curated-dot"} />{item.title}</button>)}</div> : <p>Belum ada hukum yang terdeteksi oleh aturan terbatas kami pada ayat ini. Baca bersama guru untuk pemeriksaan menyeluruh.</p>}<small>Titik hijau: contoh disusun manual. Titik emas: hasil pemindaian otomatis, perlu verifikasi guru. Daftar ini belum mencakup seluruh hukum tajwid.</small></div>
+        <div className="verse-rule-overview"><div className="verse-rule-heading"><span className="section-kicker">PETA TAJWID AYAT</span><strong>{verseAnnotations.length} temuan</strong></div>{ruleOverview.length ? <div className="verse-rule-chips">{ruleOverview.map((item) => <button key={item.id} type="button" className={`rule-tone-${getRuleTone(item)}`} onClick={() => chooseAnnotation(item)}><i className={item.reviewStatus === "automatic-unreviewed" ? "auto-dot" : "curated-dot"} />{item.title}</button>)}</div> : <p>Belum ada hukum yang terdeteksi oleh aturan terbatas kami pada ayat ini. Baca bersama guru untuk pemeriksaan menyeluruh.</p>}<small>Titik hijau: contoh disusun manual. Titik emas: hasil pemindaian otomatis, perlu verifikasi guru. Daftar ini belum mencakup seluruh hukum tajwid.</small></div>
         <div className="verse-nav"><button type="button" onClick={() => changeLocation(surah.number, verse.number - 1)} disabled={verse.number === 1}><ArrowLeft size={17} /> Ayat sebelumnya</button><span className="verse-nav-current">{surah.name} · {verse.number}</span><button type="button" onClick={() => changeLocation(surah.number, verse.number + 1)} disabled={verse.number === surah.verses.length}>Ayat berikutnya <ArrowRight size={17} /></button></div>
         <div className="legend"><span className="legend-title">Penanda bacaan</span><span><i className="legend-dot legend-green" /> Pertemuan huruf</span><span><i className="legend-dot legend-gold" /> Panjang bacaan</span><span><i className="legend-dot legend-blue" /> Waqaf &amp; sifat</span><small>Warna adalah bantuan visual; label hukum tetap tersedia dalam panel.</small></div>
         <p className="editorial-note">Teks ayat: Tanzil Project. Pemindaian tajwid otomatis bersifat terbatas dan belum ditinjau ahli independen.</p>
@@ -159,10 +271,14 @@ function InsightContent({ item, matches, onSelect, selectedText, readingMode, on
   const lesson = getLesson(item.ruleIds[0]);
   const hasComparison = item.waqafVariant && item.wasalVariant;
   const variant = readingMode === "waqaf" ? item.waqafVariant : item.wasalVariant;
+  const activeTone = getRuleTone(item);
   return <div className="insight-content">
-    <span className="selected-arabic" dir="rtl" lang="ar">{selectedText}</span>
-    <div className="insight-title"><span className="rule-chip">{item.reviewStatus === "automatic-unreviewed" ? "Hasil pemindaian otomatis" : lesson?.category ?? "Kaidah bacaan"}</span><h3>{item.title}</h3><p>{item.explanation}</p></div>
-    {matches.length > 1 && <div className="other-rules"><span>Aspek lain pada bagian ini</span><div>{matches.map((match) => <button key={match.id} type="button" className={match.id === item.id ? "active" : ""} onClick={() => onSelect(match.id)}>{match.title}</button>)}</div></div>}
+    <span className={`selected-arabic rule-tone-${activeTone}`} dir="rtl" lang="ar">{selectedText}</span>
+    <div className="insight-title"><span className={`rule-chip rule-tone-${activeTone}`}>{item.reviewStatus === "automatic-unreviewed" ? "Hasil pemindaian otomatis" : lesson?.category ?? "Kaidah bacaan"}</span><h3>{item.title}</h3><p>{item.explanation}</p></div>
+    {matches.length > 1 && <div className="other-rules"><span>Aspek lain pada bagian ini</span><div>{matches.map((match) => {
+      const isActive = match.id === item.id;
+      return <button key={match.id} type="button" className={`rule-option rule-tone-${getRuleTone(match)} ${isActive ? "active" : ""}`} aria-pressed={isActive} onClick={() => onSelect(match.id)}><i className="rule-option-dot" aria-hidden="true" />{match.title}{isActive && <span className="sr-only"> (dipilih)</span>}</button>;
+    })}</div></div>}
     <div className="insight-section"><span className="section-kicker">01 / CARA MEMBACA</span><p>{item.pronunciationGuide}</p></div>
     <div className="insight-section"><span className="section-kicker">02 / MENGAPA DEMIKIAN?</span><p><strong>Pemicu: {item.triggerLetters}.</strong> {item.explanation}</p></div>
     {hasComparison && <div className="insight-section comparison"><span className="section-kicker">03 / BERHENTI ATAU DISAMBUNG</span><div className="segmented" role="group" aria-label="Mode bacaan"><button type="button" className={readingMode === "waqaf" ? "active" : ""} aria-pressed={readingMode === "waqaf"} onClick={() => onModeChange("waqaf")}>Berhenti</button><button type="button" className={readingMode === "wasal" ? "active" : ""} aria-pressed={readingMode === "wasal"} onClick={() => onModeChange("wasal")}>Disambung</button></div><div className="variant-result"><strong>{variant?.reading}</strong><p>{variant?.explanation}</p>{variant?.harakat && <span>Panjang / kondisi: {variant.harakat}</span>}</div><small>Pilih tempat waqaf dengan memperhatikan makna ayat.</small></div>}
