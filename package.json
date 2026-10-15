@@ -4,10 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "npm run tajweed:build && npm run tajweed:check",
     "build": "next build",
+    "tajweed:build": "node scripts/generate-tajweed-data.mjs",
+    "tajweed:check": "node scripts/check-tajweed-data.mjs",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "vitest run"
+    "test": "vitest run --configLoader runner"
   },
   "dependencies": {
     "next": "^16.2.0",

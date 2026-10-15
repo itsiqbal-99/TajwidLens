@@ -1,4 +1,4 @@
-/** Canonical letter groups used by both lesson content and the automatic scanner (Hafs 'an 'Asim). */
+/** Canonical letter groups used by the learning content (Hafs 'an 'Asim). */
 export const IZHAR_HALQI_LETTERS = ["ء", "ه", "ع", "ح", "غ", "خ"] as const;
 export const IDGHAM_BIGHUNNAH_LETTERS = ["ي", "ن", "م", "و"] as const;
 export const IDGHAM_BILAGHUNNAH_LETTERS = ["ل", "ر"] as const;

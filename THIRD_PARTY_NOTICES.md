@@ -15,7 +15,20 @@ The source text was copied from the [Tanzil text mirror](https://github.com/gptf
 
 ## Tajwid learning reference
 
-The editorial explanations and limited automatic rule descriptions draw on *Reach the Goal via Tajweed Rule*, 1st edition, Understand Quran Academy: https://download.understandquran.com/fileadmin/user_upload/extras/tajweed/Tajweed_Rules.pdf. The Indonesian text and automatic results have not been independently reviewed by a qualified tajwid teacher.
+The curated lesson examples draw on *Reach the Goal via Tajweed Rule*, 1st edition, Understand Quran Academy: https://download.understandquran.com/fileadmin/user_upload/extras/tajweed/Tajweed_Rules.pdf. The Indonesian learning copy has not been independently reviewed by a qualified tajwid teacher.
+
+## Quran.ws Tajweed
+
+The tajweed reader uses the rules, precomputed annotations, and Quran editions from **Quran.ws Tajweed**, release `v0.4.3`, corpus version `0.4.2`, commit `c0d07c02965d7853f8002491f05f90e8b0f24d06`.
+
+License: Creative Commons Attribution 4.0 International (CC BY 4.0)
+
+Project: https://github.com/quran-ws/quran-tajweed
+
+Documentation: https://quran.ws/docs/reference/quran-tajweed/
+License guide: https://quran.ws/docs/reference/licensing/
+
+The original license files are preserved in `sources/quran-ws-v0.4.3/`. TajwidLens filters the source to stable rules without `needsReview`, aligns the source offsets to KFGQPC UthmanicHafs v3.0, and redistributes the resulting per-surah payloads with attribution. See `sources/quran-ws-v0.4.3/README.md` for the exact transformation and fail-closed policy.
 
 ## Fonts
 

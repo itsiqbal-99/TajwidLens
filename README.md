@@ -1,34 +1,32 @@
 # TajwidLens
 
-TajwidLens is an Indonesian-language companion for learning Quranic tajwid. This Next.js application runs as a static site and requires no account, API server, or Quran API calls at runtime.
+TajwidLens is a static, Indonesian-language learning companion for reading the Quran with inspectable tajweed annotations. It does not generate tajweed rulings in the browser. The reader uses a pinned, precomputed corpus and displays the exact annotated character ranges over a separately verified Quran edition.
 
-## Reading-first redesign (2026)
+## Features
 
-The current interface uses a consistent editorial visual system across the application. The home page and navigation shell were rebuilt around a reading-first experience; see [DESIGN_NOTES.md](DESIGN_NOTES.md) for details. The flat favicon assets can be regenerated with `python scripts/generate-brand-icons.py`.
+- All 114 surahs and 6,236 ayahs from KFGQPC UthmanicHafs v3.0 (2026), Hafs `an Asim.
+- 143,049 imported annotation ranges backed by 152 stable source rules.
+- Character-level highlighting: a highlight can cover part of a word, cross a word boundary, or overlap another rule.
+- Multi-color striped ranges and an overlap switcher when several rulings apply to the same characters.
+- A contextual panel whose primary view uses familiar Indonesian tajweed names and answers three beginner questions: what happens, how to read it, and why it is marked. Arabic source rules, patterns, offsets, and IDs remain available in a collapsed technical section.
+- Searchable surah and ayah pickers.
+- Previous/next navigation and horizontal swipe navigation on mobile.
+- A per-ayah tajweed map with spaced, color-coded rule chips.
+- 24 beginner learning modules with letter groups and prominent examples.
+- Local search across lessons, terms, surahs, and curated learning examples.
+- A hijaiyah pronunciation explorer.
+- Responsive light and dark themes, keyboard focus states, and reduced-motion support.
+- Static export with no account, analytics dependency, API server, or runtime Quran API request.
 
-## Available features
+## Tajweed data policy
 
-- A complete Quran reader with all 114 surahs and 6,236 ayahs from the Tanzil Uthmani text.
-- Searchable Surah and Ayah selectors, so readers can jump directly to a destination instead of scrolling through long lists.
-- Local content search across lessons, tajwid terms, surahs, and prepared examples.
-- An ayah-level tajwid map with a distinct accent color for each rule. A word that contains several findings receives a segmented, multi-color underline.
-- A contextual reading panel that explains the active rule, how to pronounce it, common mistakes, related examples, and prepared waqaf/wasal comparisons.
-- Twenty-four beginner-oriented tajwid lessons with plain-language summaries, trigger formulas, letter sets, prominent Arabic examples, and highlighted examples in Quranic context.
-- Previous/next ayah controls on every screen, plus horizontal swipe navigation on mobile devices.
-- A hijaiyah pronunciation explorer for reviewing letter names, articulation points, and commonly confused sounds.
-- Responsive light and dark themes with keyboard focus states and reduced-motion support.
-- A privacy-friendly static build: no account, API server, analytics requirement, or runtime Quran API call.
-- Transparent review labels that distinguish manually prepared examples from limited automatic scanning results.
+The annotation source is [Quran.ws Tajweed](https://quran.ws/docs/reference/quran-tajweed/) release `v0.4.3`, corpus version `0.4.2`, pinned to commit `c0d07c02965d7853f8002491f05f90e8b0f24d06`. The source rules, annotations, and editions are distributed under CC BY 4.0.
 
-## Scope
+Only rules whose source status is `stable` and whose `needsReview` flag is false are imported. Disputed, disabled, and review-needed rules are excluded. TajwidLens does not run a local pattern matcher to fill gaps.
 
-- All **114 surahs and 6,236 ayahs** are available to read, with verse-by-verse selection.
-- Each ayah can be scanned for a limited set of tajwid patterns. Results are clearly identified as automatic and as requiring teacher verification; explanations and word markers can be opened from the ayah tajwid map.
-- **39 manually authored annotations** for Al-Fatihah, Al-Ikhlas, Al-Falaq, and An-Nas remain available and take precedence when they overlap automatic results.
-- The application includes **24 tajwid lessons**, a reference library, local search, a hijaiyah letter explorer, and waqaf/wasal comparisons for prepared examples.
-- Light and dark themes, rule-category colors, an explanation panel, and responsive layouts are included. When one selection contains multiple rules, every rule is shown with its own category accent in the contextual panel, while the active rule receives stronger emphasis.
+The upstream annotation offsets refer to a legacy edition whose earlier printed provenance was not recorded. TajwidLens never displays that edition. Instead, the generator transfers an existing range to KFGQPC UthmanicHafs v3.0 only when every grapheme in the complete ayah has a one-to-one match after the encoding normalizations documented by the source project. Four materially different ayahs—11:41, 27:20, 36:22, and 52:37—fail closed, so their 62 source ranges are not transferred.
 
-The automatic scanner recognizes a subset of nun sakinah/tanwin, mim sakinah, ghunnah on nun or mim with shadda, qalqalah with a visible sukun, lam ta'rif, some mad tabi'i patterns, and mad iwadh at the end of an ayah. **It does not provide a complete ruling for every tajwid occurrence in every ayah.** Results have not been reviewed by a qualified expert, and readings that depend on waqaf, recitation tradition, or wider context must still be checked with a teacher. When the scanner finds nothing, the application says so without implying that the ayah contains no tajwid rules.
+This is intentionally not a claim of complete scholarly coverage. The upstream corpus documents gaps, including some stop-dependent rulings and broader waqaf/ibtida decisions. The interface reports those limits and never invents a ruling when the source does not provide one. TajwidLens remains a learning aid and does not replace talaqqi with a qualified teacher.
 
 ## Run locally
 
@@ -41,34 +39,39 @@ npm run dev
 
 Open `http://localhost:3000`.
 
-## Checks and production build
+## Validation and production build
 
 ```bash
+npm run tajweed:build
+npm run tajweed:check
 npm run typecheck
 npm run lint
 npm run test
 npm run build
 ```
 
-`next build` writes the static site to `out/`.
+`npm run build` regenerates and validates the tajweed payloads before Next.js writes the static site to `out/`.
 
-## Data and architecture
+The validator checks the pinned source hashes, the display-edition digest, all 114 per-surah payload hashes, all 6,236 ayahs, every annotation bound and quote, grapheme boundaries, rule references, and the expected annotation total.
 
-Tanzil Uthmani text v1.0.2 is stored verbatim in `sources/tanzil-uthmani-v1.0.2.txt`, and surah metadata is stored in `sources/tanzil-quran-data.xml`. Run `python scripts/generate-quran.py` to generate `src/data/quran-full.json`. The script verifies the order of all 114 surahs, the total of 6,236 ayahs, and that the displayed text—including basmalahs that are visually separated—can be recombined exactly as it appears in the source.
+## Data layout
 
-`src/data/quran.ts` provides ayah access. `src/data/annotations.ts` stores curated annotations and merges results from `src/lib/tajwid-detector.ts`. Automatic rules are derived from visible letters and diacritics and cached per ayah for the current application session. Highlighting never alters the Quran text. Lessons live in `src/data/lessons.ts`, search logic in `src/lib/search.ts`, and the interface in `src/components/` and `src/app/`.
+- `sources/quran-ws-v0.4.3/` contains the pinned source corpus, edition comparison, licenses, and checksum lock.
+- `scripts/generate-tajweed-data.mjs` performs the strict source-to-display-edition transfer.
+- `scripts/check-tajweed-data.mjs` validates every generated output.
+- `public/data/tajweed/` contains one runtime payload per surah, keeping the initial bundle small.
+- `src/data/tajweed-index.json` is the generated manifest.
+- `src/data/tajweed-rules-generated.json` is the filtered, display-ready rule catalog.
+- `src/components/tajweed-text.tsx` renders exact and overlapping ranges.
+- `src/components/quran-workspace.tsx` contains reader state, searchable navigation, the rule map, mobile swiping, and the inspector.
+- `src/data/annotations.ts` now contains only curated lesson examples; it no longer merges or invokes an automatic detector.
 
-No licensed recitation audio is bundled. Audio controls report that playback is unavailable and are ready to be connected after a properly licensed source and attribution are added.
+The older Tanzil dataset remains in the repository for lesson examples and source comparison. The annotation reader itself displays only the KFGQPC text included with the pinned tajweed source.
 
 ## Static deployment
 
-Upload the contents of `out/` to any static host. For GitHub Pages under a repository subpath, set `NEXT_PUBLIC_BASE_PATH` before building, for example:
+For GitHub Pages, set `GITHUB_PAGES=true` and `NEXT_PUBLIC_REPO_NAME` to the repository name before building. The existing workflow supplies these values.
 
-```powershell
-$env:NEXT_PUBLIC_BASE_PATH = '/TajwidLens'
-npm run build
-```
+## Licensing and attribution
 
-## Sources and licensing
-
-Arabic text: [Tanzil Quran Text](https://tanzil.net/docs/download) (Uthmani v1.0.2), © 2008–2010 Tanzil.net, licensed under CC BY 3.0. The source file was obtained from a [Tanzil distribution mirror](https://github.com/gptforjoomla/Tanzil/blob/master/Packages/com_tanzil/site/resources/quran/quran-uthmani.txt). See the [Tanzil text license](https://tanzil.net/docs/text_license) and `THIRD_PARTY_NOTICES.md`. Tajwid explanations were editorially cross-checked against the Malaysian Ministry of Home Affairs' *Garis Panduan Al-Quran Tajwid Berwarna Berserta Waqaf dan Ibtida' (2020)* ([PDF](https://www.moha.gov.my/utama/images/Akta%20Perundangan/GARIS%20PANDUAN%20TEKS%20Al-QURAN/GP_Kaedah_Hukum_Tajwid_dan_Waqaf_IBTIDA_2020.pdf)) and *Reach the Goal via Tajweed Rule* by Understand Quran Academy ([PDF](https://download.understandquran.com/fileadmin/user_upload/extras/tajweed/Tajweed_Rules.pdf)). The Indonesian explanations and detection results have not received an independent expert review and do not replace talaqqi with a qualified teacher.
+See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and the original license files in `sources/quran-ws-v0.4.3/`. The data pipeline and user interface are documented in [DESIGN_NOTES.md](DESIGN_NOTES.md).

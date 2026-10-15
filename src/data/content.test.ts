@@ -4,6 +4,9 @@ import { annotations, getAnnotation, getAnnotationText, getAnnotations, getRelat
 import { lessons } from "./lessons";
 import { getVerse, getWords, surahs } from "./quran";
 import { searchContent } from "../lib/search";
+import { getHukumLabel, getRuleHelp } from "../lib/tajweed-presentation";
+import tajweedIndex from "./tajweed-index.json";
+import tajweedRules from "./tajweed-rules-generated.json";
 import {
   IDGHAM_BIGHUNNAH_LETTERS,
   IDGHAM_BILAGHUNNAH_LETTERS,
@@ -87,28 +90,24 @@ describe("konten bacaan", () => {
     expect(searchContent("mad thabi'i").some((result) => result.href.includes("mad-tabii"))).toBe(true);
   });
 
-  it("memindai hukum pada ayat di luar contoh manual dengan tautan yang dapat dibuka", () => {
-    const results = getAnnotations(2, 2);
-    expect(results.some((item) => item.reviewStatus === "automatic-unreviewed")).toBe(true);
-    expect(results.some((item) => item.ruleIds[0] === "lam-tarif")).toBe(true);
-    expect(results.some((item) => item.ruleIds[0] === "idgham-bilaghunnah" && item.wordIndices.includes(7))).toBe(true);
-    for (const item of results) {
-      expect(getAnnotation(item.id)).toEqual(item);
-      for (const index of item.wordIndices) expect(index).toBeLessThan(getWords(getVerse(2, 2)!.text).length);
-    }
+  it("tidak lagi membuat anotasi otomatis di browser", () => {
+    expect(getAnnotations(2, 2)).toEqual([]);
+    expect(getAnnotation("auto-2-2-0-1-lam-tarif")).toBeUndefined();
   });
 
-  it("memindai seluruh ayat tanpa indeks kata yang keluar batas", () => {
-    let scanned = 0;
-    let withoutFinding = 0;
-    for (const surah of surahs) for (const verse of surah.verses) {
-      const results = getAnnotations(surah.number, verse.number);
-      const words = getWords(verse.text);
-      if (!results.length) withoutFinding++;
-      for (const item of results) for (const index of item.wordIndices) expect(index).toBeLessThan(words.length);
-      scanned++;
+  it("mencatat korpus tajwid prahitung dan kebijakan penolakan secara eksplisit", () => {
+    expect(tajweedIndex.counts.accepted).toBe(143049);
+    expect(tajweedIndex.rejectedAyahs).toEqual(["11:41", "27:20", "36:22", "52:37"]);
+    expect(tajweedIndex.surahs.reduce((sum, surah) => sum + surah.ayahCount, 0)).toBe(6236);
+    expect(Object.keys(tajweedRules)).toHaveLength(152);
+  });
+
+  it("memberi semua hukum nama dan petunjuk yang ramah pemula Indonesia", () => {
+    for (const rule of Object.values(tajweedRules)) {
+      expect(getHukumLabel(rule)).not.toBe("Hukum Tajwid Lanjutan");
+      expect(getRuleHelp(rule).summary.length).toBeGreaterThan(15);
+      expect(getRuleHelp(rule).reading.length).toBeGreaterThan(20);
+      expect(getRuleHelp(rule).trigger.length).toBeGreaterThan(15);
     }
-    expect(scanned).toBe(6236);
-    expect(withoutFinding).toBeLessThan(50);
-  }, 15000);
+  });
 });

@@ -1,5 +1,4 @@
 import { getWords, getVerse } from "./quran";
-import { detectTajwid } from "@/lib/tajwid-detector";
 
 export type ReadingVariant = { label: string; reading: string; explanation: string; harakat?: string };
 export type Annotation = {
@@ -16,7 +15,7 @@ export type Annotation = {
   waqafVariant?: ReadingVariant;
   wasalVariant?: ReadingVariant;
   sourceReferences: readonly string[];
-  reviewStatus: "editorial-unreviewed" | "automatic-unreviewed";
+  reviewStatus: "editorial-unreviewed";
 };
 
 const sourceReferences = ["Tanzil Quran Text v1.0.2", "KDN Malaysia, Garis Panduan Al-Quran Tajwid Berwarna Berserta Waqaf dan Ibtida' (2020)", "Understand Quran Academy, Reach the Goal via Tajweed Rule (1st ed.)"] as const;
@@ -81,23 +80,8 @@ export const annotations: readonly Annotation[] = [
   note(114, 6, [1], ["lam-tarif"], "Lam qamariyah", "ال + ج", "Jim sesudah ال pada ٱلْجِنَّةِ termasuk huruf qamariyah; lam dibaca jelas.", "Jelaskan lam sebelum jim.", "Meleburkan lam ke jim."),
 ];
 
-const detectedCache = new Map<string, readonly Annotation[]>();
-export const getAnnotations = (surah: number, ayah: number): readonly Annotation[] => {
-  const curated = annotations.filter((item) => item.surahNumber === surah && item.ayahNumber === ayah);
-  const key = `${surah}:${ayah}`;
-  let detected = detectedCache.get(key);
-  if (!detected) {
-    detected = detectTajwid(surah, ayah);
-    detectedCache.set(key, detected);
-  }
-  return [...curated, ...detected.filter((candidate) => !curated.some((item) => item.ruleIds[0] === candidate.ruleIds[0] && item.wordIndices.some((index) => candidate.wordIndices.includes(index))))];
-};
-export const getAnnotation = (id: string) => {
-  const curated = annotations.find((item) => item.id === id);
-  if (curated) return curated;
-  const match = /^auto-(\d+)-(\d+)-\d+-\d+-[\w-]+$/.exec(id);
-  return match ? getAnnotations(Number(match[1]), Number(match[2])).find((item) => item.id === id) : undefined;
-};
+export const getAnnotations = (surah: number, ayah: number): readonly Annotation[] => annotations.filter((item) => item.surahNumber === surah && item.ayahNumber === ayah);
+export const getAnnotation = (id: string) => annotations.find((item) => item.id === id);
 export const getAnnotationText = (item: Annotation) => {
   const verse = getVerse(item.surahNumber, item.ayahNumber);
   return verse ? item.wordIndices.map((index) => getWords(verse.text)[index]).join(" ") : "";
