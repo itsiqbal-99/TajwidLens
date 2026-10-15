@@ -70,7 +70,7 @@ The older Tanzil dataset remains in the repository for lesson examples and sourc
 
 ## Static deployment
 
-For GitHub Pages, set `GITHUB_PAGES=true` and `NEXT_PUBLIC_REPO_NAME` to the repository name before building. The existing workflow supplies these values.
+For GitHub Pages, set `GITHUB_PAGES=true`, `NEXT_PUBLIC_REPO_NAME` to the repository name, and `NEXT_PUBLIC_BASE_PATH` to `/<repository-name>` before building. The existing workflow supplies all three values. `NEXT_PUBLIC_BASE_PATH` is intentionally public because browser-side data and icon requests need the repository prefix.
 
 ## Licensing and attribution
 

@@ -1,7 +1,7 @@
-const repoName = process.env.NEXT_PUBLIC_REPO_NAME;
-
-const basePath =
-  process.env.GITHUB_PAGES === "true" && repoName ? `/${repoName}` : "";
+// This module is imported by Client Components. Next.js only exposes
+// NEXT_PUBLIC_* values to the browser, so a server-only GITHUB_PAGES check
+// would silently collapse the prefix to an empty string after deployment.
+const basePath = (process.env.NEXT_PUBLIC_BASE_PATH ?? "").replace(/\/+$/, "");
 
 export function assetPath(path: string): string {
   const normalized = path.startsWith("/") ? path : `/${path}`;
