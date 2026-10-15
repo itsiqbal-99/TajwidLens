@@ -16,7 +16,7 @@ export default function HomePage() {
         <div className="hero-overline"><span className="tiny-square"/> PENDAMPING MEMBACA AL-QUR&apos;AN <span className="overline-count">/ 01</span></div>
         <h1>Baca Al-Qur&apos;an, <span>pahami setiap bacaannya.</span></h1>
         <p className="new-hero-lead">Saat sebuah kata terasa sulit, temukan bagaimana membacanya dan mengapa hukumnya berlaku—langsung dari konteks ayat.</p>
-        <div className="new-hero-actions"><Link className="button button-primary" href="/reading-guide/?surah=113&ayah=2">Mulai dari satu ayat <ArrowUpRight size={17}/></Link><Link className="understated-link" href="/explore/">Jelajahi Al-Qur&apos;an <ArrowRight size={16}/></Link></div>
+        <div className="new-hero-actions"><Link className="button button-primary" href="/reading-guide/?surah=113&ayah=2">Mulai dari satu ayat <ArrowUpRight size={17}/></Link><Link className="button button-secondary home-learn-shortcut" href="/learn/"><BookOpenText size={17}/> Belajar tajwid</Link><Link className="understated-link" href="/explore/">Jelajahi Al-Qur&apos;an <ArrowRight size={16}/></Link></div>
         <div className="hero-credibility"><span><b>114</b> surah</span><span><b>6.236</b> ayat</span><span><b>Hafs</b> ‘an ‘Ashim</span></div>
       </div>
       <div className="new-hero-visual"><HeroReadingDemo verses={{"113:2": getVerse(113, 2)?.text ?? "", "1:3": getVerse(1, 3)?.text ?? ""}}/></div>

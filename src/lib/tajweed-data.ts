@@ -40,7 +40,10 @@ export function loadTajweedSurah(surah: number): Promise<TajweedSurahPayload> {
   const manifest = tajweedIndex.files.find((item) => item.surah === surah);
   if (!manifest) return Promise.reject(new Error("Surah tidak ditemukan pada indeks tajwid."));
 
-  const request = fetch(assetPath(`/data/tajweed/${manifest.file}`), { cache: "force-cache" })
+  // Tie the browser cache key to the exact manifest entry. This prevents an
+  // older, valid payload from being compared with a newly generated manifest.
+  const payloadUrl = `${assetPath(`/data/tajweed/${manifest.file}`)}?v=${manifest.sha256.slice(0, 16)}`;
+  const request = fetch(payloadUrl, { cache: "force-cache" })
     .then(async (response) => {
       if (!response.ok) throw new Error(`Gagal memuat data tajwid (${response.status}).`);
       const bytes = await response.arrayBuffer();

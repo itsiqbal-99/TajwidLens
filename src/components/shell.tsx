@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, Moon, Sun, X, ArrowUpRight, BookOpen, Compass, GraduationCap, ScanText, AudioLines, Library, ArrowRight } from "lucide-react";
+import { Menu, X, ArrowUpRight, BookOpen, Compass, GraduationCap, ScanText, AudioLines, Library, ArrowRight, Palette, Check } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const nav = [
@@ -14,6 +14,13 @@ const nav = [
   { href: "/reference/", label: "Referensi", icon: Library },
 ];
 
+const themes = [
+  { id: "samudra", label: "Samudra", description: "Biru awan & koral" },
+  { id: "zamrud", label: "Zamrud", description: "Hijau malam & emas" },
+  { id: "senja", label: "Senja", description: "Krem hangat & terakota" },
+] as const;
+type ThemeId = typeof themes[number]["id"];
+
 function BrandIcon() {
   return <span className="brand-mark" aria-hidden="true"><svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 12.5c4.7-1.9 8.6-1.2 12 1.6 3.4-2.8 7.3-3.5 12-1.6v16.2c-4.7-1.9-8.6-1.3-12 1.5-3.4-2.8-7.3-3.4-12-1.5V12.5Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/><path d="M20 14.2v15.3" stroke="currentColor" strokeWidth="2"/><circle cx="27.7" cy="20.8" r="4.6" fill="var(--brand-mark-bg)" stroke="var(--brand-mark-accent)" strokeWidth="2"/><path d="m31.2 24.3 3.5 3.5" stroke="var(--brand-mark-accent)" strokeWidth="2" strokeLinecap="round"/></svg></span>;
 }
@@ -21,19 +28,20 @@ function BrandIcon() {
 export function AppHeader() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const [dark, setDark] = useState(false);
+  const [theme, setTheme] = useState<ThemeId>("samudra");
+  const [themeReady, setThemeReady] = useState(false);
   useEffect(() => {
     const saved = window.localStorage.getItem("tajwidlens-theme");
-    const isDark = saved === "dark";
-    document.documentElement.dataset.theme = isDark ? "dark" : "light";
-    queueMicrotask(() => setDark(isDark));
+    const next: ThemeId = saved === "dark" || saved === "zamrud" ? "zamrud" : saved === "senja" ? "senja" : "samudra";
+    queueMicrotask(() => setTheme(next));
+    queueMicrotask(() => setThemeReady(true));
   }, []);
-  function toggleTheme() {
-    const next = !dark;
-    setDark(next);
-    document.documentElement.dataset.theme = next ? "dark" : "light";
-    window.localStorage.setItem("tajwidlens-theme", next ? "dark" : "light");
-  }
+  useEffect(() => {
+    if (!themeReady) return;
+    document.documentElement.dataset.theme = theme;
+    window.localStorage.setItem("tajwidlens-theme", theme);
+  }, [theme, themeReady]);
+  function chooseTheme(next: ThemeId) { setTheme(next); }
   useEffect(() => { queueMicrotask(() => setOpen(false)); }, [pathname]);
   useEffect(() => { if (!open) return; const handle = (event: KeyboardEvent) => { if (event.key === "Escape") setOpen(false); }; window.addEventListener("keydown", handle); return () => window.removeEventListener("keydown", handle); }, [open]);
 
@@ -42,7 +50,7 @@ export function AppHeader() {
     <header className="site-header"><div className="header-inner">
       <Link className="brand" href="/" aria-label="TajwidLens, kembali ke beranda"><BrandIcon/><span>Tajwid<span className="brand-accent">Lens</span></span><span className="brand-separator" aria-hidden="true"/><span className="brand-descriptor">THE READING COMPANION</span></Link>
       <nav className="desktop-nav" aria-label="Navigasi utama">{nav.filter((item) => item.href !== "/reading-guide/").map((item) => <Link key={item.href} href={item.href} className={pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href)) ? "nav-active" : ""}>{item.label}</Link>)}</nav>
-      <div className="header-actions"><button className="icon-button theme-button" type="button" onClick={toggleTheme} aria-label={dark ? "Aktifkan tema terang" : "Aktifkan tema gelap"} title={dark ? "Tema terang" : "Tema gelap"}>{dark ? <Sun size={18}/> : <Moon size={18}/>}</button><Link className={`header-cta ${pathname.startsWith("/reading-guide/") ? "header-cta-active" : ""}`} href="/reading-guide/">Panduan Bacaan <ArrowUpRight size={15}/></Link><button className="icon-button mobile-menu-button" type="button" onClick={() => setOpen(!open)} aria-expanded={open} aria-controls="mobile-nav" aria-label={open ? "Tutup menu" : "Buka menu"}>{open ? <X size={21}/> : <Menu size={21}/>}</button></div>
+      <div className="header-actions"><details className="theme-picker"><summary className="icon-button theme-button" aria-label="Pilih tema warna" title="Pilih tema"><Palette size={18}/></summary><div className="theme-menu" role="group" aria-label="Tema warna">{themes.map((item) => <button type="button" key={item.id} className={theme === item.id ? "is-active" : ""} onClick={(event) => { chooseTheme(item.id); event.currentTarget.closest("details")?.removeAttribute("open"); }} aria-pressed={theme === item.id}><i className={`theme-swatch theme-swatch-${item.id}`} aria-hidden="true"/><span><strong>{item.label}</strong><small>{item.description}</small></span>{theme === item.id && <Check size={16}/>}</button>)}</div></details><Link className={`header-cta ${pathname.startsWith("/reading-guide/") ? "header-cta-active" : ""}`} href="/reading-guide/">Panduan Bacaan <ArrowUpRight size={15}/></Link><button className="icon-button mobile-menu-button" type="button" onClick={() => setOpen(!open)} aria-expanded={open} aria-controls="mobile-nav" aria-label={open ? "Tutup menu" : "Buka menu"}>{open ? <X size={21}/> : <Menu size={21}/>}</button></div>
     </div>{open && <nav className="mobile-nav" id="mobile-nav" aria-label="Navigasi seluler">{nav.map(({href, label, icon: Icon}) => <Link href={href} key={href} className={pathname === href || (href !== "/" && pathname.startsWith(href)) ? "nav-active" : ""} onClick={() => setOpen(false)}><Icon size={18}/><span>{label}</span><ArrowUpRight size={15}/></Link>)}</nav>}</header>
   </>;
 }

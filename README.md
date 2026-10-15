@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="public/showcase/tajwidlens-showcase-landscape.png" alt="TajwidLens — baca Al-Qur'an dan pahami setiap bacaannya" width="100%" />
+</p>
+
 # TajwidLens
 
 TajwidLens is a static, Indonesian-language learning companion for reading the Quran with inspectable tajweed annotations. It does not generate tajweed rulings in the browser. The reader uses a pinned, precomputed corpus and displays the exact annotated character ranges over a separately verified Quran edition.
@@ -12,11 +16,24 @@ TajwidLens is a static, Indonesian-language learning companion for reading the Q
 - Searchable surah and ayah pickers.
 - Previous/next navigation and horizontal swipe navigation on mobile.
 - A per-ayah tajweed map with spaced, color-coded rule chips.
-- 24 beginner learning modules with letter groups and prominent examples.
+- 24 beginner learning modules with category-specific visual illustrations, letter groups, and prominent examples. The same visual language continues from the library card into each lesson detail page.
 - Local search across lessons, terms, surahs, and curated learning examples.
 - A hijaiyah pronunciation explorer.
-- Responsive light and dark themes, keyboard focus states, and reduced-motion support.
+- Three responsive color themes—**Samudra**, **Zamrud**, and **Senja**—with a named theme picker, persisted locally in the browser.
+- A direct **Belajar tajwid** shortcut in the home hero, in addition to the complete learning-path section.
+- Installable PWA experience for Android and iOS, including a web app manifest, home-screen icons, an Android install prompt, iOS installation guidance, and offline caching for the application shell.
+- Responsive keyboard focus states and reduced-motion support.
 - Static export with no account, analytics dependency, API server, or runtime Quran API request.
+
+## Product showcase
+
+Three editable SVG promotional posters and ready-to-share PNG exports are included:
+
+- [Desktop landscape (PNG)](public/showcase/tajwidlens-showcase-landscape.png) · [SVG source](public/showcase/tajwidlens-showcase-landscape.svg) — 1600 × 900 px.
+- [Mobile portrait (PNG)](public/showcase/tajwidlens-showcase-portrait.png) · [SVG source](public/showcase/tajwidlens-showcase-portrait.svg) — 1080 × 1350 px.
+- [Social square (PNG)](public/showcase/tajwidlens-showcase-square.png) · [SVG source](public/showcase/tajwidlens-showcase-square.svg) — 1080 × 1080 px.
+
+The campaign presents TajwidLens across laptop and phone mockups, with tajweed per ayah, visual learning modules, three color themes, and Android/iOS PWA installation as the main product benefits.
 
 ## Tajweed data policy
 

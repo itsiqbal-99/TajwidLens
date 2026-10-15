@@ -10,9 +10,12 @@ const lock = JSON.parse(readFileSync(resolve(sourceDir, "source-lock.json"), "ut
 
 const readLocked = (name) => {
   const bytes = readFileSync(resolve(sourceDir, name));
+  const text = bytes.toString("utf8");
   const digest = createHash("sha256").update(bytes).digest("hex");
-  if (digest !== lock.files[name]) throw new Error(`Source checksum mismatch: ${name}`);
-  return JSON.parse(bytes.toString("utf8"));
+  const normalizedText = text.replaceAll("\r\n", "\n");
+  const normalizedDigest = createHash("sha256").update(normalizedText, "utf8").digest("hex");
+  if (digest !== lock.files[name] && normalizedDigest !== lock.files[name]) throw new Error(`Source checksum mismatch: ${name}`);
+  return JSON.parse(normalizedText);
 };
 
 const annotations = readLocked("annotations.json");

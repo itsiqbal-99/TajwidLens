@@ -352,3 +352,146 @@ body { font-size: 14px; line-height: 1.65; }
   .sheet-backdrop { display: block; position: fixed; inset: 0; z-index: 49; border: 0; background: rgba(36,55,70,.48); cursor: default; }
   .insight-panel.panel-open { z-index: 50; border-radius: 13px 13px 0 0; box-shadow: 0 -15px 55px rgba(0,0,0,.2); }
 }
+
+/* Three named visual themes */
+:root[data-theme="samudra"] {
+  --cloud-blue: #edf3f6; --paper-white: #fcfdfd; --mist-blue: #f7fafb;
+  --ink-blue: #243746; --muted-slate: #667680; --interface-blue: #55758c;
+  --dusty-coral: #c98779; --coral-text: #995d52; --coral-strong: #a86458;
+  --soft-ochre: #c5a369; --muted-lavender: #9489a8; --line-blue: #d6e0e5;
+  --bg: #edf3f6; --surface: #fcfdfd; --surface-muted: #f7fafb;
+  --forest: #243746; --forest-deep: #2f4858; --emerald: #55758c;
+  --gold: #c5a369; --gold-text: #7c6743; --text: #243746; --text-secondary: #667680;
+  --border: #d6e0e5; --border-strong: #b9c9d2; --focus: #55758c;
+  --green-tint: #e7eef2; --gold-tint: #f4efe3; --blue-tint: #e5eef3;
+  --clay-tint: #f5e8e4; --lavender-tint: #eeeaf2;
+  --brand-mark-bg: #2f4858; --brand-mark-accent: #c98779;
+  --shadow: 0 6px 26px rgba(54,78,94,.065); color-scheme: light;
+}
+
+:root[data-theme="zamrud"] {
+  --cloud-blue: #102821; --paper-white: #17372e; --mist-blue: #1d4036;
+  --ink-blue: #f4f2e5; --muted-slate: #b8c8bf; --interface-blue: #7ac8a8;
+  --dusty-coral: #e1a05f; --coral-text: #f0b574; --coral-strong: #b96d42;
+  --soft-ochre: #dcc27b; --muted-lavender: #9db7aa; --line-blue: #31584a;
+  --bg: #102821; --surface: #17372e; --surface-muted: #1d4036;
+  --forest: #f4f2e5; --forest-deep: #0c4a38; --emerald: #7ac8a8;
+  --gold: #dcc27b; --gold-text: #ead18e; --text: #f4f2e5; --text-secondary: #b8c8bf;
+  --border: #31584a; --border-strong: #487062; --focus: #86d9b6;
+  --green-tint: #214a3d; --gold-tint: #4a412b; --blue-tint: #1d493e;
+  --clay-tint: #543b2e; --lavender-tint: #30473f;
+  --brand-mark-bg: #0c4a38; --brand-mark-accent: #e1a05f;
+  --meeting-accent: #7ac8a8; --waqaf-accent: #b4c8ba;
+  --tajwid-band-opacity: 36%; --tajwid-band-selected-opacity: 52%; --tajwid-panel-opacity: 28%;
+  --tajwid-ikhfa: #83d8bb; --tajwid-izhar: #8de0cb; --tajwid-idgham-ghunnah: #d3b3ed;
+  --tajwid-idgham-clear: #c0aae4; --tajwid-iqlab: #f0a276; --tajwid-qalqalah: #e7c76f;
+  --tajwid-lam: #c8b5df; --tajwid-mad-tabii: #e0bf70; --tajwid-default: #99d7c0;
+  --shadow: 0 9px 34px rgba(0,0,0,.2); color-scheme: dark;
+}
+
+:root[data-theme="senja"] {
+  --cloud-blue: #f7efe6; --paper-white: #fffaf3; --mist-blue: #f4e6dc;
+  --ink-blue: #493345; --muted-slate: #78666f; --interface-blue: #a95746;
+  --dusty-coral: #cf7059; --coral-text: #9f4738; --coral-strong: #a44d3d;
+  --soft-ochre: #c79249; --muted-lavender: #8d6885; --line-blue: #e3cfc1;
+  --bg: #f7efe6; --surface: #fffaf3; --surface-muted: #f4e6dc;
+  --forest: #493345; --forest-deep: #573849; --emerald: #a95746;
+  --gold: #c79249; --gold-text: #815e2e; --text: #493345; --text-secondary: #78666f;
+  --border: #e3cfc1; --border-strong: #cfae9d; --focus: #a95746;
+  --green-tint: #f0dfd2; --gold-tint: #f5e5c9; --blue-tint: #f0ddd4;
+  --clay-tint: #f5d9cd; --lavender-tint: #eee1eb;
+  --brand-mark-bg: #573849; --brand-mark-accent: #e49a7f;
+  --meeting-accent: #a95746; --waqaf-accent: #8d6885;
+  --shadow: 0 9px 30px rgba(91,55,66,.09); color-scheme: light;
+}
+
+[data-theme="zamrud"] .reading-journey { background: #17372e; border-color: var(--border); }
+[data-theme="senja"] .reading-journey { background: #f2e2d6; border-color: var(--border); }
+[data-theme="zamrud"] .demo-shell { background: var(--surface); color: var(--text); }
+[data-theme="zamrud"] .demo-reading p, [data-theme="zamrud"] .demo-explanation h3, [data-theme="zamrud"] .demo-explanation a { color: var(--text); }
+[data-theme="zamrud"] .demo-chrome, [data-theme="zamrud"] .demo-reading-hint, [data-theme="zamrud"] .demo-reason { color: var(--text-secondary); }
+[data-theme="zamrud"] .button-light { background: #f4f2e5; color: #17372e; }
+
+/* Named theme picker */
+.theme-picker { position: relative; }
+.theme-picker > summary { list-style: none; }
+.theme-picker > summary::-webkit-details-marker { display: none; }
+.theme-picker[open] > summary { background: var(--surface-muted); color: var(--emerald); }
+.theme-menu { position: absolute; top: calc(100% + 12px); right: 0; z-index: 70; width: 262px; padding: 8px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); box-shadow: 0 18px 48px rgba(27,45,55,.18); }
+.theme-menu::before { content: "PILIH SUASANA"; display: block; padding: 8px 10px 7px; color: var(--text-secondary); font-size: 9px; font-weight: 760; letter-spacing: .13em; }
+.theme-menu button { width: 100%; display: grid; grid-template-columns: 36px 1fr 18px; gap: 10px; align-items: center; padding: 9px; border: 1px solid transparent; border-radius: 7px; background: transparent; color: var(--text); text-align: left; }
+.theme-menu button:hover, .theme-menu button.is-active { border-color: var(--border); background: var(--surface-muted); }
+.theme-menu button span { display: flex; flex-direction: column; line-height: 1.3; }
+.theme-menu button strong { font-size: 12px; font-weight: 690; }
+.theme-menu button small { color: var(--text-secondary); font-size: 9.5px; }
+.theme-menu button > svg { color: var(--emerald); }
+.theme-swatch { width: 34px; height: 34px; border-radius: 6px; border: 1px solid rgba(0,0,0,.08); box-shadow: inset 0 0 0 5px rgba(255,255,255,.2); }
+.theme-swatch-samudra { background: linear-gradient(135deg,#2f4858 0 48%,#c98779 48% 72%,#edf3f6 72%); }
+.theme-swatch-zamrud { background: linear-gradient(135deg,#0c4a38 0 48%,#dcc27b 48% 72%,#17372e 72%); }
+.theme-swatch-senja { background: linear-gradient(135deg,#573849 0 48%,#cf7059 48% 72%,#f7efe6 72%); }
+
+/* Visual learning library */
+.library-heading { position: relative; }
+.lesson-list { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; padding-top: 22px; }
+.lesson-row { display: flex; min-width: 0; min-height: 390px; flex-direction: column; align-items: stretch; gap: 0; padding: 12px; border: 1px solid var(--border); border-radius: 10px; background: color-mix(in srgb,var(--surface) 86%,transparent); overflow: hidden; transition: transform .2s ease,border-color .2s ease,box-shadow .2s ease; }
+.lesson-row:hover { padding: 12px; transform: translateY(-5px); border-color: color-mix(in srgb,var(--emerald) 50%,var(--border)); box-shadow: var(--shadow); }
+.lesson-card-top { display: flex; align-items: center; justify-content: space-between; padding: 3px 3px 11px; color: var(--emerald); }
+.lesson-card-top .lesson-number { font-size: 11px; letter-spacing: .08em; }
+.lesson-card-top svg { transition: transform .2s ease; }
+.lesson-row:hover .lesson-card-top svg { transform: translate(3px,-3px); }
+.lesson-card-copy { padding: 19px 8px 14px; }
+.lesson-card-copy h2 { margin: 7px 0 7px; font-size: 21px; line-height: 1.25; }
+.lesson-card-copy p { font-size: 11.5px; line-height: 1.68; }
+.lesson-visual { position: relative; min-height: 166px; overflow: hidden; border-radius: 7px; background: linear-gradient(145deg,color-mix(in srgb,var(--blue-tint) 74%,var(--surface)),color-mix(in srgb,var(--clay-tint) 72%,var(--surface))); color: var(--forest); isolation: isolate; }
+.lesson-visual svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.visual-orbit,.visual-wave,.visual-axis { fill: none; vector-effect: non-scaling-stroke; }
+.visual-orbit { stroke: color-mix(in srgb,var(--emerald) 58%,transparent); stroke-width: 1.4; }
+.visual-orbit-two { stroke: color-mix(in srgb,var(--dusty-coral) 62%,transparent); }
+.visual-wave { stroke: var(--gold); stroke-width: 2; }
+.visual-axis { stroke: color-mix(in srgb,var(--border-strong) 65%,transparent); stroke-width: 1; }
+.visual-disc { fill: color-mix(in srgb,var(--surface) 48%,transparent); stroke: color-mix(in srgb,var(--emerald) 42%,transparent); }
+.visual-disc-two { fill: color-mix(in srgb,var(--dusty-coral) 17%,transparent); stroke: color-mix(in srgb,var(--dusty-coral) 46%,transparent); }
+.visual-dot { fill: var(--gold); }
+.lesson-visual-copy { position: absolute; inset: 0; display: grid; align-content: center; justify-items: center; z-index: 1; text-align: center; }
+.lesson-visual-copy > span { margin-bottom: 6px; color: var(--emerald); font-size: 8px; font-weight: 760; letter-spacing: .13em; text-transform: uppercase; }
+.lesson-visual-copy > strong { color: var(--forest); font-size: 39px; line-height: 1.25; text-shadow: 0 1px var(--surface); }
+.lesson-visual-copy > small { position: absolute; right: 14px; bottom: 9px; color: var(--text-secondary); font-family: "Noto Naskh Arabic",serif; font-size: 17px; opacity: .72; }
+.lesson-visual[data-pattern="1"] svg { transform: scaleX(-1); }
+.lesson-visual[data-pattern="2"] .visual-disc-one { transform: translate(52px,-16px); }
+.lesson-visual[data-pattern="3"] .visual-wave { transform: translateY(18px); }
+.lesson-visual[data-category="Dengung"] { background: linear-gradient(145deg,var(--lavender-tint),var(--blue-tint)); }
+.lesson-visual[data-category="Sifat bunyi"] { background: linear-gradient(145deg,var(--gold-tint),var(--clay-tint)); }
+.lesson-visual[data-category="Panjang bacaan"] { background: linear-gradient(145deg,var(--gold-tint),var(--surface-muted)); }
+.lesson-visual[data-category="Konteks bacaan"] { background: linear-gradient(145deg,var(--clay-tint),var(--lavender-tint)); }
+.lesson-hero { display: grid; grid-template-columns: minmax(0,1.15fr) minmax(270px,.85fr); gap: clamp(28px,5vw,70px); align-items: center; }
+.lesson-hero-copy { min-width: 0; }
+.lesson-visual-large { min-height: 260px; border: 1px solid var(--border); }
+.lesson-visual-large .lesson-visual-copy > strong { font-size: clamp(48px,6vw,76px); }
+.home-learn-shortcut { color: var(--forest); }
+
+/* PWA installation prompt */
+.pwa-install { position: fixed; right: 20px; bottom: 20px; z-index: 90; display: grid; grid-template-columns: 42px minmax(0,1fr) auto; align-items: center; gap: 12px; width: min(520px,calc(100vw - 40px)); padding: 14px 14px 14px 16px; border: 1px solid var(--border-strong); border-radius: 14px; background: color-mix(in srgb,var(--surface) 94%,transparent); box-shadow: 0 18px 50px rgba(29,50,62,.2); backdrop-filter: blur(16px); }
+.pwa-install-icon { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 11px; color: #fff; background: var(--forest-deep); }
+.pwa-install-copy { display: flex; min-width: 0; flex-direction: column; line-height: 1.35; }
+.pwa-install-copy strong { color: var(--text); font-size: 13px; }
+.pwa-install-copy > span { color: var(--text-secondary); font-size: 10.5px; }
+.pwa-install-copy small { display: flex; align-items: center; gap: 5px; margin-top: 7px; color: var(--text); font-size: 10px; }
+.pwa-install-action { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 38px; padding: 0 14px; border: 0; border-radius: 8px; color: #fff; background: var(--emerald); font-size: 11px; font-weight: 720; }
+.pwa-install-close { position: absolute; top: -9px; right: -9px; display: grid; place-items: center; width: 27px; height: 27px; border: 1px solid var(--border); border-radius: 50%; color: var(--text); background: var(--surface); box-shadow: var(--shadow); }
+
+@media (max-width: 960px) {
+  .lesson-list { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .lesson-hero { grid-template-columns: 1fr; }
+  .lesson-visual-large { max-width: 620px; min-height: 220px; }
+}
+@media (max-width: 650px) {
+  .theme-menu { position: fixed; top: 64px; right: 16px; left: 16px; width: auto; }
+  .lesson-list { grid-template-columns: 1fr; gap: 12px; }
+  .lesson-row { min-height: 0; }
+  .lesson-visual { min-height: 178px; }
+  .lesson-card-copy { padding-bottom: 18px; }
+  .lesson-visual-large { min-height: 195px; }
+  .pwa-install { right: 12px; bottom: 12px; grid-template-columns: 38px minmax(0,1fr); width: calc(100vw - 24px); padding: 12px; }
+  .pwa-install-icon { width: 38px; height: 38px; }
+  .pwa-install-action { grid-column: 1 / -1; width: 100%; }
+}
