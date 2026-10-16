@@ -5,6 +5,7 @@ import "@fontsource/noto-naskh-arabic/500.css";
 import "@fontsource/noto-naskh-arabic/600.css";
 import "./globals.css";
 import "./reading-first.css";
+import "./learning-ux.css";
 import { AppHeader, AppFooter } from "@/components/shell";
 import { PwaInstaller } from "@/components/pwa-installer";
 import { assetPath } from "@/lib/asset-path";
@@ -33,5 +34,5 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="id" suppressHydrationWarning><body><AppHeader /><main id="main-content">{children}</main><AppFooter /><PwaInstaller /></body></html>;
+  return <html lang="id" data-scroll-behavior="smooth" suppressHydrationWarning><body><AppHeader /><main id="main-content">{children}</main><AppFooter /><PwaInstaller /></body></html>;
 }

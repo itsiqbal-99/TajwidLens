@@ -3,8 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, BookOpenText, CircleAlert } from "lucide-react";
 import { getLesson, lessons } from "@/data/lessons";
-import { getSurah, getVerse, getWords } from "@/data/quran";
-import { annotations } from "@/data/annotations";
+import { getSurah, getWords } from "@/data/quran";
+import { learningVerses, lessonHref } from "@/lib/reading-navigation";
 import { AudioPlayer } from "@/components/audio-player";
 import { LessonVisual } from "@/components/lesson-visual";
 
@@ -15,10 +15,10 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
   const lesson = getLesson((await params).slug);
   if (!lesson) notFound();
   const exampleSurah = getSurah(lesson.example.surah);
-  const exampleVerse = getVerse(lesson.example.surah, lesson.example.ayah);
+  const exampleVerse = learningVerses[`${lesson.example.surah}:${lesson.example.ayah}`];
   const exampleWords = exampleVerse ? getWords(exampleVerse.text) : [];
-  const firstAnnotation = annotations.find((item) => item.surahNumber === lesson.example.surah && item.ayahNumber === lesson.example.ayah && item.ruleIds.includes(lesson.id));
-  const exampleUrl = `/reading-guide/?surah=${lesson.example.surah}&ayah=${lesson.example.ayah}${firstAnnotation ? `&annotation=${firstAnnotation.id}` : ""}`;
+  const exampleUrl = lessonHref(lesson);
+  const lessonIndex = lessons.findIndex((item) => item.id === lesson.id);
   return <div className="page-container lesson-page page-top">
     <Link href="/learn/" className="back-link"><ArrowLeft size={17} /> Semua materi</Link>
     <div className="lesson-layout">
@@ -36,5 +36,6 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
       </article>
       <aside className="lesson-side"><div className="lesson-side-card"><BookOpenText size={22} /><strong>Belajar dalam konteks</strong><p>Setelah memahami kaidah, kembali ke ayat dan pilih bagian bacaan yang relevan.</p><Link href={exampleUrl}>Lihat contoh ayat <ArrowRight size={16} /></Link></div><div className="lesson-side-note"><strong>Status materi</strong><p>Aturan diperiksa silang dengan rujukan tajwid yang dicantumkan. Materi ini tetap bukan pengganti talaqqi dan koreksi guru.</p><Link href="/reference/">Lihat sumber <ArrowRight size={15} /></Link></div></aside>
     </div>
+    <nav className="learning-order" aria-label="Urutan materi">{lessons[lessonIndex - 1] && <Link href={`/learn/${lessons[lessonIndex - 1].id}/`}>← Sebelumnya: {lessons[lessonIndex - 1].title}</Link>}{lessons[lessonIndex + 1] && <Link href={`/learn/${lessons[lessonIndex + 1].id}/`}>Lanjut: {lessons[lessonIndex + 1].title} →</Link>}</nav>
   </div>;
 }

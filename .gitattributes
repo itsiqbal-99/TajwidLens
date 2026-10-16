@@ -1,0 +1,6 @@
+# Byte-verified data must have identical line endings on every checkout.
+public/data/tajweed/*.json text eol=lf
+sources/quran-ws-v0.4.3/*.json text eol=lf
+src/data/*-index.json text eol=lf
+src/data/learning-verses.json text eol=lf
+src/data/tajweed-examples.json text eol=lf

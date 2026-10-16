@@ -1,4 +1,4 @@
-const CACHE_VERSION = "tajwidlens-pwa-v1";
+const CACHE_VERSION = "tajwidlens-pwa-v2";
 const APP_SCOPE = self.registration.scope;
 const CORE_PATHS = ["./", "./learn/", "./explore/", "./reading-guide/", "./android-chrome-192x192.png", "./android-chrome-512x512.png"];
 const CORE_URLS = CORE_PATHS.map((path) => new URL(path, APP_SCOPE).toString());
@@ -8,7 +8,7 @@ self.addEventListener("install", (event) => {
 });
 
 self.addEventListener("activate", (event) => {
-  event.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((key) => key !== CACHE_VERSION).map((key) => caches.delete(key)))).then(() => self.clients.claim()));
+  event.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((key) => key.startsWith("tajwidlens-pwa-") && key !== CACHE_VERSION).map((key) => caches.delete(key)))).then(() => self.clients.claim()));
 });
 
 async function networkFirst(request) {
@@ -18,7 +18,7 @@ async function networkFirst(request) {
     if (response.ok) await cache.put(request, response.clone());
     return response;
   } catch {
-    return (await cache.match(request)) || (request.mode === "navigate" ? cache.match(new URL("./", APP_SCOPE).toString()) : undefined) || Response.error();
+    return (await cache.match(request)) || (request.mode === "navigate" ? await cache.match(new URL(request.url).pathname) : undefined) || Response.error();
   }
 }
 
@@ -35,9 +35,9 @@ self.addEventListener("fetch", (event) => {
   const request = event.request;
   if (request.method !== "GET") return;
   const url = new URL(request.url);
-  if (url.origin !== self.location.origin) return;
+  if (url.origin !== self.location.origin || !url.href.startsWith(APP_SCOPE)) return;
   const isTajweedPayload = url.pathname.includes("/data/tajweed/");
-  if (request.mode === "navigate" || isTajweedPayload) {
+  if (request.mode === "navigate" || isTajweedPayload || url.pathname.endsWith(".txt") || request.headers.get("RSC")) {
     event.respondWith(networkFirst(request));
     return;
   }
