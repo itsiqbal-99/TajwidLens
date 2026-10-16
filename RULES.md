@@ -1,3 +1,0 @@
-- do execute immediately, ask some question first for clarification
-- do not use overengineering code and structure
-- check security aspect 
