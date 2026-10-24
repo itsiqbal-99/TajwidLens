@@ -1,5 +1,15 @@
 # TajwidLens — checkpoint untuk melanjutkan dari rumah
 
+## Perbaikan terbatas — 24 Oktober 2026 (Asia/Jakarta)
+
+- Tetap Phase 01; tidak melanjutkan Phase 02–04.
+- Error integritas disebabkan akhir baris CRLF pada seluruh 114 payload. Dipulihkan ke LF dengan memastikan SHA-256 tetap sama dengan manifest asli; teks dan anotasi tidak diubah. `web/.gitattributes` mempertahankan LF untuk payload dan sumber terkunci.
+- Loader memakai versi hash pada URL dan revalidasi cache; pemeriksaan ukuran, checksum, dan rentang anotasi tetap aktif.
+- Tombol tema terang/gelap existing diberi border/latar agar lebih terlihat; area aksi header tidak menyusut. Browser memverifikasi tombol terlihat pada 1440/1024/390/320 px dan klik mengaktifkan tema gelap.
+- Verifikasi: 11 tes frontend PASS, TypeScript PASS, corpus PASS (114 payload, 6.236 ayat, 143.049 anotasi). Tes regresi mencakup penolakan payload CRLF dan pemuatan ulang data valid.
+- Browser: preview beranotasi 1:1, 2:2, 114:2 PASS; preferensi tema bertahan setelah reload. Pemeriksaan awal 2:1 menunggu elemen anotasi yang tidak muncul, sehingga pemeriksaan rendering anotasi dialihkan ke 2:2.
+- Integrasi Neon, Google OAuth, SMTP live dan deployment tetap belum diverifikasi.
+
 Tanggal: **23 Oktober 2026 (Asia/Bangkok)**  
 Posisi terakhir: **Phase 01 — Backend Foundation + Full Authentication**  
 Workspace asal: `C:\Users\Iqbal Digi\Documents\projects\TajwidLens`

@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import type { CSSProperties } from "react";
 import type { TajweedAnnotation, TajweedRule } from "@/data/tajweed-types";
-import { getHukumColor } from "@/lib/tajweed-presentation";
+import { getHukumColor, getHukumLabel } from "@/lib/tajweed-presentation";
 
 type Segment = { start: number; end: number; value: string; annotations: TajweedAnnotation[] };
 
@@ -52,7 +52,7 @@ export function TajweedText({ text, annotations, rules, selectedId, visible, fon
   fontSize: number;
   onSelect: (annotations: TajweedAnnotation[]) => void;
 }) {
-  const segments = useMemo(() => makeSegments(text, visible ? annotations : []), [annotations, text, visible]);
+  const segments = useMemo(() => makeSegments(text, annotations), [annotations, text]);
 
   return <p className="arabic-verse tajweed-text" dir="rtl" lang="ar" style={{ fontSize }} aria-label={text}>
     {segments.map((segment) => segment.annotations.length ? <span
@@ -60,8 +60,9 @@ export function TajweedText({ text, annotations, rules, selectedId, visible, fon
       role="button"
       tabIndex={0}
       className={`tajweed-segment ${segment.annotations.length > 1 ? "has-overlap" : ""}`}
-      style={segmentStyle(segment, rules, selectedId)}
-      aria-label={`${segment.value}; ${segment.annotations.length} anotasi tajwid`}
+      style={visible ? segmentStyle(segment, rules, selectedId) : segment.annotations.some((item) => item.id === selectedId) ? { outline: "2px solid var(--focus)" } : undefined}
+      aria-label={`${segment.value}; ${[...new Set(segment.annotations.map((item) => getHukumLabel(rules[item.ruleId])))].join(", ")}`}
+      aria-pressed={segment.annotations.some((item) => item.id === selectedId)}
       onClick={() => onSelect(segment.annotations)}
       onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); onSelect(segment.annotations); } }}
     >{segment.value}</span> : <span key={`${segment.start}-${segment.end}`}>{segment.value}</span>)}

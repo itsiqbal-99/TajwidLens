@@ -10,9 +10,12 @@ const lock = JSON.parse(readFileSync(resolve(sourceDir, "source-lock.json"), "ut
 
 const readLocked = (name) => {
   const bytes = readFileSync(resolve(sourceDir, name));
+  const text = bytes.toString("utf8");
   const digest = createHash("sha256").update(bytes).digest("hex");
-  if (digest !== lock.files[name]) throw new Error(`Source checksum mismatch: ${name}`);
-  return JSON.parse(bytes.toString("utf8"));
+  const normalizedText = text.replaceAll("\r\n", "\n");
+  const normalizedDigest = createHash("sha256").update(normalizedText, "utf8").digest("hex");
+  if (digest !== lock.files[name] && normalizedDigest !== lock.files[name]) throw new Error(`Source checksum mismatch: ${name}`);
+  return JSON.parse(normalizedText);
 };
 
 const annotations = readLocked("annotations.json");
@@ -76,6 +79,9 @@ mkdirSync(outputDir, { recursive: true });
 const manifests = [];
 const rejectedAyahs = [];
 const counts = { accepted: 0, excludedRule: 0, unmatchedAyah: 0 };
+const learningVerses = {};
+const searchExamples = [];
+const exampleCounts = new Map();
 
 for (const surah of quran) {
   const verses = [];
@@ -102,6 +108,15 @@ for (const surah of quran) {
       counts.accepted += 1;
     }
     verses.push({ number: oldVerse.number, text, annotations: verseAnnotations });
+    if ([1, 112, 113, 114].includes(surah.number) || (surah.number === 2 && [8, 10, 19].includes(oldVerse.number))) {
+      learningVerses[ref] = verses.at(-1);
+    }
+    for (const item of verseAnnotations) {
+      if ((exampleCounts.get(item.hukumId) ?? 0) >= 3) continue;
+      const words = [...text.matchAll(/\S+/gu)].filter((word) => word.index < item.end && word.index + word[0].length > item.start).map((word) => word[0]).join(" ");
+      searchExamples.push({ ...item, surah: surah.number, ayah: oldVerse.number, words });
+      exampleCounts.set(item.hukumId, (exampleCounts.get(item.hukumId) ?? 0) + 1);
+    }
   }
   const payload = { source: { provider: "Quran.ws Tajweed", release: lock.release, corpusVersion: lock.corpusVersion, commit: lock.commit,
     riwayah: lock.riwayah, displayEdition: "KFGQPC UthmanicHafs v3.0 (2026)", displayEditionSha256: targetDigest,
@@ -111,6 +126,8 @@ for (const surah of quran) {
 }
 
 writeFileSync(resolve(generatedDir, "tajweed-rules-generated.json"), `${JSON.stringify(ruleCatalog, null, 2)}\n`, "utf8");
+writeFileSync(resolve(generatedDir, "learning-verses.json"), `${JSON.stringify(learningVerses)}\n`, "utf8");
+writeFileSync(resolve(generatedDir, "tajweed-examples.json"), `${JSON.stringify(searchExamples)}\n`, "utf8");
 writeFileSync(resolve(generatedDir, "tajweed-index.json"), `${JSON.stringify({ source: { release: lock.release, corpusVersion: lock.corpusVersion, commit: lock.commit,
   displayEdition: "KFGQPC UthmanicHafs v3.0 (2026)", displayEditionSha256: targetDigest }, counts, rejectedAyahs,
   surahs: quran.map(({ number, name, arabicName, meaning, verses }) => ({ number, name, arabicName, meaning, ayahCount: verses.length })), files: manifests }, null, 2)}\n`, "utf8");

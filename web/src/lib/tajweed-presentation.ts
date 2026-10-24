@@ -1,4 +1,5 @@
-import type { TajweedRule } from "@/data/tajweed-types";
+import type { TajweedAnnotation, TajweedRule } from "@/data/tajweed-types";
+import { getLesson } from "@/data/lessons";
 
 type BeginnerHelp = { summary: string; reading: string; trigger: string; lesson?: string };
 
@@ -129,6 +130,34 @@ export function getHukumLabel(rule: TajweedRule) {
 export function getContextNote(rule: TajweedRule) {
   if (rule.hukumId === "madd-iwad" || rule.hukumId.startsWith("seven-alefs")) return getRuleHelp(rule).reading;
   if (rule.hukumId === "madd-silah-sughra") return "Hukum ini dibaca ketika ayat atau kata disambung. Jika berhenti pada ha, tambahan panjangnya tidak dibaca.";
-  if (rule.ruleAr.includes("الوقف")) return "Keterangan ini berlaku ketika berhenti. Jika bacaan disambung, ikuti harakat asli yang tertulis.";
-  return "Hukum yang ditampilkan berlaku pada bacaan sambung biasa. Jika Anda memilih berhenti di bagian ini, cara baca dapat berubah; ikuti tanda waqaf dan bimbingan guru.";
+  return "Perbandingan berhenti dan sambung belum tersedia untuk bagian ini. Jangan menerapkan contoh waqaf dari kata lain pada bagian ini.";
+}
+
+export function getAnnotationHelp(rule: TajweedRule, annotation: TajweedAnnotation) {
+  const help = getRuleHelp(rule);
+  const clusters = [...new Intl.Segmenter("ar", { granularity: "grapheme" }).segment(annotation.quote)].map((item) => item.segment).filter((item) => /\p{Letter}/u.test(item));
+  const following = annotation.quote.trim().split(/\s+/).at(-1)?.match(/[\u0621-\u064a\u0671]/u)?.[0];
+  const nun = ["ikhfa-haqiqi", "izhar-halqi", "idgham-bi-ghunnah", "idgham-bila-ghunnah", "iqlab"].includes(rule.categoryId);
+  const mim = ["ikhfa-shafawi", "izhar-shafawi", "idgham-shafawi"].includes(rule.categoryId);
+  const specificReasons: Record<string, string> = {
+    "raa-tarqeeq.1": "Ra berkasrah pada bagian yang ditandai, sehingga dibaca tipis.",
+    "raa-tafkheem.1": "Ra berfathah atau berdammah pada bagian yang ditandai, sehingga dibaca tebal.",
+    "madd-tabee-kalimi.1": "Huruf berfathah diikuti alif mad (termasuk alif kecil). Vokal a pada bagian ini dipanjangkan dua harakat.",
+    "madd-tabee-kalimi.2": "Huruf berdammah diikuti wau mad. Vokal u pada bagian ini dipanjangkan dua harakat.",
+    "madd-tabee-kalimi.3": "Huruf berkasrah diikuti ya mad. Vokal i pada bagian ini dipanjangkan dua harakat.",
+  };
+  const reason = specificReasons[rule.id] ?? (following && annotation.quote.includes(" ") && (nun || mim)
+    ? `${mim ? "Mim sukun" : rule.hukumId.includes("tanween") ? "Tanwin" : "Nun sukun"} pada bagian ini bertemu ${following} saat disambung. ${help.summary}`
+    : help.trigger);
+  const mistakes: Record<string, string> = {
+    "idgham-kamil": "Jangan membunyikan nun secara terpisah setelah dilebur.",
+    "idgham-naqis": "Jangan menghilangkan dengung ketika masuk ke ya atau wau.",
+    "izhar-mutlaq": "Jangan melebur nun pada pengecualian dalam satu kata ini.",
+    "madd-far-hamz": "Jangan mengabaikan hamzah yang memengaruhi panjang bacaan.",
+    "leen-letters": "Jangan menyamakan bunyi lin saat sambung dengan mad biasa.",
+    "ikhfa-ghunnah-quality": "Jangan menghilangkan dengung saat menyiapkan huruf berikutnya.",
+    "mutamathilain-sagheer": "Jangan menyisipkan vokal baru di antara kedua huruf.",
+    "mutajanisain-sagheer": "Jangan menyisipkan vokal baru di antara kedua huruf.",
+  };
+  return { ...help, reason, letters: clusters.join(" · "), mistake: (help.lesson ? getLesson(help.lesson)?.commonMistake : undefined) ?? mistakes[rule.categoryId] };
 }
