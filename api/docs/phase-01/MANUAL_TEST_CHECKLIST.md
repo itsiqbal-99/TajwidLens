@@ -3,6 +3,7 @@
 ## Latest revision — sharp wallpaper, navbar/profile and popup completion
 
 - TESTED (isolated browser): new Google user confirms their name on the original page, not the popup; the popup closes automatically. Returning Google user reaches home on the original page, popup closes.
+- TESTED: direct/same-tab Google sign-in still reaches authenticated home when no original listener exists.
 - TESTED: profile save/persistence, password-confirmed Google linking, wrong password, wrong Google email, existing linked subject, missing/expired session/intent, replay, and password login after linking. No automatic email-only account merge.
 - TESTED (visual fixtures): full-panel sharp image, visible exact hadith, signed-in Welcome/name chip, guest sign-in entry, illustrated profile, six viewport widths, long names, keyboard focus, dark theme and reduced motion.
 - USER REPORTED: real Google signup/login now succeeds. USER RETRY: close older Google windows, refresh the original login/register page, start once, choose your Google account, and confirm the original page changes while the popup closes. Never share the callback URL/code/token.

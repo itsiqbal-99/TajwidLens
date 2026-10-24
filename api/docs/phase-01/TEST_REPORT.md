@@ -4,6 +4,7 @@
 
 - Web static export 41 pages PASS; API build PASS; 25 frontend unit tests PASS, including strict completion-message destination validation; frontend lint PASS.
 - Final-export API/browser suite: 18 PASS / 1 SKIP / 0 failed. Popup tests now assert that the **original page** receives new-user profile onboarding / returning-user home navigation and that each popup closes automatically, without pressing the manual status button. Profile edit, password-confirmed Google linking, normal password login/recovery/logout, guest entry and security regressions also pass.
+- A final repeat with the same-tab Google flow added also passes 18/1/0: without an originating listener, completion falls back to authenticated home in the same tab. No live identity or account was used.
 - Linking checks cover unauthenticated/CSRF/extra-body rejection, wrong password, mismatched email, missing live session, expired intent, conflicting Google subject, replay, unchanged user count/ID/profile/password and subsequent ordinary Google/password login.
 - Login/register visual fixture: sharp wallpaper covers the full panel, no blur, .94 opacity; six widths PASS with exact logo/hadith, no overflow, pointer reset and reduced motion.
 - Profile/navbar visual fixture: six widths 1440/1280/1024/768/390/320 PASS, long nickname/email, signed-in greeting, guest sign-in link, focus, dark theme and reduced motion. No live user was created/edited for screenshots.

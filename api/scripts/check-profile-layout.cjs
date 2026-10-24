@@ -23,6 +23,7 @@ const assert=require('node:assert/strict');
       assert.ok(account && account.x>=0 && account.x+account.width<=width,`Account navigation outside viewport ${width}`);
       await expect(page.getByRole('button',{name:'Simpan profil',exact:true})).toBeVisible();
       if(width===1440||width===390) await page.screenshot({path:`docs/phase-01/profile-redesign-${width===1440?'desktop':'mobile'}.png`,fullPage:true});
+      if(width===1440) await page.screenshot({path:'docs/phase-01/profile-redesign-preview.png'});
     }
     await page.getByLabel('Nama panggilan',{exact:true}).focus();
     await expect(page.getByLabel('Nama panggilan',{exact:true})).toBeFocused();
