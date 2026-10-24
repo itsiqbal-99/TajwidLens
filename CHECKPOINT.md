@@ -1,5 +1,12 @@
 # TajwidLens — checkpoint untuk melanjutkan dari rumah
 
+## Revisi terbaru — konfirmasi registrasi manual
+
+- Setelah respons registrasi sukses, form di-reset lalu diganti panel **Pendaftaran diterima.** dengan ikon, pesan server, fokus aksesibel/live region, CTA ke login (safe next dipertahankan) dan opsi Daftar akun lain dengan field kosong. Error tetap mempertahankan input untuk retry.
+- Jika capabilities menunjukkan verifikasi email diperlukan, panel menjelaskan kotak masuk/spam dan verifikasi sebelum login. Tidak mengklaim email terverifikasi atau membocorkan apakah email sudah terdaftar; kebijakan respons generik backend tidak diubah.
+- UI fixture tanpa akun live lulus: error input retention, fokus/status sukses, form hilang, reset kosong, password kembali tersembunyi, link next dan tanpa submit ulang otomatis pada lebar 1440/768/390/320. Screenshot desktop/mobile di `api/docs/phase-01/registration-complete-*.png` ditinjau. Export web 41 halaman lulus; hasil integrasi akhir dicatat di TEST_REPORT.
+- Lint dan acceptance API/browser terisolasi final lulus: 18 PASS / 1 SKIP / 0 gagal, termasuk konfirmasi/reset untuk mode email dan CTA login mode pengujian. Tidak menguji pengiriman SMTP live atau membuat akun live; backend/Google/profil tidak diubah oleh revisi ini.
+
 ## Revisi terbaru — wallpaper tajam, popup Google, navbar & profil
 
 - Wallpaper memenuhi panel kiri, tanpa blur, opacity gambar .94 dan overlay terarah agar heading/hadis tetap terbaca. Aset ilustrasi existing dipakai ulang; tidak ada bitmap/dependency baru.

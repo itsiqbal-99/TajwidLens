@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, Eye, EyeOff, LockKeyhole } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Eye, EyeOff, LockKeyhole } from 'lucide-react';
 import { apiUrl, authApi } from '@/lib/auth-api';
 import { googleLoginError, safeReturnPath } from '@/lib/auth-navigation';
 import { assetPath } from '@/lib/asset-path';
@@ -45,6 +45,7 @@ export function AccountForm({ mode }: { mode: Mode }) {
   const [googleOpened, setGoogleOpened] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  const [registrationResult, setRegistrationResult] = useState<{message:string}|null>(null);
   const [token, setToken] = useState('');
   const [destination, setDestination] = useState('/home/');
   const [welcome, setWelcome] = useState(false);
@@ -53,6 +54,7 @@ export function AccountForm({ mode }: { mode: Mode }) {
   const completing = useRef(false);
   const completionIds = useRef(new Set<string>());
   const errorRef = useRef<HTMLParagraphElement>(null);
+  const registrationRef = useRef<HTMLDivElement>(null);
   const profile = mode === 'profile';
   const entry = mode === 'login' || mode === 'register';
   const emailDeferred = !loading && !!capabilities && !capabilities.emailDelivery;
@@ -71,6 +73,7 @@ export function AccountForm({ mode }: { mode: Mode }) {
     if (hash.has('token')) window.history.replaceState(null, '', window.location.pathname);
   }, []);
   useEffect(() => { if (error) errorRef.current?.focus(); }, [error]);
+  useEffect(() => { if (registrationResult) registrationRef.current?.focus(); }, [registrationResult]);
   useEffect(() => {
     const restore = () => { working.current = false; setBusy(false); };
     window.addEventListener('pageshow', restore);
@@ -104,7 +107,8 @@ export function AccountForm({ mode }: { mode: Mode }) {
   }
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const fields = Object.fromEntries(new FormData(event.currentTarget));
+    const form = event.currentTarget;
+    const fields = Object.fromEntries(new FormData(form));
     void action(async () => {
       if (mode === 'login') {
         await authApi('/auth/login', fields);
@@ -118,6 +122,11 @@ export function AccountForm({ mode }: { mode: Mode }) {
       }
       const path = mode === 'register' ? '/auth/register' : mode === 'forgot-password' ? '/auth/password/forgot' : mode === 'reset-password' ? '/auth/password/reset' : '/auth/verify-email';
       const result = await authApi<{ message: string }>(path, mode === 'verify-email' ? { token } : mode === 'reset-password' ? { ...fields, token } : fields);
+      if (mode === 'register') {
+        form.reset();
+        setRegistrationResult(result);
+        return;
+      }
       setMessage(result.message);
       if (mode === 'verify-email') await refresh();
     });
@@ -131,6 +140,19 @@ export function AccountForm({ mode }: { mode: Mode }) {
     catch { setError('Browser tidak mengizinkan jendela Google. Gunakan tautan lanjutkan di tab ini.'); }
     setGoogleOpened(true);
   }
+
+  if (mode === 'register' && registrationResult) return <section className="account-card account-registration-complete">
+    <span className="account-eyebrow">LANGKAH BERIKUTNYA</span>
+    <div ref={registrationRef} className="account-registration-status" role="status" tabIndex={-1} aria-live="polite" aria-atomic="true">
+      <span className="account-registration-icon"><CheckCircle2 size={30} aria-hidden="true" /></span>
+      <h1>Pendaftaran diterima.</h1>
+      <p>{registrationResult.message}</p>
+      {capabilities?.emailDelivery && !capabilities.developmentRegistration && <p>Periksa kotak masuk dan folder spam, lalu ikuti tautan verifikasi sebelum masuk.</p>}
+    </div>
+    <Link className="account-primary" href={'/login/?next=' + encodeURIComponent(destination)}>Lanjut ke halaman masuk <ArrowRight size={17} aria-hidden="true" /></Link>
+    <button className="account-register-again" type="button" onClick={() => setRegistrationResult(null)}>Daftar akun lain</button>
+    <div className="account-guest"><Link href="/home/">Lanjutkan tanpa akun <ArrowRight size={15} aria-hidden="true" /></Link><p>Membaca dan belajar tetap gratis, tanpa akun.</p></div>
+  </section>;
 
   return <section className={entry ? 'account-card' : 'account-page account-card'}>
     <span className="account-eyebrow">{profile ? 'AKUN ANDA' : 'AKUN TAJWIDLENS'}</span>

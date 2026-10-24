@@ -1,5 +1,12 @@
 # Phase 01 test update — 24 October 2026 (Asia/Jakarta)
 
+## Latest revision — manual registration feedback
+
+- New confirmation state replaces the submitted form, resets native controls, focuses an accessible status panel and offers login / register-another actions. API errors preserve input. Backend anti-enumeration and email verification policy unchanged.
+- UI fixture PASS at 1440/768/390/320: failed request preserves email/password, accepted response hides the form, status gets focus, safe next link retained, register-another opens empty controls with password hidden, exactly two deliberate requests (no automatic repeated submission). Screenshots inspected.
+- Production export/typecheck and web lint PASS (41 pages). Final isolated API/browser acceptance: 18 PASS / 1 SKIP / 0 failed, including confirmation and empty retry form for mail-verification mode, login continuation for development mode and existing Google/profile/recovery regressions. Real PostgreSQL integration remains skipped.
+- No live account created; SMTP delivery itself is not verified by this UI change.
+
 ## Latest revision — account experience and popup handoff
 
 - Web static export 41 pages PASS; API build PASS; 25 frontend unit tests PASS, including strict completion-message destination validation; frontend lint PASS.

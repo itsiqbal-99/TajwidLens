@@ -295,6 +295,12 @@ test('API authentication and persistence with migrated PostgreSQL emulator',asyn
         await page.getByLabel('Email',{exact:true}).fill('browser@example.com');
         await page.getByRole('button',{name:'Daftar',exact:true}).click();
         await page.getByRole('status').filter({hasText:'Jika alamat'}).waitFor();
+        await browserExpect(page.getByRole('heading',{name:'Pendaftaran diterima.',exact:true})).toBeVisible();
+        await browserExpect(page.locator('.account-registration-status')).toBeFocused();
+        await browserExpect(page.locator('form')).toHaveCount(0);
+        await browserExpect(page.getByRole('link',{name:'Lanjut ke halaman masuk',exact:true})).toHaveAttribute('href','/login/?next=%2Fhome%2F');
+        await page.getByRole('button',{name:'Daftar akun lain',exact:true}).click();
+        for(const label of ['Nama panggilan','Email','Kata sandi']) await browserExpect(page.getByLabel(label,{exact:true})).toHaveValue('');
         const verify=mails.find(m=>m.email==='browser@example.com' && m.kind==='verify')!;
         await page.goto(`http://localhost:3101/verify-email/#token=${verify.token}`);
         await page.getByRole('button',{name:'Verifikasi email',exact:true}).click();
@@ -435,7 +441,10 @@ test('API authentication and persistence with migrated PostgreSQL emulator',asyn
         await page.getByLabel('Kata sandi',{exact:true}).fill('development browser password');
         await page.getByRole('button',{name:'Daftar',exact:true}).click();
         await page.getByRole('status').filter({hasText:'siap untuk pengujian'}).waitFor();
-        await page.goto('http://localhost:3101/login/');
+        await browserExpect(page.getByRole('heading',{name:'Pendaftaran diterima.',exact:true})).toBeVisible();
+        await browserExpect(page.locator('form')).toHaveCount(0);
+        await page.getByRole('link',{name:'Lanjut ke halaman masuk',exact:true}).click();
+        await page.waitForURL('**/login/?next=%2Fhome%2F');
         await page.getByLabel('Email',{exact:true}).fill('browser-dev@example.com');
         await page.getByLabel('Kata sandi',{exact:true}).fill('development browser password');
         await page.getByRole('button',{name:'Masuk',exact:true}).click();await page.waitForURL('**/home/');
