@@ -1,4 +1,5 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { AppConfig, CONFIG } from '../../config/config';
 import { DataSource, MoreThan } from 'typeorm';
 import { randomBytes, createHash } from 'node:crypto';
 import * as argon2 from 'argon2';
@@ -19,15 +20,16 @@ export function publicUser(u: User) {
 @Injectable()
 export class AuthService {
   private dummyHash = argon2.hash(secret(), passwordOptions);
-  constructor(private db: DataSource, private mailer: Mailer) {}
+  constructor(private db: DataSource, private mailer: Mailer, @Inject(CONFIG) private config: AppConfig) {}
   async register(input: RegisterDto) {
-    this.mailer.assertAvailable();
+    if (!this.config.allowUnverifiedEmail) this.mailer.assertAvailable();
     const passwordHash = await argon2.hash(input.password, passwordOptions);
     try {
       await this.db.transaction(async em => {
         if (await em.existsBy(User,{email:input.email})) return;
         const user = await em.save(User, em.create(User,{email:input.email,passwordHash,nickname:input.nickname,
           fullName:input.fullName,learningGoal:input.learningGoal,level:input.level}));
+        if (this.config.allowUnverifiedEmail) return;
         const token = secret();
         await em.save(AuthToken,{hash:digest(token),userId:user.id,kind:'verify',expiresAt:new Date(Date.now()+86400000)});
         await this.mailer.send(user.email,'verify',token);
@@ -35,7 +37,9 @@ export class AuthService {
     } catch (error) {
       if ((error as {code?:string}).code !== '23505') throw error;
     }
-    return genericMessage;
+    return this.config.allowUnverifiedEmail
+      ? {message:'Jika alamat dapat digunakan, akun siap untuk pengujian. Silakan masuk. Email belum diverifikasi.'}
+      : genericMessage;
   }
   async login(email: string, password: string) {
     return this.db.transaction(async em => {
@@ -43,6 +47,8 @@ export class AuthService {
         .where('u.email = :email',{email}).setLock('pessimistic_write').getOne();
       const valid = await argon2.verify(user?.passwordHash || await this.dummyHash,password);
       if (!user?.passwordHash || !valid) throw new UnauthorizedException('Email atau kata sandi tidak sesuai.');
+      if (!user.emailVerifiedAt && !this.config.allowUnverifiedEmail)
+        throw new UnauthorizedException('Verifikasi email Anda sebelum masuk.');
       const token = secret();
       await em.save(Session,{hash:digest(token),userId:user.id,expiresAt:new Date(Date.now()+604800000)});
       return {token,user:publicUser(user)};
@@ -53,8 +59,14 @@ export class AuthService {
     const session = await this.db.getRepository(Session).findOneBy({hash:digest(token),expiresAt:MoreThan(new Date())});
     if (!session) throw new UnauthorizedException();
     const user = await this.db.getRepository(User).createQueryBuilder('u').addSelect('u.passwordHash').where('u.id = :id',{id:session.userId}).getOne();
-    if (!user) throw new UnauthorizedException();
+    if (!user || (!user.emailVerifiedAt && !this.config.allowUnverifiedEmail)) throw new UnauthorizedException();
     return user;
+  }
+  async confirmPassword(userId: string, password: string) {
+    const user = await this.db.getRepository(User).createQueryBuilder('u').addSelect('u.passwordHash')
+      .where('u.id = :id', {id:userId}).getOne();
+    const valid = await argon2.verify(user?.passwordHash || await this.dummyHash, password);
+    if (!user?.passwordHash || !valid) throw new UnauthorizedException('Kata sandi tidak sesuai.');
   }
   async logout(token?: string) { if (token) await this.db.getRepository(Session).delete({hash:digest(token)}); }
   async requestToken(email: string, kind: 'reset' | 'verify') {

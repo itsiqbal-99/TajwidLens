@@ -9,6 +9,9 @@ export class EmailDto {
 export class LoginDto extends EmailDto {
   @ApiProperty() @IsString() @Length(1, 128) password!: string;
 }
+export class LinkGoogleDto {
+  @ApiProperty() @IsString() @Length(1, 128) password!: string;
+}
 export class ProfileDto {
   @ApiPropertyOptional() @IsOptional() @IsString() @Length(1, 60) @Matches(/\S/) nickname?: string;
   @ApiPropertyOptional() @IsOptional() @IsString() @MaxLength(120) fullName?: string;

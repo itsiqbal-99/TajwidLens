@@ -6,9 +6,11 @@ import "@fontsource/noto-naskh-arabic/600.css";
 import "./globals.css";
 import "./reading-first.css";
 import "./learning-ux.css";
-import { AppHeader, AppFooter } from "@/components/shell";
-import { PwaInstaller } from "@/components/pwa-installer";
+import { AuthProvider } from "@/components/auth-provider";
+import "./account.css";
 import { assetPath } from "@/lib/asset-path";
+import Script from "next/script";
+import { developmentWorkerCleanup } from "@/lib/development-worker";
 
 export const metadata: Metadata = {
   title: { default: "TajwidLens — Baca Al-Qur'an dengan Lebih Yakin", template: "%s | TajwidLens" },
@@ -34,5 +36,5 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="id" data-scroll-behavior="smooth" suppressHydrationWarning><body><AppHeader /><main id="main-content">{children}</main><AppFooter /><PwaInstaller /></body></html>;
+  return <html lang="id" data-scroll-behavior="smooth" suppressHydrationWarning><body>{process.env.NODE_ENV === 'development' && <Script id="development-worker-cleanup" strategy="beforeInteractive" dangerouslySetInnerHTML={{__html:developmentWorkerCleanup(assetPath('/sw.js'))}}/>}<AuthProvider>{children}</AuthProvider></body></html>;
 }

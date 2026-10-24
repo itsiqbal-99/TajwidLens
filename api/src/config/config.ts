@@ -2,6 +2,9 @@ import "dotenv/config";
 
 export function readConfig(env = process.env) {
   const production = env.NODE_ENV === "production";
+  const allowUnverifiedEmail = env.AUTH_ALLOW_UNVERIFIED_EMAIL === "true";
+  if (allowUnverifiedEmail && !["development", "test"].includes(env.NODE_ENV || ""))
+    throw new Error("AUTH_ALLOW_UNVERIFIED_EMAIL is development/test only");
   const databaseUrl = env.DATABASE_URL;
   if (!databaseUrl) throw new Error("DATABASE_URL is required");
   const db = new URL(databaseUrl);
@@ -31,6 +34,7 @@ export function readConfig(env = process.env) {
     throw new Error("Invalid port");
   return {
     production,
+    allowUnverifiedEmail,
     port,
     databaseUrl: db.toString(),
     ssl:

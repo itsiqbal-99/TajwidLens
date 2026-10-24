@@ -1,6 +1,6 @@
-const CACHE_VERSION = "tajwidlens-pwa-v2";
+const CACHE_VERSION = "tajwidlens-pwa-v4";
 const APP_SCOPE = self.registration.scope;
-const CORE_PATHS = ["./", "./learn/", "./explore/", "./reading-guide/", "./android-chrome-192x192.png", "./android-chrome-512x512.png"];
+const CORE_PATHS = ["./", "./home/", "./login/", "./learn/", "./explore/", "./reading-guide/", "./android-chrome-192x192.png", "./android-chrome-512x512.png"];
 const CORE_URLS = CORE_PATHS.map((path) => new URL(path, APP_SCOPE).toString());
 
 self.addEventListener("install", (event) => {
@@ -35,6 +35,7 @@ self.addEventListener("fetch", (event) => {
   const request = event.request;
   if (request.method !== "GET") return;
   const url = new URL(request.url);
+  if (url.pathname.includes('/api/') || url.pathname.includes('/profile/')) return;
   if (url.origin !== self.location.origin || !url.href.startsWith(APP_SCOPE)) return;
   const isTajweedPayload = url.pathname.includes("/data/tajweed/");
   if (request.mode === "navigate" || isTajweedPayload || url.pathname.endsWith(".txt") || request.headers.get("RSC")) {

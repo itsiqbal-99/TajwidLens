@@ -1,5 +1,66 @@
 # TajwidLens — checkpoint untuk melanjutkan dari rumah
 
+## Revisi terbaru — wallpaper tajam, popup Google, navbar & profil
+
+- Wallpaper memenuhi panel kiri, tanpa blur, opacity gambar .94 dan overlay terarah agar heading/hadis tetap terbaca. Aset ilustrasi existing dipakai ulang; tidak ada bitmap/dependency baru.
+- Callback Google sukses biasa sekarang ke `/auth-complete/`. Popup mengirim notifikasi same-origin tanpa token/kode/credential; halaman asal memeriksa sesi server, menerima onboarding profil atau safe return path, lalu memberi ack untuk menutup popup. `noopener/noreferrer` tetap aktif. Tanpa ack, tersedia tautan lanjut dan fallback lokal 12 detik.
+- Navbar memakai avatar inisial, sapaan Welcome/nama dan link profil. Halaman profil punya banner ilustrasi, ringkasan identitas/metode masuk dan panel edit. Tetap mengikuti tema aplikasi; layout diuji sampai 320px, nama panjang, keyboard dan reduced motion. Auth tetap independen dari tema reader.
+- Revisi penautan dari giliran terinterupsi diselesaikan: profil menyediakan Hubungkan Google dengan sesi + konfirmasi password + identitas Google email sama. Intent sekali pakai 10 menit menggunakan auth_tokens existing. Tidak ada migration/auto-merge/manual edit akun live; profil/password/user ID dipertahankan. Pengguna melaporkan daftar/login Google live sudah berhasil, namun handoff popup terbaru perlu retry pengguna.
+- Build web 41 halaman, build API, lint dan 25 unit test PASS. Detail keputusan, mekanisme dan provenance di `api/docs/phase-01/ACCOUNT_EXPERIENCE.md`; hasil acceptance final ada di TEST_REPORT. Tidak melanjutkan fase lain.
+- Acceptance export final: 18 PASS / 1 SKIP / 0 gagal; onboarding pengguna Google baru di halaman asal, pengguna lama ke beranda asal dan popup tertutup otomatis tanpa menekan Periksa status login. Profil/save, penautan Google, recovery/logout, guest dan keamanan tetap lulus. Visual profil/navbar enam lebar, nama panjang, dark theme, fokus, serta wallpaper auth enam lebar juga PASS. Tes PostgreSQL nyata tetap dilewati.
+
+## Revisi terbaru — Architectural Light (24 Oktober 2026)
+
+- Pengguna memilih **Architectural Light**. Login/daftar kini framed split-screen: panel sage terang, ilustrasi arsitektur/buku/lensa baru, form putih terfokus, logo PNG resmi dan hadis lengkap. Mobile form dahulu; tema reader tidak mengubah palet auth. Motion masuk 420ms, feedback 140ms dan pointer depth hanya pada ilustrasi; reduced motion mematikannya.
+- JSX AccountForm yang terpotong/berpindah serta submit handler yang hilang telah diperbaiki. Heading ganda, akses `location` saat render server dan logo buatan pada shell dihapus. Styling auth dipusatkan pada account.css. Snapshot sumber sebelum perbaikan ada di `api/node_modules/.cache/auth-redesign-82d44af5`.
+- Web typecheck/lint, 24 unit test dan production export 40 halaman PASS. Acceptance terisolasi pg-mem/browser: 17 PASS / 1 SKIP / 0 gagal, termasuk daftar, login, profil, recovery, logout dan popup/fallback Google. Tidak mengubah akun live atau backend pada revisi visual ini.
+- Pada pengecekan aktual, port4000 menolak koneksi; jangan menyamakan fixture visual dan acceptance terisolasi dengan ketersediaan API/Neon live. Preview web3000 yang lambat/tidak responsif direstart hanya proses TajwidLens yang terverifikasi.
+- Pengguna **sudah mengonfirmasi** email Google sama dengan akun manual. Pernyataan lama bahwa jawaban belum tersedia sudah kedaluwarsa. Auto-link tetap ditolak dengan aman; secure account linking belum diotorisasi/diimplementasikan. Revisi ini khusus visual, tidak lanjut fase lain.
+- Detail keputusan dan prompt/provenance aset: `api/docs/phase-01/ARCHITECTURAL_LIGHT.md`. Ilustrasi baru WebP 1200×800 / 113.590 byte; PNG original dan aset sebelumnya dipertahankan.
+- Visual login/daftar enam lebar 1440/1024/850/768/390/320px PASS dengan fixture eksplisit karena API aktual offline; pointer/reset, reduced motion, logo/hadis, kontrol dan password reveal teruji. Empat screenshot desktop/mobile ditinjau. Export final dibangun ulang setelah penyempurnaan crop/blending ilustrasi.
+
+## Revisi terbaru — callback Google setelah pemilihan akun
+
+- Laporan pengguna: setelah memilih akun Google kembali ke pesan generik. Kegagalan lampau tidak dapat diidentifikasi dari pesan itu karena semua exception ditelan. Jangan mengklaim login live sudah berhasil.
+- Bug konkret direproduksi sebelum perbaikan: dua GET start pada satu cookie jar saling menimpa cookie OAuth tetap, lalu callback pertama gagal. GET dan POST start kini memakai cookie binding unik per state; callback hanya membaca/menghapus cookie percobaannya sendiri. HttpOnly/SameSite/PKCE/nonce/expiry/replay tetap dipertahankan; tidak ada migration.
+- Error callback kini dipetakan secara aman: sesi/cookie, kode kedaluwarsa, benturan akun, konfigurasi, koneksi, validasi identitas, pembatalan. Logger hanya mencetak tahap/kategori terkontrol, bukan raw respons provider, kode, token, secret atau email. Pesan frontend allowlist, tidak memantulkan input URL.
+- Koneksi token Google dan pengambilan sertifikat berhasil. Dua percobaan diagnostik pada API/Neon aktual sama-sama lolos state binding lalu ditolak Google sebagaimana diharapkan karena sengaja menggunakan kode tidak valid (`google_code`). Tidak ada akun atau credential pengguna dimodifikasi/dipakai.
+- Uji final: API build, web lint/build 40 halaman, 24 unit frontend PASS; acceptance API/browser 17 PASS / 1 SKIP, termasuk cookie paralel, replay, expired/missing cookie, benturan akun tanpa menautkan akun, pembatalan, redaksi log, dan pesan UI.
+- Pengguna ditanya apakah email Google sama dengan akun email/password yang sudah didaftarkan; jawaban belum tersedia saat penulisan. Akun manual tidak ditautkan otomatis. Harus mulai login baru (tutup jendela Google lama) karena binding cookie lama tidak kompatibel. Jika gagal lagi, minta hanya pesan error baru, bukan URL callback/kode/token. Login Google live penuh masih perlu verifikasi pengguna.
+
+## Revisi terbaru — auth terang, ilustrasi & Google launch
+
+- Panel hadis hitam diganti permukaan terang dengan ilustrasi buku/lensa dari ImageGen, terinspirasi logo resmi. Asset final `web/public/auth-study-illustration.webp` berukuran 24.520 byte; logo/hadis/terjemahan/sumber tetap utuh. Desktop dua sisi, mobile form dahulu. Motion sekali masuk 360 ms, interaksi 140 ms, reduced motion mematikan animasi.
+- Handler lama melakukan POST fetch lintas-origin lalu redirect asynchronous, bukan popup. Pada browser pengguna teramati timeout dan tab lama tetap memakai handler lama sesudah revisi. Handler baru membuka GET OAuth langsung dalam jendela/tab terpisah pada klik pengguna, dengan noopener/noreferrer, fallback tab yang sama, dan pemeriksaan sesi ketika kembali/fokus atau melalui tombol. Form email tidak terkunci. State/nonce/PKCE/browser-bound cookie tetap sama; POST JSON tetap kompatibel bagi caller lain.
+- Cache-first service worker dapat mempertahankan bundle Next development yang mutable. Bootstrap sebelum hydration, hanya `NODE_ENV=development`, melepas worker dengan scriptURL aplikasi yang tepat dan cache `tajwidlens-pwa-*`; worker/cache aplikasi lain serta akun/preferensi tidak disentuh. Versi cache PWA menjadi v4. Empat unit test memeriksa scope, basePath, reload sekali, dan browser tanpa SW.
+- Bukti langsung: halaman Google **Sign in → to continue to tajwidlens** berhasil tampil lewat fallback di browser yang sedang dibuka. Tidak ada kredensial dimasukkan atau consent disetujui. Login Google penuh/identity/session live tetap belum diverifikasi.
+- Web 23 unit test, lint, typecheck/build statis 40 halaman, API build, layout login/daftar enam ukuran layar, dan acceptance API/browser 14 PASS / 1 SKIP lulus. Popup login/daftar, callback/profil dengan identity double, serta popup diblokir telah diuji. Detail desain/prompt aset dan bukti terbaru di `api/docs/phase-01/DESIGN_REVISION.md` dan laporan Phase01. Tetap tidak melanjutkan fase berikutnya.
+
+## Revisi terbaru — redesign auth & perbaikan server aktual
+
+- API port4000 yang masih berjalan ternyata versi lama: source memiliki `/auth/status`, tetapi runtime/Swagger belum. Proses TajwidLens yang tepat sudah diganti; endpoint aktual kini 200. `api/npm run dev` memakai native Node watch + ts-node agar perubahan source termuat otomatis.
+- Probe capabilities tidak lagi mengunci form/session. Pemeriksaan sesi terpisah; form email/password tetap bisa dikirim saat status tidak tersedia. Pembatasan registrasi tetap mengikuti keputusan backend, bukan asumsi frontend.
+- Revisi desain terakhir mengikuti permintaan pengguna: logo resmi PNG, dua sisi pada login/daftar (panel hadis charcoal di kiri, form putih di kanan). Hadis Arab, terjemahan dan sumber Bukhari 5027/Utsman bin 'Affan tampil lengkap. Pada mobile panel berpindah ke bawah form, bukan disembunyikan. Auth tetap independen dari tema aplikasi existing.
+- `node scripts/check-auth-layout.cjs` lulus untuk login/daftar pada 1440/1024/850/768/390/320px: logo, konten hadis persis, layout/overflow, kontrol aktif, password reveal dan reduced motion. Screenshot desktop/mobile ditinjau. Typecheck/lint serta build 40 halaman lulus; logika auth tidak diubah oleh revisi visual terakhir.
+- Uji browser **pada web aktual dan Neon** lulus: daftar, persistence akun belum verified, login, refresh, profil, logout. Regresi status404 juga lulus dengan login nyata. Semua akun uji milik run dibersihkan; data pengguna lain tidak diubah.
+- Detail bukti dan screenshot redesign ada di laporan Phase01. Tetap belum memverifikasi Google consent live/production; SMTP tetap deferred dan tidak memulai fase berikutnya.
+
+## Status terbaru — Phase 01 auth UX, 24 Oktober 2026 (Asia/Jakarta)
+
+Bagian ini menggantikan asumsi konfigurasi/provider pada checkpoint historis di bawah. Tetap Phase 01; SMTP sengaja ditunda sesuai instruksi terbaru. Baca laporan terbaru di `api/docs/phase-01/` untuk bukti pengujian dan blocker.
+
+- Akar masalah: frontend tidak memiliki `NEXT_PUBLIC_API_URL` dan layout terbaru tidak memasang AuthProvider. File lokal ignored `web/.env.local` sekarang berisi origin API lokal; provider tunggal dipasang kembali. Restart server development setelah perubahan environment. Static deploy perlu rebuild dan repository variable publik `NEXT_PUBLIC_API_URL`; tidak ada secret di browser.
+- Credentials database/Google sudah tersedia di `api/.env` lokal. Neon verified TLS, schema dan migration existing sudah diverifikasi; Nest startup nyata tanpa SMTP, health/capabilities/401/deferred recovery lulus. Tidak ada migration atau user uji dibuat di database live.
+- `AUTH_ALLOW_UNVERIFIED_EMAIL=true` telah diaktifkan eksplisit pada `api/.env` development lokal. Hanya development/test yang mengizinkannya; production menolak startup jika flag true. Akun tetap belum verified dan tidak ada email dikirim. Di luar mode ini, password login memerlukan email terverifikasi dan registrasi email memerlukan delivery.
+- `/` mengarah ke login setelah pemeriksaan sesi, atau `/home/` jika sudah login. Homepage lama dipertahankan pada `/home/`; guest langsung menuju sana. Tidak memakai fake anonymous user atau browser flag sebagai authorization. URL Quran Reader dan materi publik tetap sama.
+- Layout `(auth)` terpisah dari `(app)`; login/registrasi tidak menampilkan navigasi utama. Ketiga tema existing tetap tersedia. New Google user mengonfirmasi nama di `/profile/?welcome=1`; returning user menuju `/home/`. Guard profile dan return URL internal tersedia.
+- Google live consent hingga session **belum diverifikasi**. Daftarkan callback lokal tepat `http://localhost:4000/api/v1/auth/google/callback`. Jangan mengklaim berhasil dari redirect/credentials saja. SMTP delivery DEFERRED; production domain/cookie dan PostgreSQL concurrency tetap NOT VERIFIED.
+- Harness browser memakai frontend 3101 dan API uji 4101, tidak menghentikan API development pada 4000. Smoke startup memakai 4102 lalu menghentikan child-nya sendiri.
+- Hasil terbaru: API build PASS; acceptance API/browser 14 PASS, 1 SKIP, 0 FAIL; web 19 tes PASS, lint PASS, static build 40 halaman PASS; corpus tetap 114 payload/6.236 ayat/143.049 anotasi. Screenshot login/register desktop dan mobile serta profile mobile diperiksa. Detail status live/double ada di laporan.
+- Tes menemukan benturan redirect logout guard/form; diperbaiki dengan revoke cookie lalu document replacement ke login, serta revalidasi sesi pada halaman yang dipulihkan dari cache Back/Forward. Mode unverified juga diperiksa saat autentikasi sesi, sehingga menonaktifkan flag tidak mempertahankan akses sesi akun belum verified.
+
+Bagian lama berikut merupakan riwayat, bukan instruksi untuk memasang SMTP atau memulai fase baru.
+
 ## Perbaikan terbatas — 24 Oktober 2026 (Asia/Jakarta)
 
 - Tetap Phase 01; tidak melanjutkan Phase 02–04.

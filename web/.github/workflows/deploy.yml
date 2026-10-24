@@ -27,6 +27,7 @@ jobs:
         run: npm run build
         env:
           GITHUB_PAGES: "true"
+          NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
           NEXT_PUBLIC_REPO_NAME: ${{ vars.NEXT_PUBLIC_REPO_NAME || github.event.repository.name }}
           NEXT_PUBLIC_BASE_PATH: /${{ vars.NEXT_PUBLIC_REPO_NAME || github.event.repository.name }}
       - uses: actions/configure-pages@v5

@@ -10,6 +10,7 @@ const basePath = isGitHubPages ? configuredBasePath || (repoName ? `/${repoName}
 if (isGitHubPages && !basePath) throw new Error("NEXT_PUBLIC_BASE_PATH or NEXT_PUBLIC_REPO_NAME must be configured for GitHub Pages");
 
 const nextConfig: NextConfig = {
+  devIndicators: false,
   output: "export",
   trailingSlash: true,
 

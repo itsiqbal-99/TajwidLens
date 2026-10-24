@@ -11,8 +11,8 @@ it("loads verified payloads and rejects altered bytes", async () => {
   vi.stubGlobal("fetch", fetchMock);
   expect((await loadTajweedSurah(entry.surah)).verses).toHaveLength(7);
   expect(fetchMock).toHaveBeenCalledWith(
-    expect.stringContaining(`${entry.file}?v=${entry.sha256}`),
-    { cache: "no-cache" },
+    expect.stringContaining(`${entry.file}?v=${entry.sha256.slice(0,16)}`),
+    { cache: "force-cache" },
   );
   const other = tajweedIndex.files[1];
   const original = readFileSync(`public/data/tajweed/${other.file}`, "utf8");
