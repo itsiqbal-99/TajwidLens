@@ -13,6 +13,10 @@ import { readConfig, CONFIG } from '../src/config/config';
 import { User } from '../src/modules/users/user.entity';
 import { AuthToken, OAuthAttempt, Session } from '../src/modules/auth/auth.entity';
 import { InitialAuth1760000000000 } from '../src/database/1760000000000-InitialAuth';
+import { LearningProgress1792886400000 } from '../src/database/1792886400000-LearningProgress';
+import { UserLessonProgress } from '../src/modules/learning/learning.entity';
+import { LearningController } from '../src/modules/learning/learning.controller';
+import { LearningService } from '../src/modules/learning/learning.service';
 import { AuthService, digest, secret } from '../src/modules/auth/auth.service';
 import { AuthController } from '../src/modules/auth/auth.controller';
 import { UsersController } from '../src/modules/users/users.controller';
@@ -72,13 +76,13 @@ test('API authentication and persistence with migrated PostgreSQL emulator',asyn
   memory.public.registerFunction({name:'current_database',returns:DataType.text,implementation:()=> 'test'});
   memory.public.registerFunction({name:'version',returns:DataType.text,implementation:()=> 'PostgreSQL 16'});
   memory.public.registerFunction({name:'gen_random_uuid',returns:DataType.uuid,impure:true,implementation:randomUUID});
-  const db:DataSource=memory.adapters.createTypeormDataSource({type:'postgres',entities:[User,Session,AuthToken,OAuthAttempt],migrations:[InitialAuth1760000000000],synchronize:false});
+  const db:DataSource=memory.adapters.createTypeormDataSource({type:'postgres',entities:[User,Session,AuthToken,OAuthAttempt,UserLessonProgress],migrations:[InitialAuth1760000000000,LearningProgress1792886400000],synchronize:false});
   await db.initialize();await db.runMigrations();
   const config=readConfig({DATABASE_URL:'postgres://localhost/test',FRONTEND_URL:'http://localhost:3101',API_URL:'http://localhost:4101',GOOGLE_CLIENT_ID:'test-client',GOOGLE_CLIENT_SECRET:'test-only'});
   const mails:{email:string;kind:string;token:string}[]=[];
   const requestLimit=process.env.E2E === 'true' ? 200 : 20;
   const mailer={assertAvailable(){},async send(email:string,kind:string,token:string){mails.push({email,kind,token});}};
-  const module=await Test.createTestingModule({imports:[ThrottlerModule.forRoot([{ttl:60000,limit:requestLimit}])],controllers:[AuthController,UsersController],providers:[AuthService,GoogleService,SessionGuard,UsersService,{provide:APP_GUARD,useClass:ThrottlerGuard},
+  const module=await Test.createTestingModule({imports:[ThrottlerModule.forRoot([{ttl:60000,limit:requestLimit}])],controllers:[AuthController,UsersController,LearningController],providers:[AuthService,GoogleService,SessionGuard,UsersService,LearningService,{provide:APP_GUARD,useClass:ThrottlerGuard},
     {provide:DataSource,useValue:db},{provide:CONFIG,useValue:config},{provide:Mailer,useValue:mailer}]}).compile();
   const app=module.createNestApplication(); setup(app,config);await app.init();
   const api=request(app.getHttpServer());
@@ -263,7 +267,7 @@ test('API authentication and persistence with migrated PostgreSQL emulator',asyn
           const pathname=new URL(req.url!,'http://localhost').pathname;
           const file=resolve(root,'.'+decodeURIComponent(pathname)+(pathname.endsWith('/') ? 'index.html' : ''));
           if(!file.startsWith(root+sep)) {res.writeHead(403);res.end();return;}
-          const types:Record<string,string>={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.webp':'image/webp','.woff2':'font/woff2'};
+          const types:Record<string,string>={'.html':'text/html','.txt':'text/plain','.js':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.webp':'image/webp','.woff2':'font/woff2'};
           res.setHeader('Content-Type',types[extname(file)] || 'application/octet-stream');res.end(await readFile(file));
         } catch {res.writeHead(404);res.end();}
       });
@@ -285,7 +289,8 @@ test('API authentication and persistence with migrated PostgreSQL emulator',asyn
         await page.waitForURL('**/home/');
         await page.reload();await page.getByRole('heading',{name:/Baca Al-Qur/}).waitFor();
         await page.goBack({waitUntil:'domcontentloaded'});await page.waitForURL('**/login/');
-        await page.goForward({waitUntil:'domcontentloaded'});await page.waitForURL('**/home/');
+        await page.goForward({waitUntil:'load'});await page.waitForURL('**/home/',{waitUntil:'load'});
+        await browserExpect(page.getByRole('heading',{name:/Baca Al-Qur/})).toBeVisible();
         await page.goto('http://localhost:3101/register/');
         await page.getByLabel('Nama panggilan').fill('Browser');
         await page.getByLabel('Email',{exact:true}).fill('not-an-email');
@@ -298,7 +303,7 @@ test('API authentication and persistence with migrated PostgreSQL emulator',asyn
         await browserExpect(page.getByRole('heading',{name:'Pendaftaran diterima.',exact:true})).toBeVisible();
         await browserExpect(page.locator('.account-registration-status')).toBeFocused();
         await browserExpect(page.locator('form')).toHaveCount(0);
-        await browserExpect(page.getByRole('link',{name:'Lanjut ke halaman masuk',exact:true})).toHaveAttribute('href','/login/?next=%2Fhome%2F');
+        await browserExpect(page.getByRole('link',{name:'Lanjut ke halaman masuk',exact:true})).toHaveAttribute('href','/login/?next=%2Fdashboard%2F');
         await page.getByRole('button',{name:'Daftar akun lain',exact:true}).click();
         for(const label of ['Nama panggilan','Email','Kata sandi']) await browserExpect(page.getByLabel(label,{exact:true})).toHaveValue('');
         const verify=mails.find(m=>m.email==='browser@example.com' && m.kind==='verify')!;
@@ -314,17 +319,44 @@ test('API authentication and persistence with migrated PostgreSQL emulator',asyn
         await page.getByLabel('Kata sandi',{exact:true}).fill('wrong');
         await page.getByRole('button',{name:'Masuk',exact:true}).click();
         await page.getByRole('alert').waitFor();
-        await page.getByLabel('Kata sandi',{exact:true}).fill('browser password 123');
-        await page.getByRole('button',{name:'Masuk',exact:true}).click();
-        await page.waitForURL('**/home/');
-        await page.goto('http://localhost:3101/');await page.waitForURL('**/home/');
+        let releaseOldSession!:()=>void,oldSessionHeld=false,oldSessionHandled=false;
+        const oldSessionGate=new Promise<void>(done=>{releaseOldSession=done;});
+        await page.route('http://localhost:4000/api/v1/auth/me',async route=>{
+          if(oldSessionHeld){await route.continue({url:'http://localhost:4101/api/v1/auth/me'});return;}
+          oldSessionHeld=true;await oldSessionGate;
+          await route.fulfill({status:401,headers:{'Access-Control-Allow-Origin':'http://localhost:3101','Access-Control-Allow-Credentials':'true'},json:{message:'Unauthorized'}});oldSessionHandled=true;
+        });
+        try {
+          await page.evaluate(()=>window.dispatchEvent(new PageTransitionEvent('pageshow',{persisted:true})));
+          await browserExpect.poll(()=>oldSessionHeld).toBe(true);
+          await page.getByLabel('Kata sandi',{exact:true}).fill('browser password 123');
+          await page.getByRole('button',{name:'Masuk',exact:true}).click();
+          await page.waitForURL('**/dashboard/');
+          releaseOldSession();await browserExpect.poll(()=>oldSessionHandled).toBe(true);
+          await browserExpect(page.locator('.account-nav')).toContainText('Browser');
+        } finally {releaseOldSession();await page.unroute('http://localhost:4000/api/v1/auth/me');}
+        await page.goto('http://localhost:3101/');await page.waitForURL('**/dashboard/');
         await page.getByRole('link',{name:'Profil',exact:true}).click();
         await page.waitForURL('**/profile/');
         await page.getByLabel('Nama panggilan').fill('Nama tersimpan');
-        await page.getByRole('button',{name:'Simpan profil'}).click();
-        await page.getByText('Profil berhasil disimpan.').waitFor();
+        let releaseProfile!:()=>void,profileSessionReads=0;
+        const profileGate=new Promise<void>(done=>{releaseProfile=done;});
+        const countProfileSessionReads=(request:{url:()=>string})=>{if(request.url().endsWith('/api/v1/auth/me'))profileSessionReads++;};
+        page.on('request',countProfileSessionReads);
+        await page.route('http://localhost:4000/api/v1/users/me',async route=>{
+          if(route.request().method()==='PATCH')await profileGate;
+          await route.continue({url:'http://localhost:4101/api/v1/users/me'});
+        });
+        try {
+          await page.getByRole('button',{name:'Simpan profil'}).click();
+          await browserExpect(page.getByText('Menyimpan perubahan profil…',{exact:true})).toBeVisible();
+          await browserExpect(page.locator('.action-spinner')).toBeVisible();
+          releaseProfile();await page.getByText('Profil berhasil disimpan.').waitFor();
+          await browserExpect(page.locator('.action-feedback-success .action-check')).toBeVisible();
+          assert.equal(profileSessionReads,0,'Confirmed profile response must not trigger another session lookup');
+        } finally {releaseProfile();page.off('request',countProfileSessionReads);await page.unroute('http://localhost:4000/api/v1/users/me');}
         assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth <= innerWidth),true);
-        await page.screenshot({path:'docs/phase-01/profile-mobile.png',fullPage:true});
+        await page.screenshot({path:'docs/phase-02/auth-profile-mobile.png',fullPage:true});
         await page.reload();await page.getByLabel('Nama panggilan').waitFor();
         assert.equal(await page.getByLabel('Nama panggilan').inputValue(),'Nama tersimpan');
         const googleLinkService=module.get(GoogleService),beforeLink=googleLinkService.validateIdentity;
@@ -368,16 +400,16 @@ test('API authentication and persistence with migrated PostgreSQL emulator',asyn
         await page.setViewportSize({width:1440,height:1000});
         await page.goto('http://localhost:3101/login/');
         await browserExpect(page.getByRole('button',{name:'Masuk dengan Google',exact:true})).toBeEnabled();
-        await page.screenshot({path:'docs/phase-01/login-desktop.png',fullPage:true});
+        await page.screenshot({path:'docs/phase-02/auth-login-desktop.png',fullPage:true});
         assert.equal(await page.locator('.auth-layout').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(248, 249, 247)');
-        await page.screenshot({path:'docs/phase-01/login-theme-independent.png',fullPage:true});
+        await page.screenshot({path:'docs/phase-02/auth-login-theme-independent.png',fullPage:true});
         await page.setViewportSize({width:390,height:844});
-        await page.screenshot({path:'docs/phase-01/login-mobile.png',fullPage:true});
+        await page.screenshot({path:'docs/phase-02/auth-login-mobile.png',fullPage:true});
         assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth <= innerWidth),true);
         await page.goto('http://localhost:3101/register/');
-        await page.screenshot({path:'docs/phase-01/register-mobile.png',fullPage:true});
+        await page.screenshot({path:'docs/phase-02/auth-register-mobile.png',fullPage:true});
         await page.setViewportSize({width:1440,height:1000});
-        await page.screenshot({path:'docs/phase-01/register-desktop.png',fullPage:true});
+        await page.screenshot({path:'docs/phase-02/auth-register-desktop.png',fullPage:true});
         await page.emulateMedia({reducedMotion:'reduce'});
         assert.equal(await page.locator('.account-card').evaluate(el=>getComputedStyle(el).animationName),'none');
         await page.keyboard.press('Tab');
@@ -394,17 +426,29 @@ test('API authentication and persistence with migrated PostgreSQL emulator',asyn
           await route.fulfill({response,headers:{...response.headers(),location:`http://localhost:4101/api/v1/auth/google/callback?state=${state}&code=identity-double`}});
         });
         await page.goto('http://localhost:3101/login/');
-        const opened=page.context().waitForEvent('page');
-        await page.getByRole('button',{name:'Masuk dengan Google',exact:true}).click();
         await browserExpect(page.getByRole('button',{name:'Masuk dengan Google',exact:true})).toBeEnabled();
-        await browserExpect(page.getByLabel('Email',{exact:true})).toBeEnabled();
-        const popup=await opened;
-        await page.waitForURL('**/profile/?welcome=1');
-        await browserExpect.poll(()=>popup.isClosed()).toBe(true);
+        let releaseCapabilities!:()=>void;
+        const capabilitiesGate=new Promise<void>(done=>{releaseCapabilities=done;});
+        await page.context().route('http://localhost:4000/api/v1/auth/status',async route=>{
+          await capabilitiesGate;await route.fulfill({headers:{'Access-Control-Allow-Origin':'http://localhost:3101','Access-Control-Allow-Credentials':'true'},json:{google:true,emailRegistration:true,emailDelivery:true,developmentRegistration:false}});
+        });
+        const googleStarted=Date.now();
+        try {
+          const opened=page.context().waitForEvent('page');
+          await page.getByRole('button',{name:'Masuk dengan Google',exact:true}).click();
+          await browserExpect(page.getByRole('button',{name:'Masuk dengan Google',exact:true})).toBeEnabled();
+          await browserExpect(page.getByLabel('Email',{exact:true})).toBeEnabled();
+          const popup=await opened;
+          await page.waitForURL('**/dashboard/',{timeout:6000});
+          await browserExpect.poll(()=>popup.isClosed(),{timeout:6000}).toBe(true);
+          console.log(`Fixture Google handoff: ${Date.now()-googleStarted}ms with capabilities deliberately pending`);
+        } finally {releaseCapabilities();await page.context().unroute('http://localhost:4000/api/v1/auth/status');}
+        await page.getByRole('link',{name:'Profil',exact:true}).click();await page.waitForURL('**/profile/');
         await page.getByLabel('Nama panggilan').waitFor();
         assert.equal(await page.getByLabel('Nama panggilan').inputValue(),'Google Browser');
         await page.getByLabel('Nama panggilan').fill('Nama Google');
-        await page.getByRole('button',{name:'Simpan dan mulai belajar'}).click();await page.waitForURL('**/home/');
+        await page.getByRole('button',{name:'Simpan profil',exact:true}).click();await page.getByText('Profil berhasil disimpan.').waitFor();
+        await page.goto('http://localhost:3101/dashboard/');
         await browserExpect(page.locator('.account-nav')).toContainText('Nama Google');
         await page.goto('http://localhost:3101/profile/');
         await page.getByRole('button',{name:'Keluar dari akun'}).click();await page.waitForURL('**/login/');
@@ -412,14 +456,14 @@ test('API authentication and persistence with migrated PostgreSQL emulator',asyn
         await page.goto('http://localhost:3101/register/');
         const returning=page.context().waitForEvent('page');
         await page.getByRole('button',{name:'Daftar dengan Google',exact:true}).click();
-        const returningPopup=await returning;await page.waitForURL('**/home/');
+        const returningPopup=await returning;await page.waitForURL('**/dashboard/');
         await browserExpect.poll(()=>returningPopup.isClosed()).toBe(true);
         await page.goto('http://localhost:3101/profile/');
         await page.getByRole('button',{name:'Keluar dari akun'}).click();await page.waitForURL('**/login/');
 
         // No originating listener: the same-tab flow must still reach an authenticated page.
         await page.goto('http://localhost:4000/api/v1/auth/google/start');
-        await page.waitForURL('**/home/',{timeout:25000});
+        await page.waitForURL('**/dashboard/',{timeout:6000});
         await browserExpect(page.locator('.account-nav')).toContainText('Nama Google');
         await page.goto('http://localhost:3101/profile/');
         await page.getByRole('button',{name:'Keluar dari akun'}).click();await page.waitForURL('**/login/');
@@ -444,10 +488,10 @@ test('API authentication and persistence with migrated PostgreSQL emulator',asyn
         await browserExpect(page.getByRole('heading',{name:'Pendaftaran diterima.',exact:true})).toBeVisible();
         await browserExpect(page.locator('form')).toHaveCount(0);
         await page.getByRole('link',{name:'Lanjut ke halaman masuk',exact:true}).click();
-        await page.waitForURL('**/login/?next=%2Fhome%2F');
+        await page.waitForURL('**/login/?next=%2Fdashboard%2F');
         await page.getByLabel('Email',{exact:true}).fill('browser-dev@example.com');
         await page.getByLabel('Kata sandi',{exact:true}).fill('development browser password');
-        await page.getByRole('button',{name:'Masuk',exact:true}).click();await page.waitForURL('**/home/');
+        await page.getByRole('button',{name:'Masuk',exact:true}).click();await page.waitForURL('**/dashboard/');
         await page.goto('http://localhost:3101/profile/');await page.getByText('Email belum diverifikasi',{exact:true}).waitFor();
         await page.getByRole('button',{name:'Keluar dari akun'}).click();await page.waitForURL('**/login/');
         await page.goto('http://localhost:3101/forgot-password/');

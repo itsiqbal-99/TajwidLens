@@ -16,7 +16,7 @@ class SafeErrors implements ExceptionFilter {
 export function setup(app: INestApplication, config: AppConfig) {
   app.setGlobalPrefix('api/v1');
   app.use(helmet()); app.use(cookieParser());
-  app.enableCors({origin:config.origin,credentials:true,methods:['GET','POST','PATCH'],allowedHeaders:['Content-Type','X-TajwidLens-CSRF']});
+  app.enableCors({origin:config.origin,credentials:true,methods:['GET','POST','PATCH','PUT'],allowedHeaders:['Content-Type','X-TajwidLens-CSRF']});
   app.use((req: Request,res: Response,next: NextFunction) => {
     res.setHeader('Cache-Control','no-store');
     if (!['GET','HEAD','OPTIONS'].includes(req.method) &&

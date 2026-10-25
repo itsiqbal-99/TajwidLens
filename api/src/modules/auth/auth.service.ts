@@ -56,9 +56,9 @@ export class AuthService {
   }
   async authenticate(token?: string) {
     if (!token || !/^[A-Za-z0-9_-]{43}$/.test(token)) throw new UnauthorizedException();
-    const session = await this.db.getRepository(Session).findOneBy({hash:digest(token),expiresAt:MoreThan(new Date())});
-    if (!session) throw new UnauthorizedException();
-    const user = await this.db.getRepository(User).createQueryBuilder('u').addSelect('u.passwordHash').where('u.id = :id',{id:session.userId}).getOne();
+    const user = await this.db.getRepository(User).createQueryBuilder('u').addSelect('u.passwordHash')
+      .innerJoin(Session,'s','s.userId = u.id')
+      .where('s.hash = :hash AND s.expiresAt > :now',{hash:digest(token),now:new Date()}).getOne();
     if (!user || (!user.emailVerifiedAt && !this.config.allowUnverifiedEmail)) throw new UnauthorizedException();
     return user;
   }

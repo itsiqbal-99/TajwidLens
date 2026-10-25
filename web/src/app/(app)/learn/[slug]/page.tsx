@@ -7,8 +7,9 @@ import { getSurah, getWords } from "@/data/quran";
 import { learningVerses, lessonHref } from "@/lib/reading-navigation";
 import { AudioPlayer } from "@/components/audio-player";
 import { LessonVisual } from "@/components/lesson-visual";
+import { LessonProgress } from "@/components/lesson-progress";
 
-export function generateStaticParams() { return lessons.map((lesson) => ({ slug: lesson.id })); }
+export function generateStaticParams() { return lessons.map((lesson) => ({ slug: lesson.slug })); }
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> { const lesson = getLesson((await params).slug); return { title: lesson?.title ?? "Materi tajwid" }; }
 
 export default async function LessonPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -36,6 +37,7 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
       </article>
       <aside className="lesson-side"><div className="lesson-side-card"><BookOpenText size={22} /><strong>Belajar dalam konteks</strong><p>Setelah memahami kaidah, kembali ke ayat dan pilih bagian bacaan yang relevan.</p><Link href={exampleUrl}>Lihat contoh ayat <ArrowRight size={16} /></Link></div><div className="lesson-side-note"><strong>Status materi</strong><p>Aturan diperiksa silang dengan rujukan tajwid yang dicantumkan. Materi ini tetap bukan pengganti talaqqi dan koreksi guru.</p><Link href="/reference/">Lihat sumber <ArrowRight size={15} /></Link></div></aside>
     </div>
-    <nav className="learning-order" aria-label="Urutan materi">{lessons[lessonIndex - 1] && <Link href={`/learn/${lessons[lessonIndex - 1].id}/`}>← Sebelumnya: {lessons[lessonIndex - 1].title}</Link>}{lessons[lessonIndex + 1] && <Link href={`/learn/${lessons[lessonIndex + 1].id}/`}>Lanjut: {lessons[lessonIndex + 1].title} →</Link>}</nav>
+    <LessonProgress lessonId={lesson.id} href={`/learn/${lesson.slug}/`} next={lessons[lessonIndex+1] ? {title:lessons[lessonIndex+1].title,href:`/learn/${lessons[lessonIndex+1].slug}/`} : null} />
+    <nav className="learning-order" aria-label="Urutan materi">{lessons[lessonIndex - 1] && <Link href={`/learn/${lessons[lessonIndex - 1].slug}/`}>← Sebelumnya: {lessons[lessonIndex - 1].title}</Link>}{lessons[lessonIndex + 1] && <Link href={`/learn/${lessons[lessonIndex + 1].slug}/`}>Lanjut: {lessons[lessonIndex + 1].title} →</Link>}</nav>
   </div>;
 }

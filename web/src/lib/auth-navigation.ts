@@ -1,4 +1,4 @@
-const destinations = new Set(['home','profile','explore','reading-guide','learn','pronunciation','reference']);
+const destinations = new Set(['dashboard','home','profile','explore','reading-guide','learn','pronunciation','reference']);
 
 export function googleLoginError(reason:string|null):string {
   switch(reason) {
@@ -15,7 +15,7 @@ export function googleLoginError(reason:string|null):string {
 }
 
 export function safeReturnPath(value: string | null): string {
-  if (!value || !value.startsWith('/') || value.startsWith('//') || /[\\\s%]/.test(value)) return '/home/';
+  if (!value || !value.startsWith('/') || value.startsWith('//') || /[\\\s%]/.test(value)) return '/dashboard/';
   const url = new URL(value, 'https://tajwidlens.invalid');
-  return destinations.has(url.pathname.split('/')[1]) ? `${url.pathname}${url.search}${url.hash}` : '/home/';
+  return destinations.has(url.pathname.split('/')[1]) ? `${url.pathname}${url.search}${url.hash}` : '/dashboard/';
 }

@@ -16,9 +16,11 @@ it('explains safe Google failure reasons without reflecting arbitrary callback i
 
 it('allows only internal application return paths',()=>{
   for (const value of [null,'https://evil.test','//evil.test','/\\evil.test','/%2f%2fevil.test','/login/','/home/../../login/']) {
-    expect(safeReturnPath(value)).toBe('/home/');
+    expect(safeReturnPath(value)).toBe('/dashboard/');
   }
   expect(safeReturnPath('/profile/')).toBe('/profile/');
+  expect(safeReturnPath('/dashboard/')).toBe('/dashboard/');
+  expect(safeReturnPath('/learn/ikhfa-haqiqi/')).toBe('/learn/ikhfa-haqiqi/');
   expect(safeReturnPath('/reading-guide/?surah=113&ayah=2')).toBe('/reading-guide/?surah=113&ayah=2');
 });
 

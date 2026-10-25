@@ -1,0 +1,194 @@
+[
+  {
+    "id": "pengantar",
+    "slug": "pengantar",
+    "title": "Pengantar ilmu tajwid",
+    "category": "Dasar",
+    "summary": "Tajwid membantu setiap huruf dibaca dari tempat keluarnya dan sesuai sifatnya.",
+    "order": 10
+  },
+  {
+    "id": "huruf-hijaiyah",
+    "slug": "huruf-hijaiyah",
+    "title": "Huruf hijaiyah",
+    "category": "Dasar",
+    "summary": "Huruf Arab memiliki bentuk, nama, dan tempat keluar bunyi yang perlu dibedakan.",
+    "order": 20
+  },
+  {
+    "id": "harakat",
+    "slug": "harakat",
+    "title": "Harakat dan tanda baca",
+    "category": "Dasar",
+    "summary": "Fathah, kasrah, dammah, sukun, dan tasydid mengubah cara bunyi huruf.",
+    "order": 30
+  },
+  {
+    "id": "makhraj",
+    "slug": "makhraj",
+    "title": "Makharijul huruf",
+    "category": "Pelafalan",
+    "summary": "Makhraj adalah tempat keluarnya bunyi huruf ketika diucapkan.",
+    "order": 40
+  },
+  {
+    "id": "sifat-huruf",
+    "slug": "sifat-huruf",
+    "title": "Sifatul huruf",
+    "category": "Pelafalan",
+    "summary": "Sifat huruf menjelaskan karakter bunyi setelah makhrajnya tepat.",
+    "order": 50
+  },
+  {
+    "id": "nun-tanwin",
+    "slug": "nun-tanwin",
+    "title": "Nun sukun dan tanwin",
+    "category": "Pertemuan huruf",
+    "summary": "Bunyi n mati mengikuti hukum yang ditentukan oleh huruf sesudahnya.",
+    "order": 60
+  },
+  {
+    "id": "ikhfa-haqiqi",
+    "slug": "ikhfa-haqiqi",
+    "title": "Ikhfa haqiqi",
+    "category": "Pertemuan huruf",
+    "summary": "Nun sukun atau tanwin disamarkan sebelum salah satu dari 15 huruf ikhfa, disertai ghunnah.",
+    "order": 70
+  },
+  {
+    "id": "izhar-halqi",
+    "slug": "izhar-halqi",
+    "title": "Izhar halqi",
+    "category": "Pertemuan huruf",
+    "summary": "Nun sukun atau tanwin dibaca jelas sebelum salah satu huruf tenggorokan.",
+    "order": 80
+  },
+  {
+    "id": "idgham-bilaghunnah",
+    "slug": "idgham-bilaghunnah",
+    "title": "Idgham bila ghunnah",
+    "category": "Pertemuan huruf",
+    "summary": "Nun sukun atau tanwin melebur ke lam atau ra tanpa ghunnah dua harakat.",
+    "order": 90
+  },
+  {
+    "id": "idgham-bighunnah",
+    "slug": "idgham-bighunnah",
+    "title": "Idgham bighunnah",
+    "category": "Pertemuan huruf",
+    "summary": "Nun sukun atau tanwin melebur ke ي، ن، م، و dengan dengung.",
+    "order": 100
+  },
+  {
+    "id": "iqlab",
+    "slug": "iqlab",
+    "title": "Iqlab",
+    "category": "Pertemuan huruf",
+    "summary": "Nun sukun atau tanwin berubah menjadi bunyi mim samar sebelum ba.",
+    "order": 110
+  },
+  {
+    "id": "mim-sukun",
+    "slug": "mim-sukun",
+    "title": "Mim sukun",
+    "category": "Pertemuan huruf",
+    "summary": "Mim mati memiliki hukum menurut huruf yang datang sesudahnya.",
+    "order": 120
+  },
+  {
+    "id": "ikhfa-syafawi",
+    "slug": "ikhfa-syafawi",
+    "title": "Ikhfa syafawi",
+    "category": "Pertemuan huruf",
+    "summary": "Mim sukun disamarkan dengan ghunnah ketika bertemu ba.",
+    "order": 130
+  },
+  {
+    "id": "idgham-mimi",
+    "slug": "idgham-mimi",
+    "title": "Idgham mimi",
+    "category": "Pertemuan huruf",
+    "summary": "Mim sukun melebur ke mim berikutnya dengan ghunnah.",
+    "order": 140
+  },
+  {
+    "id": "izhar-shafawi",
+    "slug": "izhar-shafawi",
+    "title": "Izhar syafawi",
+    "category": "Pertemuan huruf",
+    "summary": "Mim sukun dibaca jelas ketika bertemu huruf selain mim dan ba.",
+    "order": 150
+  },
+  {
+    "id": "ghunnah",
+    "slug": "ghunnah",
+    "title": "Ghunnah pada nun dan mim tasydid",
+    "category": "Dengung",
+    "summary": "Nun atau mim bertasydid dibaca dengan dengung sekitar dua harakat.",
+    "order": 160
+  },
+  {
+    "id": "qalqalah",
+    "slug": "qalqalah",
+    "title": "Qalqalah",
+    "category": "Sifat bunyi",
+    "summary": "Huruf ق ط ب ج د memantul ringan ketika bersukun.",
+    "order": 170
+  },
+  {
+    "id": "lam-tarif",
+    "slug": "lam-tarif",
+    "title": "Lam ta'rif: syamsiyah dan qamariyah",
+    "category": "Pertemuan huruf",
+    "summary": "Lam pada ال kadang terdengar jelas dan kadang melebur ke huruf berikutnya.",
+    "order": 180
+  },
+  {
+    "id": "mad-tabii",
+    "slug": "mad-tabii",
+    "title": "Mad thabi'i",
+    "category": "Panjang bacaan",
+    "summary": "Panjang alami huruf mad adalah dua harakat selama tidak disusul hamzah atau sukun penyebab mad lain.",
+    "order": 190
+  },
+  {
+    "id": "mad-arid",
+    "slug": "mad-arid",
+    "title": "Mad 'aridh lissukun",
+    "category": "Panjang bacaan",
+    "summary": "Ketika berhenti membuat huruf akhir bersukun setelah huruf mad, panjangnya dapat 2, 4, atau 6 harakat.",
+    "order": 200
+  },
+  {
+    "id": "mad-lazim",
+    "slug": "mad-lazim",
+    "title": "Mad lazim kalimi mutsaqqal",
+    "category": "Panjang bacaan",
+    "summary": "Huruf mad bertemu huruf bertasydid dalam satu kata dan dipanjangkan enam harakat.",
+    "order": 210
+  },
+  {
+    "id": "waqaf-ibtida",
+    "slug": "waqaf-ibtida",
+    "title": "Waqaf, wasal, dan ibtida",
+    "category": "Konteks bacaan",
+    "summary": "Berhenti, menyambung, dan memulai kembali dapat memengaruhi bunyi serta makna.",
+    "order": 220
+  },
+  {
+    "id": "hamzatul-wasl",
+    "slug": "hamzatul-wasl",
+    "title": "Hamzatul wasl",
+    "category": "Konteks bacaan",
+    "summary": "Hamzah sambung dibaca saat memulai dan gugur bunyinya ketika disambung dari kata sebelumnya.",
+    "order": 230
+  },
+  {
+    "id": "tafkhim-tarqiq",
+    "slug": "tafkhim-tarqiq",
+    "title": "Tafkhim dan tarqiq",
+    "category": "Sifat bunyi",
+    "summary": "Beberapa huruf dibaca tebal atau tipis sesuai sifat dan konteksnya.",
+    "order": 240
+  }
+]

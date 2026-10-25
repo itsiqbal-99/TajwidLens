@@ -6,7 +6,7 @@
     "build": "tsc",
     "typecheck": "tsc --noEmit",
     "start": "node dist/main.js",
-    "dev": "node --watch -r ts-node/register src/main.ts",
+    "dev": "nest start --watch",
     "test": "node -r ts-node/register --test test/*.test.ts",
     "migration:run": "typeorm-ts-node-commonjs migration:run -d src/database/data-source.ts"
   },

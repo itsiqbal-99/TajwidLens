@@ -1,6 +1,6 @@
-# TajwidLens API — Phase 01
+# TajwidLens API — Phase 01 + Phase 02
 
-NestJS 11, TypeORM, PostgreSQL (Neon), REST. Node 22+ recommended. This directory is an independent Git repository; no remote or deployment has been created.
+NestJS 11, TypeORM, PostgreSQL (Neon), REST. Node 22+ recommended. The current Git root is the parent TajwidLens workspace, containing `api/`, `web/` and `shared/`. No production deployment was performed for Phase 02.
 
 ## Run
 
@@ -10,13 +10,15 @@ NestJS 11, TypeORM, PostgreSQL (Neon), REST. Node 22+ recommended. This director
 4. Restore the runtime-role URL, then `npm run build` and `npm start`.
 5. Set `NEXT_PUBLIC_API_URL` in `web/.env.local` to the API origin and rebuild the static frontend.
 
+Keep `api/` and `shared/` as siblings in the backend deployment artifact: learning metadata is loaded from `shared/lesson-catalog.json`. Install/build within `api/`; start with its working directory. The frontend imports the same catalogue at build time and still exports static files. Lesson IDs are immutable progress references; changing display order never renames IDs.
+
 Use Neon PostgreSQL, with verified TLS. Both pooled runtime and direct migration connection URLs are supported; prefer a direct connection for migration jobs. URL SSL flags are stripped so they cannot disable certificate validation. No `synchronize`, no destructive rollback. Schema uses `gen_random_uuid()` (modern PostgreSQL).
 
 Production: use HTTPS frontend/API subdomains under one site, e.g. `app.example.com` / `api.example.com`, with `COOKIE_SAME_SITE=lax`. Unrelated GitHub Pages/API domains require `COOKIE_SAME_SITE=none` and remain subject to browser third-party cookie blocking. Prefer custom domains before launch. CORS permits exactly the configured frontend origin. `FRONTEND_URL` may include a GitHub Pages repository base path.
 
 The frontend repository currently deploys to GitHub Pages; no Cloudflare deployment configuration was found or changed. Cloudflare Pages can serve the existing `web/out` output, with the API hosted separately. The Node API is not a Cloudflare Pages Function.
 
-Google Cloud: configure a Web application OAuth client with exact redirect URI `API_URL/api/v1/auth/google/callback`. Supply `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`. The provider identity is validated server-side, including audience/issuer/signature/expiry through Google's library and nonce in application code. Email collisions require the existing sign-in method; linking accounts is intentionally not provided.
+Google Cloud: configure a Web application OAuth client with exact redirect URI `API_URL/api/v1/auth/google/callback`. Supply `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`. The provider identity is validated server-side, including audience/issuer/signature/expiry through Google's library and nonce in application code. Email collisions require the existing sign-in method, then explicit authenticated linking from profile; email-only automatic linking is not allowed.
 
 The UI opens `GET /api/v1/auth/google/start` directly in a no-opener window/tab on the user's click, with a same-tab fallback if popups are unavailable. No cross-origin fetch must finish before launch. Return focus or “Periksa status login” refreshes the original page's session. The POST JSON start endpoint remains supported. Embedded browsers may require the same-tab fallback or a normal Chrome/Edge window; never bypass Google's browser restrictions. Reaching Google's sign-in screen does not prove completed consent or a real application session.
 
@@ -34,7 +36,7 @@ OpenAPI UI: `/api/docs`, JSON: `/api/docs-json`. Request DTOs, account/message r
 
 Sessions are random 256-bit opaque secrets, stored only as SHA-256 hashes. Production cookies are Secure, HttpOnly, host-only (`__Host-`), and expire in seven days; the database enforces expiry. Login rotates the current browser session. Logout revokes it, reset revokes all sessions. Other browser sessions remain valid until reset/expiry. Password login requires verified email except for the explicit development/test flag. Public Quran/learning routes never require an account.
 
-`/` waits for the client session check and goes to `/login/` or `/home/`. The former homepage is preserved at `/home/`; guest entry points there directly and needs no fake account or localStorage authorization. Public deep links keep their URLs. Auth pages use `(auth)/layout.tsx`, application pages use `(app)/layout.tsx`; both share one provider. New Google users go to `/profile/?welcome=1` to confirm a prefilled nickname; returning Google users go to `/home/`. Logout returns to login. `RequireAccount` and allowlisted return URLs are available for private pages; backend SessionGuard remains the authority.
+`/` waits for the client session check and goes to `/login/` or `/dashboard/`. The former homepage is preserved at `/home/`; guest entry points there directly and needs no fake account or localStorage authorization. Public deep links keep their URLs. Auth pages use `(auth)/layout.tsx`, application pages use `(app)/layout.tsx`; both share one provider. Email/password and Google sign-in default to `/dashboard/`, preserving a safe explicit return URL from the originating page. Profile editing remains available from the navbar. Logout returns to login. `RequireAccount` and allowlisted return URLs are available for private pages; backend SessionGuard remains the authority.
 
 Password hashing: Argon2id, 19 MiB memory, two iterations, one lane. Passwords 12–128 characters. Email normalization: trim/lowercase, unique database constraint. Tokens are random, hashed, expiring, single use, consumed in a transaction with a user-row lock. Verification TTL 24 hours; password reset 30 minutes. Reset links use URL fragments to avoid server query logs; frontend removes the fragment after reading it.
 
@@ -42,7 +44,25 @@ Rate limits: 20 requests per endpoint/IP/minute, in memory. Run one replica unti
 
 Use a runtime database role with SELECT/INSERT/UPDATE/DELETE on these tables, without DDL or role management; use a separate migration owner. Avoid logging SQL, cookies, authorization codes, body fields or email URLs at your ingress. Application error responses omit database/stack details. Health is liveness, not readiness.
 
-## Tests
+## Learning progress (Phase 02)
+
+Authenticated endpoints: `GET /api/v1/learning/dashboard`, `GET /api/v1/learning/progress`, `GET /api/v1/learning/progress/:lessonId`, and `PUT /api/v1/learning/progress/:lessonId/start` or `/complete`. PUT uses an empty JSON body and the existing CSRF/Origin headers. Identity comes only from the session. Swagger describes the response DTOs. No reset/delete or client-supplied userId endpoint exists.
+
+`user_lesson_progress` stores one unique row per user/lesson. Missing rows mean NOT_STARTED. Opening a lesson starts it; only **Tandai Selesai** completes it. Atomic PostgreSQL upsert preserves COMPLETED and the first completion timestamp under retries/concurrency. Dashboard totals derive from the current 24-entry shared catalogue. No reading history, guest progress, content copy or analytics table is added.
+
+Dashboard also returns the current 24 lesson ID/status pairs from the same owned query for its map/topic coverage. The library reuses one progress-list response for card and learning-path markers. The optional **Taman** theme adds white/leaf green/mint/soft yellow. Session checks no longer wait for capabilities; verification joins session/user in one query, profile save uses its confirmed response, and logout navigates without a document reload. Google receipt and verified-close acknowledgements are separate; same-tab fallback is 1.2 seconds, with a bounded recovery watchdog after receipt. See [experience revision](docs/phase-02/EXPERIENCE_REVISION.md) for actual verification and limits. Quiz-based completion is deferred.
+
+Review the target before `npm run migration:run`. Phase 02 is additive and `synchronize` remains false. Rollback takes an exclusive lock and refuses a populated progress table; retain TypeORM's default migration transaction and use a reviewed forward migration for populated tables. The approved local Neon development database has received this migration; production has not.
+
+After building `web/out`, run browser files serially: `E2E=true node -r ts-node/register --test --test-concurrency=1 test/*.test.ts` (PowerShell: `$env:E2E='true'; node -r ts-node/register --test --test-concurrency=1 test/*.test.ts`). Phase 01 browser regression uses ports 3101/4101, Phase 02 uses 3102/4102. Isolated tests use pg-mem and never the configured development database. Database concurrency cases still issue parallel writes within the suite. Screenshot evidence goes to `docs/phase-02/`.
+
+Static hosting/test servers must serve the exported Next `.txt` navigation payloads as `text/plain` (or the framework's RSC content type). Serving them as generic binary forces full-document fallbacks; both browser harnesses now use the correct MIME.
+
+Only against an explicitly approved development target: `node -r ts-node/register scripts/verify-learning-neon.ts --approved-development`. This refuses production configuration and pending migrations, verifies migration round trips in a temporary transaction-rolled-back schema, checks concurrent writes through two connections, and runs the learning browser suite on unique owned fixtures with exact-ID/email cleanup. It does not perform Google consent or send mail. Do not run simultaneously with the isolated learning browser suite because they share test ports.
+
+Phase 02 reports: [implementation](docs/phase-02/IMPLEMENTATION_REPORT.md), [tests](docs/phase-02/TEST_REPORT.md), [manual checklist](docs/phase-02/MANUAL_TEST_CHECKLIST.md).
+
+## Authentication tests and operations
 
 Google sign-in now finishes through `/auth-complete/`, handing the verified session back to the originating login/register window before closing the popup. Same-tab continuation remains available. A password-account collision can be resolved explicitly from profile with **Hubungkan Google**: current session + current password + matching Google email; there is no automatic email-only merge or schema change. See [account experience](docs/phase-01/ACCOUNT_EXPERIENCE.md).
 
@@ -50,7 +70,7 @@ Google sign-in now finishes through `/auth-complete/`, handing the verified sess
 
 `npm test`: HTTP integration with pg-mem, real Argon2, real migrations, mock mailer and mock Google identity. Browser test skips unless `E2E=true`.
 
-Build frontend first with `NEXT_PUBLIC_API_URL=http://localhost:4000`, then run `E2E=true npm test` (PowerShell: `$env:E2E='true'; npm test`). Edge must be installed; the harness starts static frontend on 3101 and an isolated API on 4101, intercepting browser calls to the build-time localhost:4000 origin. It does not stop or test against the live development API. Screenshots go to `docs/phase-01/`.
+Build frontend first with `NEXT_PUBLIC_API_URL=http://localhost:4000`, then run `E2E=true npm test` (PowerShell: `$env:E2E='true'; npm test`). Edge must be installed; the auth harness starts static frontend on 3101 and an isolated API on 4101, intercepting browser calls to the build-time localhost:4000 origin. It does not stop or test against the live development API. Current regression screenshots go to `docs/phase-02/`; historical Phase 01 evidence is preserved.
 
 `node scripts/check-auth-config.cjs` performs a read-only connection/schema probe without printing credentials. `node scripts/smoke-auth.cjs` starts the built API on 4102 with SMTP disabled, verifies health/capabilities/401/deferred recovery, then stops only that child process. It uses the configured development Neon database without creating users or migrations.
 

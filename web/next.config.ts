@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import path from "node:path";
 
 const isGitHubPages = process.env.GITHUB_PAGES === "true";
 
@@ -13,6 +14,7 @@ const nextConfig: NextConfig = {
   devIndicators: false,
   output: "export",
   trailingSlash: true,
+  turbopack: { root: path.resolve(__dirname, '..') },
 
   basePath,
 

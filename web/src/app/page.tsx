@@ -8,7 +8,7 @@ export default function EntryPage() {
   const router = useRouter();
   useEffect(() => {
     if (loading) return;
-    router.replace(user ? "/home/" : "/login/");
+    router.replace(user ? "/dashboard/" : "/login/");
   }, [user, loading, router]);
   return <main className="entry-loading" role="status">Menyiapkan TajwidLens…</main>;
 }

@@ -5,6 +5,7 @@ import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import dataSource from "./database/data-source";
 import { AuthModule } from "./modules/auth/auth.module";
 import { UsersModule } from "./modules/users/users.module";
+import { LearningModule } from "./modules/learning/learning.module";
 
 @Controller("health")
 class HealthController {
@@ -19,6 +20,7 @@ class HealthController {
     TypeOrmModule.forRoot(dataSource.options),
     AuthModule,
     UsersModule,
+    LearningModule,
     ThrottlerModule.forRoot([{ ttl: 60000, limit: 20 }]),
   ],
   controllers: [HealthController],

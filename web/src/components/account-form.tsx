@@ -4,11 +4,11 @@ import Link from 'next/link';
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowRight, CheckCircle2, Eye, EyeOff, LockKeyhole } from 'lucide-react';
-import { apiUrl, authApi } from '@/lib/auth-api';
+import { Account, apiUrl, authApi } from '@/lib/auth-api';
 import { googleLoginError, safeReturnPath } from '@/lib/auth-navigation';
-import { assetPath } from '@/lib/asset-path';
 import { useAuth } from './auth-provider';
 import { isOAuthCompletion, oauthChannel } from '@/lib/oauth-completion';
+import { ActionFeedback } from './action-feedback';
 
 type Mode = 'login' | 'register' | 'forgot-password' | 'reset-password' | 'verify-email' | 'profile';
 const titles: Record<Mode, string> = {
@@ -39,7 +39,8 @@ export function GoogleIcon() {
   </svg>;
 }
 export function AccountForm({ mode }: { mode: Mode }) {
-  const { user, loading, error: authError, capabilities, refresh } = useAuth();
+  const { user, loading, error: sessionError, capabilitiesError, capabilities, refresh, refreshCapabilities, updateAccount, logout, signingOut } = useAuth();
+  const authError=sessionError || capabilitiesError;
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [googleOpened, setGoogleOpened] = useState(false);
@@ -47,7 +48,7 @@ export function AccountForm({ mode }: { mode: Mode }) {
   const [message, setMessage] = useState('');
   const [registrationResult, setRegistrationResult] = useState<{message:string}|null>(null);
   const [token, setToken] = useState('');
-  const [destination, setDestination] = useState('/home/');
+  const [destination, setDestination] = useState('/dashboard/');
   const [welcome, setWelcome] = useState(false);
   const [routeReady, setRouteReady] = useState(false);
   const working = useRef(false);
@@ -86,18 +87,19 @@ export function AccountForm({ mode }: { mode: Mode }) {
     const channel = typeof BroadcastChannel === 'undefined' ? null : new BroadcastChannel(oauthChannel);
     if (channel) channel.onmessage = async ({data}) => {
       if (!isOAuthCompletion(data)) return;
+      channel.postMessage({type:'received',id:data.id});
       completionIds.current.add(data.id);
       if (completing.current) return;
       completing.current = true;
-      if (data.next === '/profile/?welcome=1') setDestination(data.next);
-      if (await refresh()) completionIds.current.forEach(id => channel.postMessage({type:'ack',id}));
+      if (await refresh(true)) completionIds.current.forEach(id => channel.postMessage({type:'ack',id}));
       else { completing.current = false;setError('Sesi Google belum tersedia. Periksa pengaturan cookie browser lalu coba lagi.'); }
     };
     return () => { window.removeEventListener('focus', checkSession);channel?.close(); };
   }, [googleOpened, refresh]);
   useEffect(() => {
-    if (routeReady && !loading && user && entry) router.replace(destination);
-  }, [routeReady, loading, user, entry, destination, router]);
+    if (routeReady && !loading && user && entry && !signingOut) router.replace(destination);
+  }, [routeReady, loading, user, entry, destination, router, signingOut]);
+  useEffect(()=>{if(entry && routeReady)router.prefetch(destination);},[entry,routeReady,destination,router]);
 
   async function action(work: () => Promise<void>) {
     if (working.current) return;
@@ -112,12 +114,12 @@ export function AccountForm({ mode }: { mode: Mode }) {
     void action(async () => {
       if (mode === 'login') {
         await authApi('/auth/login', fields);
-        if (!await refresh()) throw new Error('Sesi belum tersimpan. Periksa pengaturan cookie browser lalu coba lagi.');
+        if (!await refresh(true)) throw new Error('Sesi belum tersimpan. Periksa pengaturan cookie browser lalu coba lagi.');
         return;
       }
       if (profile) {
-        await authApi('/users/me', fields, 'PATCH'); await refresh();
-        if (welcome) router.replace('/home/'); else setMessage('Profil berhasil disimpan.');
+        updateAccount(await authApi<Account>('/users/me', fields, 'PATCH'));
+        if (welcome) router.replace('/dashboard/'); else setMessage('Profil berhasil disimpan.');
         return;
       }
       const path = mode === 'register' ? '/auth/register' : mode === 'forgot-password' ? '/auth/password/forgot' : mode === 'reset-password' ? '/auth/password/reset' : '/auth/verify-email';
@@ -168,9 +170,10 @@ export function AccountForm({ mode }: { mode: Mode }) {
       {!loading && capabilities && !capabilities.google && <p className="account-muted">Login Google belum tersedia. Gunakan email atau lanjutkan tanpa akun.</p>}
       <div className="account-divider"><span>atau gunakan email</span></div>
     </>}
-    {authError && <div className="account-notice"><p role="status">{authError}</p><button type="button" disabled={busy} onClick={() => void action(async () => { await refresh(); })}>Coba lagi</button></div>}
+    {authError && <div className="account-notice"><p role="status">{authError}</p><button type="button" disabled={busy} onClick={() => void action(async () => { await Promise.all([refresh(),refreshCapabilities()]); })}>Coba lagi</button></div>}
     {error && <p ref={errorRef} tabIndex={-1} role="alert" className="account-error">{error}</p>}
-    {message && <p role="status" className="account-notice">{message}</p>}
+    {busy && <ActionFeedback state="pending">{signingOut?'Mengakhiri sesi dengan aman…':profile?'Menyimpan perubahan profil…':'Memproses permintaan Anda…'}</ActionFeedback>}
+    {!busy && message && <ActionFeedback state="success">{message}</ActionFeedback>}
     {registrationDeferred && !loading && capabilities && <p role="status" className="account-notice">Pendaftaran melalui email belum tersedia. Anda dapat menggunakan Google atau melanjutkan tanpa akun.</p>}
     {emailDeferred && ['forgot-password', 'verify-email'].includes(mode) && <p role="status" className="account-notice">Pengiriman email ditunda. Verifikasi dan pemulihan kata sandi melalui email belum tersedia. Jika akun Anda menggunakan Google, silakan masuk dengan Google.</p>}
     {mode === 'register' && capabilities?.developmentRegistration && <p className="account-development-note"><LockKeyhole size={14} aria-hidden="true" />Untuk pengujian, akun dapat langsung dipakai. Email belum diverifikasi.</p>}
@@ -211,7 +214,7 @@ export function AccountForm({ mode }: { mode: Mode }) {
         <button type="submit" className="account-google" disabled={busy}><GoogleIcon />{busy ? 'Memproses…' : 'Hubungkan Google'}</button>
       </form>}
       {user.loginMethods.includes('google') && <p className="account-notice">Google terhubung. Anda dapat masuk menggunakan akun Google Anda.</p>}
-      <button className="account-logout" type="button" disabled={busy} onClick={() => void action(async () => { await authApi('/auth/logout', {}); window.location.replace(assetPath('/login/')); })}>Keluar dari akun</button>
+      <button className="account-logout" type="button" disabled={busy || signingOut} onClick={() => void action(logout)}>Keluar dari akun</button>
     </>}
   </section>;
 }

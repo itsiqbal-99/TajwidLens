@@ -6,6 +6,7 @@ const themes = [
   { id: "samudra", label: "Samudra", description: "Biru awan & koral" },
   { id: "zamrud", label: "Zamrud", description: "Hijau malam & emas" },
   { id: "senja", label: "Senja", description: "Krem hangat & terakota" },
+  { id: "taman", label: "Taman", description: "Putih, hijau daun & mentari" },
 ] as const;
 type ThemeId = typeof themes[number]["id"];
 
@@ -14,7 +15,7 @@ export function ThemePicker() {
   const [ready, setReady] = useState(false);
   useEffect(() => {
     const saved = window.localStorage.getItem("tajwidlens-theme");
-    const next: ThemeId = saved === "dark" || saved === "zamrud" ? "zamrud" : saved === "senja" ? "senja" : "samudra";
+    const next: ThemeId = saved === "dark" || saved === "zamrud" ? "zamrud" : saved === "senja" ? "senja" : saved === "taman" ? "taman" : "samudra";
     document.documentElement.dataset.theme = next;
     queueMicrotask(() => {setTheme(next);setReady(true);});
   }, []);

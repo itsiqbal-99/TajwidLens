@@ -353,7 +353,7 @@ body { font-size: 14px; line-height: 1.65; }
   .insight-panel.panel-open { z-index: 50; border-radius: 13px 13px 0 0; box-shadow: 0 -15px 55px rgba(0,0,0,.2); }
 }
 
-/* Three named visual themes */
+/* Named visual themes */
 :root[data-theme="samudra"] {
   --cloud-blue: #edf3f6; --paper-white: #fcfdfd; --mist-blue: #f7fafb;
   --ink-blue: #243746; --muted-slate: #667680; --interface-blue: #55758c;
@@ -405,6 +405,22 @@ body { font-size: 14px; line-height: 1.65; }
   --shadow: 0 9px 30px rgba(91,55,66,.09); color-scheme: light;
 }
 
+:root[data-theme="taman"] {
+  --cloud-blue: #ffffff; --paper-white: #ffffff; --mist-blue: #f4faf6;
+  --ink-blue: #193b2b; --muted-slate: #52695b; --interface-blue: #167047;
+  --dusty-coral: #e1b83f; --coral-text: #955039; --coral-strong: #936523;
+  --soft-ochre: #dfb837; --muted-lavender: #60957c; --line-blue: #dce9e0;
+  --bg: #ffffff; --surface: #ffffff; --surface-muted: #f4faf6;
+  --forest: #193b2b; --forest-deep: #176b45; --emerald: #167047;
+  --gold: #dfb837; --gold-text: #775f17; --text: #193b2b; --text-secondary: #52695b;
+  --border: #dce9e0; --border-strong: #b5cfbf; --focus: #167047;
+  --green-tint: #e4f4e9; --gold-tint: #fff5ce; --blue-tint: #e7f5ee;
+  --clay-tint: #fff0e8; --lavender-tint: #e9f4ec;
+  --brand-mark-bg: #176b45; --brand-mark-accent: #f1ce5a;
+  --meeting-accent: #167047; --waqaf-accent: #527b65;
+  --shadow: 0 8px 30px rgba(25,70,44,.055); color-scheme: light;
+}
+[data-theme="taman"] .reading-journey { background: var(--green-tint); border-color: var(--border); }
 [data-theme="zamrud"] .reading-journey { background: #17372e; border-color: var(--border); }
 [data-theme="senja"] .reading-journey { background: #f2e2d6; border-color: var(--border); }
 [data-theme="zamrud"] .demo-shell { background: var(--surface); color: var(--text); }
@@ -429,6 +445,7 @@ body { font-size: 14px; line-height: 1.65; }
 .theme-swatch-samudra { background: linear-gradient(135deg,#2f4858 0 48%,#c98779 48% 72%,#edf3f6 72%); }
 .theme-swatch-zamrud { background: linear-gradient(135deg,#0c4a38 0 48%,#dcc27b 48% 72%,#17372e 72%); }
 .theme-swatch-senja { background: linear-gradient(135deg,#573849 0 48%,#cf7059 48% 72%,#f7efe6 72%); }
+.theme-swatch-taman { background: linear-gradient(135deg,#ffffff 0 35%,#218451 35% 65%,#bfe8ce 65% 82%,#f2d66f 82%); }
 
 /* Visual learning library */
 .library-heading { position: relative; }

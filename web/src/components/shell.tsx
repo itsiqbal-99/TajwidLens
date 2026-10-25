@@ -23,6 +23,7 @@ export function BrandIcon() {
 export function AppHeader() {
   const { user, loading } = useAuth();
   const pathname = usePathname();
+  const navigation=nav.map(item=>user && item.href==='/home/' ? {...item,href:'/dashboard/',label:'Ruang Belajar'} : item);
   const [open, setOpen] = useState(false);
   useEffect(() => { queueMicrotask(() => setOpen(false)); }, [pathname]);
   useEffect(() => { if (!open) return; const handle = (event: KeyboardEvent) => { if (event.key === "Escape") setOpen(false); }; window.addEventListener("keydown", handle); return () => window.removeEventListener("keydown", handle); }, [open]);
@@ -31,12 +32,12 @@ export function AppHeader() {
     <a className="skip-link" href="#main-content">Lewati ke konten</a>
     <header className="site-header"><div className="header-inner">
       <Link className="brand" href="/home/" aria-label="TajwidLens, kembali ke beranda"><BrandIcon/><span>Tajwid<span className="brand-accent">Lens</span></span><span className="brand-separator" aria-hidden="true"/><span className="brand-descriptor">THE READING COMPANION</span></Link>
-      <nav className="desktop-nav" aria-label="Navigasi utama">{nav.filter((item) => item.href !== "/reading-guide/").map((item) => <Link key={item.href} href={item.href} className={pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href)) ? "nav-active" : ""}>{item.label}</Link>)}</nav>
+      <nav className="desktop-nav" aria-label="Navigasi utama">{navigation.filter((item) => item.href !== "/reading-guide/").map((item) => <Link key={item.href} href={item.href} className={pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href)) ? "nav-active" : ""}>{item.label}</Link>)}</nav>
       <div className="header-actions"><Link className={`account-nav ${user ? 'account-nav-signed' : 'account-nav-guest'}`} href={user ? "/profile/" : "/login/"} aria-label={loading ? 'Akun' : user ? 'Profil' : 'Masuk'} aria-current={user && pathname.startsWith('/profile/') ? 'page' : undefined}>
         <span className="account-nav-avatar" aria-hidden="true">{user ? user.nickname.trim().slice(0,1).toUpperCase() : <UserRound size={17}/>}</span>
         <span className="account-nav-copy"><small>{loading ? 'Memuat akun' : user ? 'Welcome,' : 'Akun TajwidLens'}</small><strong>{loading ? 'Akun' : user ? user.nickname : 'Masuk'}</strong></span><ChevronRight size={14} aria-hidden="true" />
       </Link><ThemePicker /><Link className={`header-cta ${pathname.startsWith("/reading-guide/") ? "header-cta-active" : ""}`} href="/reading-guide/">Panduan Bacaan <ArrowUpRight size={15}/></Link><button className="icon-button mobile-menu-button" type="button" onClick={() => setOpen(!open)} aria-expanded={open} aria-controls="mobile-nav" aria-label={open ? "Tutup menu" : "Buka menu"}>{open ? <X size={21}/> : <Menu size={21}/>}</button></div>
-    </div>{open && <nav className="mobile-nav" id="mobile-nav" aria-label="Navigasi seluler">{nav.map(({href, label, icon: Icon}) => <Link href={href} key={href} className={pathname === href || (href !== "/" && pathname.startsWith(href)) ? "nav-active" : ""} onClick={() => setOpen(false)}><Icon size={18}/><span>{label}</span><ArrowUpRight size={15}/></Link>)}</nav>}</header>
+    </div>{open && <nav className="mobile-nav" id="mobile-nav" aria-label="Navigasi seluler">{navigation.map(({href, label, icon: Icon}) => <Link href={href} key={href} className={pathname === href || (href !== "/" && pathname.startsWith(href)) ? "nav-active" : ""} onClick={() => setOpen(false)}><Icon size={18}/><span>{label}</span><ArrowUpRight size={15}/></Link>)}</nav>}</header>
   </>;
 }
 
