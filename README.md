@@ -4,6 +4,8 @@
 
 # TajwidLens
 
+Dokumentasi development: [technical flow dan diagram Mermaid](docs/TECHNICAL_FLOW.md), [pemindahan bank soal antar-database](api/docs/QUIZ_DATA_TRANSFER.md).
+
 ## Demo & Source Code
 
 - **Live Demo:** [TajwidLens Web App](https://itsiqbal-99.github.io/TajwidLens/)

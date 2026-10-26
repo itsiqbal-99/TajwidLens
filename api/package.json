@@ -12,12 +12,13 @@
     "questions:check": "node -r ts-node/register scripts/check-question-bank.ts",
     "questions:import": "node -r ts-node/register scripts/check-question-bank.ts --import",
     "verify:assessment": "node -r ts-node/register scripts/verify-assessment-neon.ts",
-    "questions:feedback":"node -r ts-node/register scripts/review-question-feedback.ts",
-    "questions:audit":"node -r ts-node/register scripts/questions.ts audit",
-    "questions:generate":"node -r ts-node/register scripts/questions.ts generate",
-    "questions:validate":"node -r ts-node/register scripts/questions.ts validate",
-    "questions:import-generated":"node -r ts-node/register scripts/questions.ts import",
-    "questions:publish":"node -r ts-node/register scripts/questions.ts publish"
+    "questions:feedback": "node -r ts-node/register scripts/review-question-feedback.ts",
+    "questions:audit": "node -r ts-node/register scripts/questions.ts audit",
+    "questions:generate": "node -r ts-node/register scripts/questions.ts generate",
+    "questions:validate": "node -r ts-node/register scripts/questions.ts validate",
+    "questions:import-generated": "node -r ts-node/register scripts/questions.ts import",
+    "questions:publish": "node -r ts-node/register scripts/questions.ts publish",
+    "questions:export-sql": "node -r ts-node/register scripts/export-quiz-sql.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.0",

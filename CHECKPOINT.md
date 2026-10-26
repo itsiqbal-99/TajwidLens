@@ -1,5 +1,14 @@
 # TajwidLens — checkpoint untuk melanjutkan dari rumah
 
+## Dokumentasi teknikal dan transfer bank soal — 26 Oktober 2026
+
+- [Technical flow](docs/TECHNICAL_FLOW.md) menjelaskan arsitektur, auth email/Google popup, reader/integritas corpus, progress/dashboard, quiz server grading, Detective, Replay, feedback, publikasi dan relasi data melalui diagram Mermaid.
+- [Panduan transfer](api/docs/QUIZ_DATA_TRANSFER.md) dan [SQL siap impor](api/exports/quiz-development.sql) disiapkan dari database development aktual: **587 versi (394 PUBLISHED, 193 DRAFT, 0 suspended)**. Snapshot ini tidak menerbitkan kandidat revisi baru. Tidak berisi akun, sesi, progress, hasil attempt, laporan atau credentials; tetap berisi answer keys privat dan metadata moderasi konten.
+- Dari `api`, `npm run questions:export-sql` memperbarui snapshot tanpa mutation database. Target berbeda wajib menjalankan migration skema terlebih dahulu dan memakai revision/registry/corpus yang sama. Database Neon yang sama antarperangkat tidak memerlukan impor.
+- SQL transactional/idempotent, menolak konflik isi immutable, mempertahankan status/persetujuan existing dan tidak membuka karantina. Hold sumber dapat diterapkan satu arah. Bukan sinkronisasi seluruh aplikasi atau pengganti gate runtime.
+- Typecheck API dan unit exporter PASS. Verifikasi PostgreSQL nyata pada tabel TEMP: impor 587, impor ulang tanpa duplikat, status/hold target tetap, konflik immutable ditolak PASS; seluruh writes uji di-rollback. Tidak menerapkan snapshot pada database tujuan atau mengubah publikasi/akun/data bank aplikasi.
+
+
 ## Status terbaru — aktivasi quiz otomatis development (26 Oktober 2026)
 
 Bagian ini menggantikan batas konten historis Phase 03/03B di bawah. Pengguna meminta soal otomatis per materi dan Detective dari anotasi, lalu secara eksplisit menyetujui: **“Ya, izinkan publikasi otomatis ke development dengan batasan tersebut.”** Batasnya tepat 394 versi, kelulusan 6/7, label validasi otomatis/belum review ahli, tanpa reviewer palsu atau pelonggaran karantina. Peninjauan otomatis awal menolak perubahan kebijakan; jalur baru baru ditambahkan setelah persetujuan khusus ini, bukan dibypass. Tidak ada otorisasi production atau Phase 04.
