@@ -13,6 +13,7 @@ const nav = [
   { href: "/explore/", label: "Jelajahi Al-Qur'an", icon: BookOpen },
   { href: "/reading-guide/", label: "Panduan Bacaan", icon: ScanText },
   { href: "/pronunciation/", label: "Pelafalan", icon: AudioLines },
+  { href: "/detective/", label: "Latihan", icon: ScanText },
   { href: "/reference/", label: "Referensi", icon: Library },
 ];
 
@@ -36,7 +37,7 @@ export function AppHeader() {
       <div className="header-actions"><Link className={`account-nav ${user ? 'account-nav-signed' : 'account-nav-guest'}`} href={user ? "/profile/" : "/login/"} aria-label={loading ? 'Akun' : user ? 'Profil' : 'Masuk'} aria-current={user && pathname.startsWith('/profile/') ? 'page' : undefined}>
         <span className="account-nav-avatar" aria-hidden="true">{user ? user.nickname.trim().slice(0,1).toUpperCase() : <UserRound size={17}/>}</span>
         <span className="account-nav-copy"><small>{loading ? 'Memuat akun' : user ? 'Welcome,' : 'Akun TajwidLens'}</small><strong>{loading ? 'Akun' : user ? user.nickname : 'Masuk'}</strong></span><ChevronRight size={14} aria-hidden="true" />
-      </Link><ThemePicker /><Link className={`header-cta ${pathname.startsWith("/reading-guide/") ? "header-cta-active" : ""}`} href="/reading-guide/">Panduan Bacaan <ArrowUpRight size={15}/></Link><button className="icon-button mobile-menu-button" type="button" onClick={() => setOpen(!open)} aria-expanded={open} aria-controls="mobile-nav" aria-label={open ? "Tutup menu" : "Buka menu"}>{open ? <X size={21}/> : <Menu size={21}/>}</button></div>
+      </Link><ThemePicker /><Link className={`header-cta ${pathname.startsWith("/reading-guide/") ? "header-cta-active" : ""}`} href="/reading-guide/" aria-label="Panduan Bacaan" title="Panduan Bacaan"><span>Panduan Bacaan</span><ArrowUpRight size={15}/></Link><button className="icon-button mobile-menu-button" type="button" onClick={() => setOpen(!open)} aria-expanded={open} aria-controls="mobile-nav" aria-label={open ? "Tutup menu" : "Buka menu"}>{open ? <X size={21}/> : <Menu size={21}/>}</button></div>
     </div>{open && <nav className="mobile-nav" id="mobile-nav" aria-label="Navigasi seluler">{navigation.map(({href, label, icon: Icon}) => <Link href={href} key={href} className={pathname === href || (href !== "/" && pathname.startsWith(href)) ? "nav-active" : ""} onClick={() => setOpen(false)}><Icon size={18}/><span>{label}</span><ArrowUpRight size={15}/></Link>)}</nav>}</header>
   </>;
 }

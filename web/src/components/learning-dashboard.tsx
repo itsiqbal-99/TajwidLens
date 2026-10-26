@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import {useEffect,useRef,useState} from 'react';
-import {ArrowRight,ArrowUpRight,BookOpen,CheckCircle2,RefreshCw,CircleDot,Circle,Layers,Route,Check} from 'lucide-react';
+import {ArrowRight,ArrowUpRight,BookOpen,CheckCircle2,RefreshCw,CircleDot,Circle,Layers,Route,Check,Clock3,ScanSearch,RotateCcw} from 'lucide-react';
 import {ApiError,authApi} from '@/lib/auth-api';
 import {readLearningDashboard,LearningDashboard as Dashboard,lessonStatusLabel} from '@/lib/learning';
 import {lessonCatalog} from '@/data/lesson-catalog';
@@ -11,27 +11,29 @@ import {ActionFeedback} from './action-feedback';
 
 function DashboardContent({data}:{data:Dashboard}) {
   const {summary,continueLearning:next}=data;
-  const fresh=summary.completedLessons===0 && summary.inProgressLessons===0;
+  const fresh=summary.completedLessons===0 && summary.inProgressLessons===0 && summary.legacyLessons===0;
   const states=new Map(data.lessonStates.map(row=>[row.lessonId,row.status]));
   const categories=[...new Set(lessonCatalog.map(lesson=>lesson.category))];
   const completedItem=(lesson:Dashboard['completedLessons'][number])=><li key={lesson.lessonId}><CheckCircle2 size={19} aria-hidden="true"/><Link href={lesson.href}><span>{lesson.title}<time dateTime={lesson.completedAt}>{new Date(lesson.completedAt).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'})}</time></span><ArrowUpRight size={16} aria-hidden="true"/></Link></li>;
   return <>
     <div className="dashboard-metrics" aria-label="Ringkasan status materi">
-      <div><span className="metric-icon metric-done"><CheckCircle2 size={20}/></span><p><strong>{summary.completedLessons}<small> / {summary.totalLessons}</small></strong><span>Materi selesai</span></p></div>
+      <div><span className="metric-icon metric-done"><CheckCircle2 size={20}/></span><p><strong>{summary.completedLessons}<small> / {summary.totalLessons}</small></strong><span>Lulus evaluasi</span></p></div>
       <div><span className="metric-icon metric-active"><CircleDot size={20}/></span><p><strong>{summary.inProgressLessons}</strong><span>Sedang dipelajari</span></p></div>
-      <div><span className="metric-icon"><Layers size={20}/></span><p><strong>{summary.totalLessons-summary.completedLessons-summary.inProgressLessons}</strong><span>Belum mulai</span></p></div>
+      <div><span className="metric-icon"><Layers size={20}/></span><p><strong>{summary.totalLessons-summary.completedLessons-summary.inProgressLessons-summary.legacyLessons}</strong><span>Belum mulai</span></p></div>
+      <div><span className="metric-icon metric-legacy"><Clock3 size={20}/></span><p><strong>{summary.legacyLessons}</strong><span>Menunggu quiz</span></p></div>
     </div>
+    <div className="dashboard-practice-links"><Link href="/detective/"><ScanSearch size={21}/><span><strong>Tajwid Detective</strong><small>Kenali hukum bacaan, satu ayat setiap latihan.</small></span><ArrowUpRight size={18}/></Link><Link href="/reviews/"><RotateCcw size={21}/><span><strong>Mistake Replay</strong><small>{data.reviewConcepts?`${data.reviewConcepts} konsep bisa dilatih kembali`:'Latih kembali konsep dari evaluasi Anda.'}</small></span><ArrowUpRight size={18}/></Link></div>
     <div className="dashboard-primary-grid">
       <section className="dashboard-continue" aria-labelledby="continue-heading">
         <div className="dashboard-card-label"><span><Route size={16} aria-hidden="true"/>{data.allCompleted?'SELURUH MATERI SELESAI':'LANGKAH BELAJAR BERIKUTNYA'}</span><span className="dashboard-topic">{next?.category || '24 materi'}</span></div>
-        <div className="dashboard-continue-copy"><span className="dashboard-lesson-index">{next?`MATERI ${String(lessonCatalog.findIndex(l=>l.id===next.lessonId)+1).padStart(2,'0')}`:'PERJALANAN ANDA'}</span><h2 id="continue-heading">{data.allCompleted?'Bekal belajar Anda semakin lengkap.':next!.title}</h2><p>{data.allCompleted?'Seluruh materi telah Anda tandai selesai. Anda tetap dapat mengulang dan memperdalam bacaan bersama guru.':fresh?'Tidak perlu terburu-buru. Mulai dari materi pertama, lalu bangun pemahaman selangkah demi selangkah.':next!.summary}</p><Link className="button button-primary" href={data.allCompleted?'/learn/':next!.href}>{data.allCompleted?'Ulangi materi':fresh?'Mulai belajar':'Lanjutkan belajar'}<ArrowRight size={18} aria-hidden="true"/></Link></div>
+        <div className="dashboard-continue-copy"><span className="dashboard-lesson-index">{next?`MATERI ${String(lessonCatalog.findIndex(l=>l.id===next.lessonId)+1).padStart(2,'0')}`:'PERJALANAN ANDA'}</span><h2 id="continue-heading">{data.allCompleted?'Bekal belajar Anda semakin lengkap.':next!.title}</h2><p>{data.allCompleted?'Seluruh materi telah Anda selesaikan melalui evaluasi. Anda tetap dapat mengulang dan memperdalam bacaan bersama guru.':fresh?'Tidak perlu terburu-buru. Mulai dari materi pertama, lalu bangun pemahaman selangkah demi selangkah.':next!.summary}</p><Link className="button button-primary" href={data.allCompleted?'/learn/':next!.href}>{data.allCompleted?'Ulangi materi':fresh?'Mulai belajar':'Lanjutkan belajar'}<ArrowRight size={18} aria-hidden="true"/></Link></div>
         <div className="dashboard-continue-note"><BookOpen size={16} aria-hidden="true"/><span>{data.allCompleted?'Semua materi tetap dapat Anda baca kembali.':'Anda bebas memilih materi. Progres tersimpan di akun Anda.'}</span></div>
       </section>
       <section className="dashboard-progress" aria-labelledby="progress-heading">
         <span className="section-kicker">GAMBARAN KESELURUHAN</span><h2 id="progress-heading">Progres belajar</h2>
         <div className="dashboard-ring" role="progressbar" aria-label="Progres penyelesaian materi" aria-valuemin={0} aria-valuemax={100} aria-valuenow={summary.progressPercentage} aria-valuetext={`${summary.completedLessons} dari ${summary.totalLessons} materi selesai`}>
           <svg viewBox="0 0 120 120" aria-hidden="true"><circle className="ring-track" cx="60" cy="60" r="49"/><circle className="ring-value" cx="60" cy="60" r="49" pathLength="100" strokeDasharray={`${summary.progressPercentage} 100`} style={{opacity:summary.progressPercentage?1:0}}/></svg>
-          <div><strong>{summary.progressPercentage.toLocaleString('id-ID',{maximumFractionDigits:1})}<small>%</small></strong><span>terselesaikan</span></div>
+          <div><strong>{summary.progressPercentage.toLocaleString('id-ID',{maximumFractionDigits:1})}<small>%</small></strong><span>lulus evaluasi</span></div>
         </div>
         <p><strong>{summary.completedLessons} dari {summary.totalLessons} materi selesai</strong><span>{data.allCompleted?'Saatnya mengulang dan memperdalam.':`${summary.totalLessons-summary.completedLessons} materi menanti untuk dipahami.`}</span></p>
       </section>
@@ -42,9 +44,9 @@ function DashboardContent({data}:{data:Dashboard}) {
         <p className="dashboard-section-intro">Pilih nomor materi untuk membuka atau mengulangnya.</p>
         <div className="dashboard-module-map">{lessonCatalog.map((lesson,index)=>{
           const status=states.get(lesson.id)!;
-          return <Link key={lesson.id} href={`/learn/${lesson.slug}/`} className={`module-map-cell status-${status.toLowerCase()}`} title={`${lesson.title} — ${lessonStatusLabel[status]}`} aria-label={`${index+1}. ${lesson.title} — ${lessonStatusLabel[status]}`}><span>{String(index+1).padStart(2,'0')}</span>{status==='COMPLETED'?<Check size={13} aria-hidden="true"/>:status==='IN_PROGRESS'?<CircleDot size={13} aria-hidden="true"/>:<Circle size={11} aria-hidden="true"/>}</Link>;
+          return <Link key={lesson.id} href={`/learn/${lesson.slug}/`} className={`module-map-cell status-${status.toLowerCase()}`} title={`${lesson.title} — ${lessonStatusLabel[status]}`} aria-label={`${index+1}. ${lesson.title} — ${lessonStatusLabel[status]}`}><span>{String(index+1).padStart(2,'0')}</span>{status==='COMPLETED'?<Check size={13} aria-hidden="true"/>:status==='AWAITING_QUIZ'?<Clock3 size={13} aria-hidden="true"/>:status==='IN_PROGRESS'?<CircleDot size={13} aria-hidden="true"/>:<Circle size={11} aria-hidden="true"/>}</Link>;
         })}</div>
-        <div className="dashboard-map-legend"><span><CheckCircle2 size={14}/>Selesai</span><span><CircleDot size={14}/>Sedang dipelajari</span><span><Circle size={13}/>Belum mulai</span></div>
+        <div className="dashboard-map-legend"><span><CheckCircle2 size={14}/>Lulus evaluasi</span><span><Clock3 size={14}/>Menunggu quiz</span><span><CircleDot size={14}/>Sedang dipelajari</span><span><Circle size={13}/>Belum mulai</span></div>
         <div className="dashboard-insight"><span className="dashboard-insight-icon"><Route size={18} aria-hidden="true"/></span><p><strong>{data.allCompleted?'Seluruh peta sudah terisi.':fresh?'Satu langkah kecil untuk memulai.':summary.inProgressLessons?`${summary.inProgressLessons} materi masih Anda pelajari.`:'Siap untuk langkah berikutnya.'}</strong><span>{data.allCompleted?'Ulangi topik pilihan untuk menjaga pemahaman.':next?`Lanjutkan ${next.title.toLowerCase()} atau jelajahi materi lain sesuai kebutuhan Anda.`:''}</span></p></div>
       </section>
       <section className="dashboard-topics dashboard-panel" aria-labelledby="topics-heading"><span className="section-kicker">RINGKASAN PER TOPIK</span><h2 id="topics-heading">Cakupan belajar</h2><div className="dashboard-topic-list">{categories.map(category=>{
@@ -52,7 +54,8 @@ function DashboardContent({data}:{data:Dashboard}) {
         return <div key={category}><p><span>{category}</span><strong>{done}<small>/{lessons.length}</small></strong></p><div className="topic-progress-track" aria-hidden="true"><span style={{width:`${done/lessons.length*100}%`}}/></div></div>;
       })}</div></section>
     </div>
-    <section className="dashboard-completed dashboard-panel" aria-labelledby="completed-heading"><div className="dashboard-section-head"><div><span className="section-kicker">TERSIMPAN DALAM PERJALANAN ANDA</span><h2 id="completed-heading">Materi yang sudah selesai</h2></div><span>{summary.completedLessons} materi</span></div>{data.completedLessons.length?<ul>{data.completedLessons.slice(0,3).map(completedItem)}</ul>:<p>Belum ada materi yang ditandai selesai. Mulai dari satu materi saat Anda siap.</p>}{data.completedLessons.length>3 && <details><summary>Lihat {data.completedLessons.length-3} materi lainnya</summary><ul>{data.completedLessons.slice(3).map(completedItem)}</ul></details>}</section>
+    {data.legacyLessons.length>0 && <section className="dashboard-legacy dashboard-panel"><div className="dashboard-section-head"><div><span className="section-kicker">HISTORI BELAJAR TETAP TERSIMPAN</span><h2>Sudah dipelajari, menunggu quiz.</h2></div><Clock3 size={22}/></div><p>Materi yang sebelumnya Anda tandai selesai tetap tercatat. Selesaikan evaluasi untuk memperoleh kelulusan terverifikasi ketika quiz tersedia.</p><ul>{data.legacyLessons.map(item=><li key={item.lessonId}><Link href={item.href}><strong>{item.title}</strong><span>Ditandai selesai <time dateTime={item.studiedAt}>{new Date(item.studiedAt).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'})}</time></span><ArrowUpRight size={16}/></Link></li>)}</ul></section>}
+    <section className="dashboard-completed dashboard-panel" aria-labelledby="completed-heading"><div className="dashboard-section-head"><div><span className="section-kicker">TERSIMPAN DALAM PERJALANAN ANDA</span><h2 id="completed-heading">Kelulusan yang terverifikasi</h2></div><span>{summary.completedLessons} materi</span></div>{data.completedLessons.length?<ul>{data.completedLessons.slice(0,3).map(completedItem)}</ul>:<p>Belum ada kelulusan quiz. Aktivitas membaca Anda tetap tersimpan; evaluasi tersedia setelah soal memiliki review tepercaya.</p>}{data.completedLessons.length>3 && <details><summary>Lihat {data.completedLessons.length-3} materi lainnya</summary><ul>{data.completedLessons.slice(3).map(completedItem)}</ul></details>}</section>
   </>;
 }
 

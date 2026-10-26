@@ -1,6 +1,14 @@
-# TajwidLens API — Phase 01 + Phase 02
+# TajwidLens API — Phase 01–03B
 
-NestJS 11, TypeORM, PostgreSQL (Neon), REST. Node 22+ recommended. The current Git root is the parent TajwidLens workspace, containing `api/`, `web/` and `shared/`. No production deployment was performed for Phase 02.
+## Phase 03B — generated candidates and question reports
+
+Referensi is visible in desktop/mobile navigation. The 26 October expansion has 394 technically validated source-derived questions (240 MCQ, 154 identification). The owner explicitly approved these exact versions for development publication with an automated-validation disclaimer: **24/24 lessons and Detective are available**. No scientific expert review is claimed; the development authorization is rejected in production. Generation/import never create new publication approvals. See [activation and actual coverage](docs/phase-03b/AUTOMATED_QUIZ_ACTIVATION.md) and [content workflow](content/README.md) for commands and guarded review/quarantine.
+
+Migration QuestionFeedback1792915200000 adds question provenance/quarantine metadata and one question_feedback table. Reports are available only after feedback is visible, require an owned submitted attempt or signed post-answer guest receipt, and never change answers, scores or completion. Mutations retain CSRF/Origin validation and reports are limited to five per IP/endpoint/minute in the existing process-local limiter. Public report reads/admin changes do not exist. Internal CLI review requires privileged local database access and an accountable operator; it refuses production configuration. No admin dashboard or fake reviewer account was added.
+
+Phase 03B reports: [implementation](docs/phase-03b/IMPLEMENTATION_REPORT.md), [tests](docs/phase-03b/TEST_REPORT.md), [generation audit](docs/phase-03b/QUESTION_GENERATION_AUDIT.md), [validation](docs/phase-03b/CONTENT_VALIDATION_REPORT.md), [checklist](docs/phase-03b/MANUAL_TEST_CHECKLIST.md). Stop at Phase 03B; no Phase 04 or production operation.
+
+NestJS 11, TypeORM, PostgreSQL (Neon), REST. Node 22+ recommended. The current Git root is the parent TajwidLens workspace, containing `api/`, `web/` and `shared/`. No production deployment was performed.
 
 ## Run
 
@@ -44,23 +52,35 @@ Rate limits: 20 requests per endpoint/IP/minute, in memory. Run one replica unti
 
 Use a runtime database role with SELECT/INSERT/UPDATE/DELETE on these tables, without DDL or role management; use a separate migration owner. Avoid logging SQL, cookies, authorization codes, body fields or email URLs at your ingress. Application error responses omit database/stack details. Health is liveness, not readiness.
 
-## Learning progress (Phase 02)
+## Learning progress and assessment (Phase 03)
 
-Authenticated endpoints: `GET /api/v1/learning/dashboard`, `GET /api/v1/learning/progress`, `GET /api/v1/learning/progress/:lessonId`, and `PUT /api/v1/learning/progress/:lessonId/start` or `/complete`. PUT uses an empty JSON body and the existing CSRF/Origin headers. Identity comes only from the session. Swagger describes the response DTOs. No reset/delete or client-supplied userId endpoint exists.
+Authenticated reads remain `GET /api/v1/learning/dashboard`, `GET /api/v1/learning/progress` and `GET /api/v1/learning/progress/:lessonId`. `PUT .../:lessonId/start` saves reading activity with an empty JSON body and existing CSRF/Origin headers. **PUT .../:lessonId/complete now returns 403.** Only passing a server-evaluated seven-question Lesson Quiz grants completion. No client userId, score or pass flag is accepted.
 
-`user_lesson_progress` stores one unique row per user/lesson. Missing rows mean NOT_STARTED. Opening a lesson starts it; only **Tandai Selesai** completes it. Atomic PostgreSQL upsert preserves COMPLETED and the first completion timestamp under retries/concurrency. Dashboard totals derive from the current 24-entry shared catalogue. No reading history, guest progress, content copy or analytics table is added.
+Existing completion keeps its original timestamp and gains LEGACY_SELF_REPORTED provenance; the public state is AWAITING_QUIZ. Dashboard counts QUIZ_VERIFIED alone, exposes legacy history separately and includes optional unresolved-concept count. Reopening never removes legacy history or verified completion. Six of seven correct answers passes; five fails. Attempt/option order and draft choices persist for 24 hours. Repeated/concurrent submission returns the original result, with answers, grade, progress and reviews in one transaction.
 
-Dashboard also returns the current 24 lesson ID/status pairs from the same owned query for its map/topic coverage. The library reuses one progress-list response for card and learning-path markers. The optional **Taman** theme adds white/leaf green/mint/soft yellow. Session checks no longer wait for capabilities; verification joins session/user in one query, profile save uses its confirmed response, and logout navigates without a document reload. Google receipt and verified-close acknowledgements are separate; same-tab fallback is 1.2 seconds, with a bounded recovery watchdog after receipt. See [experience revision](docs/phase-02/EXPERIENCE_REVISION.md) for actual verification and limits. Quiz-based completion is deferred.
+New static UI routes: /quiz/, public /detective/ and private /reviews/. Detective guests receive feedback without persistent user/session/attempt/review/progress writes. Signed challenges last ten minutes. Authenticated mistakes can be practiced through optional Replay; practice never changes original quiz scores or lesson completion. Existing Taman/Samudra/Zamrud/Senja themes and auth behavior are retained.
 
-Review the target before `npm run migration:run`. Phase 02 is additive and `synchronize` remains false. Rollback takes an exclusive lock and refuses a populated progress table; retain TypeORM's default migration transaction and use a reviewed forward migration for populated tables. The approved local Neon development database has received this migration; production has not.
+**Actual bank and reviewer registry are empty: 0/24 lesson quizzes ready; Detective unavailable.** No synthetic questions are imported into the application database. See [question audit](docs/phase-03/QUESTION_BANK_AUDIT.md) and [content workflow](content/README.md). A qualified human must approve each version with review evidence before publication; automated checks only prove technical integrity.
 
-After building `web/out`, run browser files serially: `E2E=true node -r ts-node/register --test --test-concurrency=1 test/*.test.ts` (PowerShell: `$env:E2E='true'; node -r ts-node/register --test --test-concurrency=1 test/*.test.ts`). Phase 01 browser regression uses ports 3101/4101, Phase 02 uses 3102/4102. Isolated tests use pg-mem and never the configured development database. Database concurrency cases still issue parallel writes within the suite. Screenshot evidence goes to `docs/phase-02/`.
+Commands from api:
 
-Static hosting/test servers must serve the exported Next `.txt` navigation payloads as `text/plain` (or the framework's RSC content type). Serving them as generic binary forces full-document fallbacks; both browser harnesses now use the correct MIME.
+- `npm run questions:check` — validate source bank/provenance/references and report real counts.
+- `npm run questions:import` — explicitly import unchanged immutable versions; never auto-publish or delete.
+- `npm test` — isolated pg-mem API/engine/progress/auth tests. Optional TEST_DATABASE_URL test skips without a separate _test database.
+- `$env:E2E='true'; node -r ts-node/register --test test/auth.test.ts` — auth browser regression, ports 3101/4101, after web/out is built.
+- `npm run verify:assessment -- --approved-development` — real PostgreSQL migration/legacy/constraints/concurrency/rollback tests only in a guarded run-owned temporary schema on the approved development target.
+- Add `--browser` for Phase 03 browser journeys on 3103/4103; `--browser-only` runs migration setup and browser journeys for local test iteration.
+- `--apply-development` explicitly applies only the expected Phase 03 migration to the approved application development schema after verification. It refuses production configuration and unexpected migration history. Do not use this flag on production.
 
-Only against an explicitly approved development target: `node -r ts-node/register scripts/verify-learning-neon.ts --approved-development`. This refuses production configuration and pending migrations, verifies migration round trips in a temporary transaction-rolled-back schema, checks concurrent writes through two connections, and runs the learning browser suite on unique owned fixtures with exact-ID/email cleanup. It does not perform Google consent or send mail. Do not run simultaneously with the isolated learning browser suite because they share test ports.
+The old verify-learning-neon script forwards to the current assessment verifier; manual completion tests/harness were replaced. Neither verifier uses production. Temporary schema cleanup validates its generated name and captured PostgreSQL OID before dropping only that schema.
 
-Phase 02 reports: [implementation](docs/phase-02/IMPLEMENTATION_REPORT.md), [tests](docs/phase-02/TEST_REPORT.md), [manual checklist](docs/phase-02/MANUAL_TEST_CHECKLIST.md).
+Review the target before migration. Migration never runs at application startup and synchronize stays false. Phase 03 rollback takes an exclusive lock and refuses any assessment or verified-progress data. Use a reviewed forward migration for populated deployments. Do not apply production migrations without explicit approval.
+
+Backend artifacts must include the trusted content/reviewers.json and unchanged reader index/payload assets, or configure QUIZ_CORPUS_INDEX and QUIZ_CORPUS_DIRECTORY. Identification offsets use the reader's KFGQPC edition, never the separate Tanzil file. Production Detective requires QUIZ_CHALLENGE_SECRET (stable random value, at least 32 bytes, shared between instances); without it practice is unavailable. Development uses an ephemeral key. Corpus assets are read-only data.
+
+Static hosting/test servers must serve exported Next .txt navigation payloads as text/plain (or RSC content type); binary MIME forces document reloads. Frontend remains a static export suitable for the existing host or Cloudflare Pages; deployment is not verified here.
+
+Phase 03 reports: [implementation](docs/phase-03/IMPLEMENTATION_REPORT.md), [tests](docs/phase-03/TEST_REPORT.md), [manual checklist](docs/phase-03/MANUAL_TEST_CHECKLIST.md), [question bank](docs/phase-03/QUESTION_BANK_AUDIT.md). Phase 02 reports remain historical evidence.
 
 ## Authentication tests and operations
 

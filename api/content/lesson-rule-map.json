@@ -1,0 +1,14 @@
+[
+  {"lessonId":"ikhfa-haqiqi","group":"noon","field":"categoryId","value":"ikhfa-haqiqi"},
+  {"lessonId":"izhar-halqi","group":"noon","field":"categoryId","value":"izhar-halqi"},
+  {"lessonId":"idgham-bighunnah","group":"noon","field":"categoryId","value":"idgham-bi-ghunnah"},
+  {"lessonId":"idgham-bilaghunnah","group":"noon","field":"categoryId","value":"idgham-bila-ghunnah"},
+  {"lessonId":"iqlab","group":"noon","field":"categoryId","value":"iqlab"},
+  {"lessonId":"ikhfa-syafawi","group":"meem","field":"categoryId","value":"ikhfa-shafawi"},
+  {"lessonId":"idgham-mimi","group":"meem","field":"categoryId","value":"idgham-shafawi"},
+  {"lessonId":"izhar-shafawi","group":"meem","field":"categoryId","value":"izhar-shafawi"},
+  {"lessonId":"ghunnah","group":"ghunnah","field":"categoryId","value":"mushaddadatan"},
+  {"lessonId":"mad-tabii","group":"mad","field":"hukumId","value":"madd-tabee-kalimi"},
+  {"lessonId":"tafkhim-tarqiq","group":"raa","field":"hukumId","value":"raa-tafkheem"},
+  {"lessonId":"tafkhim-tarqiq","group":"raa","field":"hukumId","value":"raa-tarqeeq"}
+]

@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { mock, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
-import { newDb, DataType } from 'pg-mem';
+import {assessmentDatabase} from './assessment-fixtures';
 import { DataSource } from 'typeorm';
 import { Test } from '@nestjs/testing';
 import { APP_GUARD } from '@nestjs/core';
@@ -12,9 +12,6 @@ import * as argon2 from 'argon2';
 import { readConfig, CONFIG } from '../src/config/config';
 import { User } from '../src/modules/users/user.entity';
 import { AuthToken, OAuthAttempt, Session } from '../src/modules/auth/auth.entity';
-import { InitialAuth1760000000000 } from '../src/database/1760000000000-InitialAuth';
-import { LearningProgress1792886400000 } from '../src/database/1792886400000-LearningProgress';
-import { UserLessonProgress } from '../src/modules/learning/learning.entity';
 import { LearningController } from '../src/modules/learning/learning.controller';
 import { LearningService } from '../src/modules/learning/learning.service';
 import { AuthService, digest, secret } from '../src/modules/auth/auth.service';
@@ -72,12 +69,7 @@ test('Google failures expose only safe categories and never log credentials',asy
 });
 
 test('API authentication and persistence with migrated PostgreSQL emulator',async t=>{
-  const memory=newDb();
-  memory.public.registerFunction({name:'current_database',returns:DataType.text,implementation:()=> 'test'});
-  memory.public.registerFunction({name:'version',returns:DataType.text,implementation:()=> 'PostgreSQL 16'});
-  memory.public.registerFunction({name:'gen_random_uuid',returns:DataType.uuid,impure:true,implementation:randomUUID});
-  const db:DataSource=memory.adapters.createTypeormDataSource({type:'postgres',entities:[User,Session,AuthToken,OAuthAttempt,UserLessonProgress],migrations:[InitialAuth1760000000000,LearningProgress1792886400000],synchronize:false});
-  await db.initialize();await db.runMigrations();
+  const db=await assessmentDatabase();
   const config=readConfig({DATABASE_URL:'postgres://localhost/test',FRONTEND_URL:'http://localhost:3101',API_URL:'http://localhost:4101',GOOGLE_CLIENT_ID:'test-client',GOOGLE_CLIENT_SECRET:'test-only'});
   const mails:{email:string;kind:string;token:string}[]=[];
   const requestLimit=process.env.E2E === 'true' ? 200 : 20;

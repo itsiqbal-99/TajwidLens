@@ -72,6 +72,14 @@ npm run build
 
 `npm run build` regenerates and validates the tajweed payloads before Next.js writes the static site to `out/`.
 
+To preview the existing build locally, stop `npm run dev` if it is using port 3000, then run:
+
+```bash
+npm run start
+```
+
+Open `http://localhost:3000`. This serves `out/` using the static handler already bundled with Next.js; `next start` is not used with `output: "export"`. The API must run separately at the `NEXT_PUBLIC_API_URL` configured when building (locally, `http://localhost:4000`). Rebuild after changing that frontend environment variable. This command is a local preview, not a production hosting configuration.
+
 The validator checks the pinned source hashes, the display-edition digest, all 114 per-surah payload hashes, all 6,236 ayahs, every annotation bound and quote, grapheme boundaries, rule references, and the expected annotation total.
 
 ## Data layout

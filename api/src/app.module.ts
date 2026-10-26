@@ -6,6 +6,7 @@ import dataSource from "./database/data-source";
 import { AuthModule } from "./modules/auth/auth.module";
 import { UsersModule } from "./modules/users/users.module";
 import { LearningModule } from "./modules/learning/learning.module";
+import {QuizModule} from './modules/quiz/quiz.module';
 
 @Controller("health")
 class HealthController {
@@ -21,6 +22,7 @@ class HealthController {
     AuthModule,
     UsersModule,
     LearningModule,
+    QuizModule,
     ThrottlerModule.forRoot([{ ttl: 60000, limit: 20 }]),
   ],
   controllers: [HealthController],

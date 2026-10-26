@@ -1,4 +1,4 @@
-const destinations = new Set(['dashboard','home','profile','explore','reading-guide','learn','pronunciation','reference']);
+const destinations = new Set(['dashboard','home','profile','explore','reading-guide','learn','pronunciation','reference','quiz','detective','reviews']);
 
 export function googleLoginError(reason:string|null):string {
   switch(reason) {

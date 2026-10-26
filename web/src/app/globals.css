@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./assessment.css";
 
 :root {
   /* Cloud Blue + Dusty Coral. The legacy semantic names stay in place so

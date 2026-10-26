@@ -7,14 +7,14 @@ import {LearningProgress1792886400000} from '../src/database/1792886400000-Learn
 import type {QueryRunner} from 'typeorm';
 
 const record=(lessonId:string,status:'IN_PROGRESS'|'COMPLETED',time:number):UserLessonProgress=>({id:lessonId,userId:'test',lessonId,status,
-  startedAt:new Date(time),lastAccessedAt:new Date(time),completedAt:status==='COMPLETED'?new Date(time):null,createdAt:new Date(time),updatedAt:new Date(time)} as UserLessonProgress);
+  startedAt:new Date(time),lastAccessedAt:new Date(time),completedAt:status==='COMPLETED'?new Date(time):null,completionSource:status==='COMPLETED'?'QUIZ_VERIFIED':null,legacyCompletedAt:null,createdAt:new Date(time),updatedAt:new Date(time)} as UserLessonProgress);
 test('catalogue keeps 24 stable, unique identifiers and current lesson routes',()=>{
   assert.equal(lessonCatalog.length,24);assert.equal(new Set(lessonCatalog.map(l=>l.id)).size,24);
   assert.equal(lessonCatalog[0].id,'pengantar');assert.equal(lessonCatalog.at(-1)!.id,'tafkhim-tarqiq');
 });
 test('new learner has real zero progress, first lesson and no seeded records',()=>{
   const result=buildLearningDashboard(lessonCatalog,[]);
-  assert.deepEqual(result.summary,{totalLessons:24,completedLessons:0,inProgressLessons:0,progressPercentage:0});
+  assert.deepEqual(result.summary,{totalLessons:24,completedLessons:0,inProgressLessons:0,legacyLessons:0,progressPercentage:0});
   assert.equal(result.continueLearning?.lessonId,'pengantar');assert.equal(result.allCompleted,false);
   assert.equal(result.lessonStates.length,24);assert.ok(result.lessonStates.every(row=>row.status==='NOT_STARTED'));
 });
@@ -37,6 +37,13 @@ test('completed last lesson advances in catalogue order then wraps to skipped le
 test('all complete is exactly 100 percent with no invalid next lesson',()=>{
   const result=buildLearningDashboard(lessonCatalog,lessonCatalog.map((l,i)=>record(l.id,'COMPLETED',i)));
   assert.equal(result.summary.progressPercentage,100);assert.equal(result.continueLearning,null);assert.equal(result.allCompleted,true);
+});
+test('legacy completion keeps its date but never counts as verified',()=>{
+  const old=record('pengantar','COMPLETED',123456);old.completionSource='LEGACY_SELF_REPORTED';old.legacyCompletedAt=old.completedAt;
+  const result=buildLearningDashboard(lessonCatalog,[old],2);
+  assert.equal(result.summary.completedLessons,0);assert.equal(result.summary.legacyLessons,1);
+  assert.equal(result.lessonStates[0].status,'AWAITING_QUIZ');assert.equal(result.legacyLessons[0].studiedAt,old.completedAt!.toISOString());
+  assert.equal(result.continueLearning?.lessonId,'pengantar');assert.equal(result.reviewConcepts,2);
 });
 test('metadata reordering preserves stable references; removed metadata never counts',()=>{
   const result=buildLearningDashboard([...lessonCatalog].reverse(),[record('removed-lesson','COMPLETED',5)]);

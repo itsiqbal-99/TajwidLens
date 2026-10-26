@@ -7,16 +7,19 @@ export class LessonParamsDto {
 export class EmptyLearningDto {}
 export class LessonProgressDto {
   @ApiProperty() lessonId!:string;
-  @ApiProperty({enum:['NOT_STARTED','IN_PROGRESS','COMPLETED']}) status!:string;
+  @ApiProperty({enum:['NOT_STARTED','IN_PROGRESS','AWAITING_QUIZ','COMPLETED']}) status!:string;
   @ApiProperty({type:String,format:'date-time',nullable:true}) startedAt!:string|null;
   @ApiProperty({type:String,format:'date-time',nullable:true}) completedAt!:string|null;
   @ApiProperty({type:String,format:'date-time',nullable:true}) lastAccessedAt!:string|null;
   @ApiProperty({type:String,format:'date-time',nullable:true}) updatedAt!:string|null;
+  @ApiProperty({type:String,enum:['LEGACY_SELF_REPORTED','QUIZ_VERIFIED'],nullable:true}) completionSource!:string|null;
+  @ApiProperty({type:String,format:'date-time',nullable:true}) legacyCompletedAt!:string|null;
 }
 export class LearningSummaryDto {
   @ApiProperty() totalLessons!:number;
   @ApiProperty() completedLessons!:number;
   @ApiProperty() inProgressLessons!:number;
+  @ApiProperty() legacyLessons!:number;
   @ApiProperty() progressPercentage!:number;
 }
 export class ContinueLessonDto {
@@ -34,7 +37,7 @@ export class CompletedLessonDto {
 }
 export class LessonStateDto {
   @ApiProperty() lessonId!:string;
-  @ApiProperty({enum:['NOT_STARTED','IN_PROGRESS','COMPLETED']}) status!:string;
+  @ApiProperty({enum:['NOT_STARTED','IN_PROGRESS','AWAITING_QUIZ','COMPLETED']}) status!:string;
 }
 export class LearningDashboardDto {
   @ApiProperty({type:LearningSummaryDto}) summary!:LearningSummaryDto;
@@ -43,5 +46,7 @@ export class LearningDashboardDto {
   @ApiProperty({type:[CompletedLessonDto]}) completedLessons!:CompletedLessonDto[];
   @ApiProperty() allCompleted!:boolean;
   @ApiProperty({type:[LessonStateDto]}) lessonStates!:LessonStateDto[];
+  @ApiProperty({description:'Needs-review concept count; practice does not grant lesson completion'}) reviewConcepts!:number;
+  @ApiProperty({type:'array',items:{type:'object',properties:{lessonId:{type:'string'},title:{type:'string'},href:{type:'string'},studiedAt:{type:'string',format:'date-time'}}}}) legacyLessons!:object[];
 }
 export class LearningProgressListDto { @ApiProperty({type:[LessonProgressDto]}) lessons!:LessonProgressDto[]; }

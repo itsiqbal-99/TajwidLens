@@ -19,8 +19,8 @@ export class LearningController {
   detail(@Req() req:AuthRequest,@Param() params:LessonParamsDto,@Query() _query:EmptyLearningDto) {return this.learning.detail(req.user.id,params.lessonId);}
   @Put('progress/:lessonId/start') @ApiResponse({status:200,type:LessonProgressDto})
   @ApiBody({schema:{type:'object',additionalProperties:false}})
-  start(@Req() req:AuthRequest,@Param() params:LessonParamsDto,@Body() _body:EmptyLearningDto,@Query() _query:EmptyLearningDto) {return this.learning.update(req.user.id,params.lessonId,'IN_PROGRESS');}
-  @Put('progress/:lessonId/complete') @ApiResponse({status:200,type:LessonProgressDto})
+  start(@Req() req:AuthRequest,@Param() params:LessonParamsDto,@Body() _body:EmptyLearningDto,@Query() _query:EmptyLearningDto) {return this.learning.start(req.user.id,params.lessonId);}
+  @Put('progress/:lessonId/complete') @ApiResponse({status:403,description:'Manual completion removed; pass a server-evaluated lesson quiz'})
   @ApiBody({schema:{type:'object',additionalProperties:false}})
-  complete(@Req() req:AuthRequest,@Param() params:LessonParamsDto,@Body() _body:EmptyLearningDto,@Query() _query:EmptyLearningDto) {return this.learning.update(req.user.id,params.lessonId,'COMPLETED');}
+  complete(@Req() _req:AuthRequest,@Param() params:LessonParamsDto,@Body() _body:EmptyLearningDto,@Query() _query:EmptyLearningDto) {return this.learning.rejectManualCompletion(params.lessonId);}
 }

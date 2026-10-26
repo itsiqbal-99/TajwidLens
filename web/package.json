@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "start": "node scripts/serve-build.mjs",
     "prebuild": "npm run tajweed:build && npm run tajweed:check",
     "build": "next build",
     "tajweed:build": "node scripts/generate-tajweed-data.mjs",

@@ -14,6 +14,8 @@ export class UserLessonProgress {
   @Column('varchar',{length:20}) status!:'IN_PROGRESS'|'COMPLETED';
   @Column('timestamptz',{default:()=> 'CURRENT_TIMESTAMP'}) startedAt!:Date;
   @Column('timestamptz',{nullable:true}) completedAt!:Date|null;
+  @Column('varchar',{length:24,nullable:true}) completionSource!:'LEGACY_SELF_REPORTED'|'QUIZ_VERIFIED'|null;
+  @Column('timestamptz',{nullable:true}) legacyCompletedAt!:Date|null;
   @Column('timestamptz',{default:()=> 'CURRENT_TIMESTAMP'}) lastAccessedAt!:Date;
   @Column('timestamptz',{default:()=> 'CURRENT_TIMESTAMP'}) createdAt!:Date;
   @Column('timestamptz',{default:()=> 'CURRENT_TIMESTAMP'}) updatedAt!:Date;
