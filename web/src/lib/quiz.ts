@@ -1,6 +1,6 @@
 import type {PublicQuestion,QuestionFeedback,QuizAttemptView,QuizAvailability,DetectiveView,DetectiveAnswer,MistakeList} from '../../../shared/quiz';
 import {lessonCatalog} from '@/data/lesson-catalog';
-export type {PublicQuestion,QuestionFeedback,QuizAttemptView,QuizAvailability,DetectiveView,DetectiveAnswer,MistakeList} from '../../../shared/quiz';
+export type {PublicQuestion,QuestionFeedback,QuizAttemptView,QuizResult,QuizAvailability,DetectiveView,DetectiveAnswer,MistakeList} from '../../../shared/quiz';
 const invalid=()=>new Error('Data evaluasi belum lengkap. Muat ulang atau coba lagi.');
 const date=(value:unknown)=>typeof value==='string' && Number.isFinite(Date.parse(value));
 const id=(value:unknown)=>typeof value==='string' && /^[0-9a-f-]{36}$/i.test(value);

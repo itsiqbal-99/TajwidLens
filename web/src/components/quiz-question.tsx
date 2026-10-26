@@ -1,6 +1,6 @@
 "use client";
 import {useEffect,useRef} from 'react';
-import {CheckCircle2,RotateCcw} from 'lucide-react';
+import {CheckCircle2,RotateCcw,Lightbulb,ArrowRight,BookOpenText} from 'lucide-react';
 import type {PublicQuestion,QuestionFeedback} from '@/lib/quiz';
 import {QuestionReport} from './question-report';
 
@@ -18,10 +18,10 @@ export function AnswerReview({question,number,focus=false,reporting}:{question:Q
   return <article className={`quiz-answer-review ${question.correct?'is-correct':'needs-practice'}`}>
     <div className="quiz-review-status">{question.correct?<CheckCircle2 size={17}/>:<RotateCcw size={17}/>}<span>{number?`Soal ${number} · `:''}{question.correct?'Benar':'Perlu dilatih kembali'}</span></div>
     <h3 ref={heading} tabIndex={focus?-1:undefined}>{question.prompt}</h3><QuestionVerse verse={question.verse}/>
-    <p>Jawaban Anda: <strong>{selected.label}</strong></p>{!question.correct && <p>Jawaban benar: <strong>{correct.label}</strong></p>}
-    <div className="quiz-explanation"><span className="section-kicker">PEMBAHASAN</span><p>{question.explanation}</p></div>
+    <div className={`answer-comparison ${question.correct?'answer-matched':''}`}><div className={question.correct?'answer-correct':'answer-selected'}><span>{question.correct?<CheckCircle2 size={14}/>:<RotateCcw size={14}/>}Jawaban Anda</span><strong dir="auto">{selected.label}</strong></div>{!question.correct&&<><ArrowRight className="answer-comparison-arrow" size={18}/><div className="answer-correct"><span><CheckCircle2 size={14}/>Jawaban yang tepat</span><strong dir="auto">{correct.label}</strong></div></>}</div>
+    <div className="quiz-explanation"><span className="section-kicker"><Lightbulb size={16}/>MENGAPA DEMIKIAN?</span><p>{question.explanation}</p></div>
     {question.validation==='AUTOMATED_SOURCE' && <p className="quiz-expiry">Validasi otomatis dari materi dan anotasi aplikasi · belum review ahli tajwid.</p>}
-    <ul className="quiz-sources">{question.sources.map((s,index)=><li key={index}>{s.url?<a href={s.url} target="_blank" rel="noreferrer">{s.title}</a>:s.title} · {s.location}</li>)}</ul>
-    <small>Versi konten {question.contentVersion}</small>{reporting && <QuestionReport questionId={question.questionId} version={question.contentVersion} context={reporting}/>}
+    <details className="answer-source-details"><summary><BookOpenText size={15}/>Sumber &amp; versi materi<span>Versi {question.contentVersion}</span></summary><ul className="quiz-sources">{question.sources.map((s,index)=><li key={index}>{s.url?<a href={s.url} target="_blank" rel="noreferrer">{s.title}</a>:s.title} · {s.location}</li>)}</ul></details>
+    {reporting && <QuestionReport questionId={question.questionId} version={question.contentVersion} context={reporting}/>}
   </article>;
 }

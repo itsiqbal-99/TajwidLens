@@ -3,7 +3,7 @@ import type {QuestionType,QuestionOption,QuestionVerse,SourceReference} from '..
 export interface Reviewer {id:string;name:string;qualification:string;evidence:string}
 export interface ReviewProvenance {reviewerId:string;reviewedAt:string;evidence:string}
 export interface GenerationProvenance {
-  method:'LESSON_FIELD_V1'|'ANNOTATION_V1';templateVersion:1;sourceVersion:string;
+  method:'LESSON_FIELD_V1'|'ANNOTATION_V1'|'CONCEPT_APPLICATION_V1';templateVersion:1;sourceVersion:string;
   sourcePath:string;sourceSha256:string;sourceField:string;sourceValueSha256:string;
   mappingSha256:string;annotationSource?:{provider:string;commit:string;payloadSha256:string;confidence:'NOT_PROVIDED'};
   validation:{status:'VALIDATION_PASSED';checks:string[]};

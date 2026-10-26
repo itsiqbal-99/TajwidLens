@@ -11,7 +11,7 @@ import {loadQuestionSources,validateQuestionManifest} from '../scripts/question-
 import {validateGenerated} from '../src/modules/quiz/generation';
 import {loadSourceApprovals} from '../src/modules/quiz/quiz.module';
 import {QuestionBankService,questionHash} from '../src/modules/quiz/question-bank.service';
-import {QuestionContent} from '../src/modules/quiz/question.types';
+import {QuestionContent,RepositorySourceApproval} from '../src/modules/quiz/question.types';
 import {QuizService} from '../src/modules/quiz/quiz.service';
 import {DetectiveService} from '../src/modules/quiz/detective.service';
 import {QuizQuestion,QuizAttempt,QuizAttemptQuestion} from '../src/modules/quiz/quiz.entity';
@@ -29,8 +29,13 @@ export async function verifyGeneratedAssessments(db:DataSource,config:ReturnType
   assert.match(('schema' in db.options?db.options.schema:'')||'',/^phase03_verify_[a-f0-9]{32}$/);
   const source=loadQuestionSources(),questions:QuestionContent[]=JSON.parse(readFileSync('content/generated-candidates.json','utf8'));
   validateQuestionManifest(JSON.parse(readFileSync('content/generated-manifest.json','utf8')),questions,source.sourceVersion);
-  const approvals=loadSourceApprovals(),approval=approvals.find(a=>'kind' in a&&a.sourceVersion===source.sourceVersion)!;
-  assert.ok(approval);assert.equal(questions.length,394);
+  const approvals=loadSourceApprovals();let approval=approvals.find(a=>'kind' in a&&a.sourceVersion===source.sourceVersion);
+  if(!approval&&process.argv.includes('--fixture-approval')){
+    const fixture:RepositorySourceApproval={kind:'REPOSITORY_DETERMINISTIC',environment:'development',id:'isolated-test-authorization',sourceVersion:source.sourceVersion,
+      files:source.files,questionHashes:questions.map(questionHash),authorizedAt:new Date(Date.now()-1000).toISOString(),authorization:'Synthetic isolated test only; not project-owner authorization',evidence:'Temporary schema test of the existing publication gate; not scientific or live approval'};
+    approvals.push(fixture);approval=fixture;
+  }
+  assert.ok(approval,'Real source authorization required, or explicit --fixture-approval on this disposable schema');assert.equal(questions.length,316);
   const testConfig={...config,frontend:'http://localhost:3103',origin:'http://localhost:3103',api:'http://localhost:4103'};
   const {app,module}=await assessmentApp(db,testConfig,approvals),bank=module.get(QuestionBankService),quiz=module.get(QuizService),detective=module.get(DetectiveService);
   try{
@@ -40,8 +45,8 @@ export async function verifyGeneratedAssessments(db:DataSource,config:ReturnType
     assert.deepEqual(await db.getRepository(QuizQuestion).find({order:{id:'ASC'}}),before);
     assert.ok(before.every(q=>q.review===null&&bank.repositoryVerified(q)&&!bank.sourceVerified(q)));
     const availability=await Promise.all(lessonCatalog.map(l=>quiz.availability(l.id)));
-    assert.ok(availability.every(a=>a.available&&a.eligibleCount>=9));
-    assert.equal((await bank.eligible()).length,394);
+    assert.ok(availability.every(a=>a.available&&a.eligibleCount>=8));
+    assert.equal((await bank.eligible()).length,316);
     const user=await db.getRepository(User).save({email:'generated-'+randomUUID()+'@example.test',nickname:'Pelajar Pengujian',emailVerifiedAt:new Date()});
     for(const lessonId of ['qalqalah','ikhfa-haqiqi']){
       const attempt=await quiz.create(user.id,lessonId);assert.equal(attempt.questions.length,7);
@@ -62,7 +67,7 @@ export async function verifyGeneratedAssessments(db:DataSource,config:ReturnType
     await assert.rejects(()=>bank.publish(questions.map(q=>q.id),approval.id),/karantina/);
     await bank.import(questions);assert.ok(!(await bank.eligible()).some(q=>q.id===row.id));
     assert.equal(questionHash(await db.getRepository(QuizQuestion).findOneByOrFail({id:row.id})),hash);
-    console.log('PASS real generated bank: 394 exact versions, 24/24 available, theory/mixed UI contracts, 6/7 completion, guest Detective, immutable import and strict atomic quarantine');
+    console.log('PASS actual-source bank: 316 exact versions, 24/24 available, theory/mixed contracts, 6/7 completion, guest Detective, immutable import and strict quarantine; authorization '+(process.argv.includes('--fixture-approval')?'TEST FIXTURE ONLY':'REAL OWNER RECORD'));
     if(browserCheck)await generatedBrowser(app,db,quiz,user.id);
   }finally{await app.close();}
 }

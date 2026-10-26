@@ -19,12 +19,12 @@ import {feedback} from '../src/modules/quiz/engine';
 test('deterministic generation, validation, idempotent import and approval gates',async t=>{
   const source=loadQuestionSources(),first=generateCandidates(source),second=generateCandidates(source,first.questions),bank=new QuestionBankService({} as DataSource,source.corpus,[]);
   await t.test('stable IDs/versions, distinct source facts, DRAFT only and all lesson coverage',()=>{
-    assert.deepEqual(second.questions,first.questions);assert.equal(first.questions.length,394);
-    assert.equal(new Set(first.questions.map(q=>q.id)).size,394);assert.equal(new Set(first.questions.map(generationFingerprint)).size,394);
+    assert.deepEqual(second.questions,first.questions);assert.equal(first.questions.length,316);
+    assert.equal(new Set(first.questions.map(q=>q.id)).size,316);assert.equal(new Set(first.questions.map(generationFingerprint)).size,316);
     assert.ok(first.questions.every(q=>q.reviewStatus==='DRAFT'&&q.review===null));
     assert.ok(first.questions.every(q=>q.options.every(o=>!/^option-\d+$/.test(o.id))));
-    assert.equal(first.questions.filter(q=>q.lessonId==='qalqalah').length,11);assert.equal(first.questions.filter(q=>q.lessonId==='mad-arid'&&q.quran).length,0);
-    for(const lesson of lessonCatalog){const pool=first.questions.filter(q=>q.lessonId===lesson.id),selection=selectQuestions(pool);assert.ok(pool.length>=9);assert.equal(selection.length,7);
+    assert.equal(first.questions.filter(q=>q.lessonId==='qalqalah').length,8);assert.equal(first.questions.filter(q=>q.lessonId==='mad-arid'&&q.quran).length,0);
+    for(const lesson of lessonCatalog){const pool=first.questions.filter(q=>q.lessonId===lesson.id),selection=selectQuestions(pool);assert.ok(pool.length>=8);assert.equal(selection.length,7);
       assert.equal(new Set(selection.map(q=>q.id)).size,7);if(pool.some(q=>q.quran))assert.equal(new Set(selection.map(q=>q.type)).size,2);}
     assert.equal(first.questions.filter(q=>q.quran).length,154);
     assert.ok(!first.questions.some(q=>q.quran?.ruleId==='iqlab-noon.1'));assert.ok(first.excluded.sourceConflict>0);
@@ -33,6 +33,20 @@ test('deterministic generation, validation, idempotent import and approval gates
     const manifest={sourceVersion:source.sourceVersion,questionHashes:first.questions.map(questionHash).sort()};
     validateQuestionManifest(manifest,first.questions,source.sourceVersion);
     for(const invalid of [null,{}, {...manifest,sourceVersion:'changed'},{...manifest,questionHashes:manifest.questionHashes.slice(1)}])assert.throws(()=>validateQuestionManifest(invalid,first.questions,source.sourceVersion),/manifest mismatch/);
+  });
+  await t.test('every MCQ tests a sourced concept, never a verbatim section-recall template',()=>{
+    const mcq=first.questions.filter(q=>q.type==='MULTIPLE_CHOICE');assert.equal(mcq.length,162);
+    const prompts=new Set<string>();
+    for(const q of mcq){assert.equal(q.generation!.method,'CONCEPT_APPLICATION_V1');assert.doesNotMatch(q.prompt,/menurut bagian|tercantum pada bagian/i);
+      assert.ok(q.sources.some(s=>s.url?.startsWith('https://')));assert.ok(q.explanation.length>=80);
+      const key=q.lessonId+':'+q.prompt.toLowerCase().replace(/\s+/g,' ');assert.ok(!prompts.has(key));prompts.add(key);}
+    for(const lesson of lessonCatalog){assert.ok(new Set(source.cases[lesson.id].map(q=>q[6])).size>=2);}
+    const cases=structuredClone(source.cases);cases.pengantar[0][1]='missing-objective';
+    assert.throws(()=>generateCandidates({...source,cases}),/objective/);
+    const recall=structuredClone(source.cases);recall.pengantar[0][2]='Menurut bagian ini, pernyataan mana yang tercantum pada bagian tersebut?';
+    assert.throws(()=>generateCandidates({...source,cases:recall}),/scenario/);
+    const refs=structuredClone(source.studies);refs[0].references[0].id='missing-reference';
+    assert.throws(()=>generateCandidates({...source,studies:refs}),/reference/);
   });
   await t.test('source, key, distractor, explanation, provenance and Quran corruption fail closed',()=>{
     const q=first.questions[0],arabic=first.questions.find(q=>q.quran)!;

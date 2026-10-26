@@ -64,7 +64,7 @@ export class QuestionBankService {
     if(!['DRAFT','REVIEWED','PUBLISHED'].includes(question?.reviewStatus))errors.push('review status');
     if(question?.generation){
       const g=question.generation;
-      if(!['LESSON_FIELD_V1','ANNOTATION_V1'].includes(g.method) || g.templateVersion!==1 || !/^[a-f0-9]{64}$/.test(g.sourceVersion)
+      if(!['LESSON_FIELD_V1','ANNOTATION_V1','CONCEPT_APPLICATION_V1'].includes(g.method) || g.templateVersion!==1 || !/^[a-f0-9]{64}$/.test(g.sourceVersion)
         || !text(g.sourcePath,500) || !/^[a-f0-9]{64}$/.test(g.sourceSha256) || !text(g.sourceField,200) || !/^[a-f0-9]{64}$/.test(g.sourceValueSha256)
         || !/^[a-f0-9]{64}$/.test(g.mappingSha256) || g.validation?.status!=='VALIDATION_PASSED' || !Array.isArray(g.validation.checks) || !g.validation.checks.length
         || (g.method==='ANNOTATION_V1' && (!g.annotationSource || !text(g.annotationSource.provider,100) || !text(g.annotationSource.commit,100) || !/^[a-f0-9]{64}$/.test(g.annotationSource.payloadSha256))))errors.push('generation provenance');

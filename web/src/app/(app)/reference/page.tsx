@@ -4,6 +4,7 @@ import { ArrowUpRight, ExternalLink } from "lucide-react";
 import tajweedIndex from "@/data/tajweed-index.json";
 import tajweedRules from "@/data/tajweed-rules-generated.json";
 import { lessons } from "@/data/lessons";
+import learningReferences from '../../../../../shared/learning-references.json';
 
 export const metadata: Metadata = { title: "Referensi dan Sumber" };
 
@@ -25,6 +26,7 @@ export default function ReferencePage() {
     <div className="reference-layout">
       <aside className="reference-toc"><strong>Di halaman ini</strong><a href="#glosarium">Glosarium</a><a href="#sumber">Sumber</a><a href="#metode">Metode impor</a><a href="#cakupan">Cakupan</a><a href="#panduan">Panduan penggunaan</a></aside>
       <div className="reference-content">
+        <section id="rujukan-belajar"><span className="section-kicker">RUJUKAN PEMBELAJARAN</span><h2>Materi dan soal yang dapat ditelusuri.</h2><p>Dasar pembelajaran diperiksa silang dengan sumber berikut. Nomor bab/halaman ditautkan pada masing-masing materi dan pembahasan quiz. Ini bukan klaim bahwa penerbit sumber telah meninjau soal TajwidLens.</p><div className="source-block">{learningReferences.map(source=><div key={source.id}><strong>{source.title}</strong><p>{source.publisher}. {source.scope}</p><p>{source.note}</p><a href={source.url} target="_blank" rel="noreferrer">Buka rujukan <ExternalLink size={15}/></a></div>)}</div></section>
         <section id="glosarium"><span className="section-kicker">01 / GLOSARIUM</span><h2>Istilah yang sering muncul</h2><div className="glossary-grid">{terms.map(([title, body]) => <div key={title}><h3>{title}</h3><p>{body}</p></div>)}</div></section>
         <section id="sumber"><span className="section-kicker">02 / SUMBER DATA</span><h2>Korpus yang dipatok dan dapat diaudit</h2><div className="source-block">
           <div><strong>Teks yang ditampilkan</strong><p>KFGQPC UthmanicHafs v3.0 (2026), riwayat Hafs &apos;an &apos;Asim. Teks disimpan per ayat dan diverifikasi terhadap digest edisi sebelum data dibuat.</p><a href="https://github.com/quran-ws/quran-tajweed/tree/c0d07c02965d7853f8002491f05f90e8b0f24d06/editions" target="_blank" rel="noreferrer">Metadata edisi <ExternalLink size={15} /></a></div>
