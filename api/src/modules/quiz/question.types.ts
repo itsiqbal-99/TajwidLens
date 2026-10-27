@@ -12,7 +12,7 @@ export interface ExpertSourceApproval {
   id:string;sourceVersion:string;questionHashes:string[];reviewerId:string;reviewedAt:string;evidence:string;
 }
 export interface RepositorySourceApproval {
-  kind:'REPOSITORY_DETERMINISTIC';environment:'development';id:string;sourceVersion:string;questionHashes:string[];
+  kind:'REPOSITORY_DETERMINISTIC';environment:'development'|'production';id:string;sourceVersion:string;questionHashes:string[];
   authorizedAt:string;authorization:string;files:Record<string,string>;evidence:string;
 }
 export type SourceApproval=ExpertSourceApproval|RepositorySourceApproval;

@@ -80,6 +80,8 @@ Review the target before migration. Migration never runs at application startup 
 
 Backend artifacts must include the trusted content/reviewers.json and unchanged reader index/payload assets, or configure QUIZ_CORPUS_INDEX and QUIZ_CORPUS_DIRECTORY. Identification offsets use the reader's KFGQPC edition, never the separate Tanzil file. Production Detective requires QUIZ_CHALLENGE_SECRET (stable random value, at least 32 bytes, shared between instances); without it practice is unavailable. Development uses an ephemeral key. Corpus assets are read-only data.
 
+The exact 394-version repository approval is authorized for production but remains automated validation, not expert tajwid review. Production must deploy `content/source-approvals.json` unchanged, keep the frontend disclosure visible, configure a stable `QUIZ_CHALLENGE_SECRET`, and package the reader corpus paths above. Any changed question hash or source version fails closed and requires a new explicit approval.
+
 Static hosting/test servers must serve exported Next .txt navigation payloads as text/plain (or RSC content type); binary MIME forces document reloads. Frontend remains a static export suitable for the existing host or Cloudflare Pages; deployment is not verified here.
 
 Phase 03 reports: [implementation](docs/phase-03/IMPLEMENTATION_REPORT.md), [tests](docs/phase-03/TEST_REPORT.md), [manual checklist](docs/phase-03/MANUAL_TEST_CHECKLIST.md), [question bank](docs/phase-03/QUESTION_BANK_AUDIT.md). Phase 02 reports remain historical evidence.

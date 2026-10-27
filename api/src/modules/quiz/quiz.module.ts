@@ -21,7 +21,7 @@ export function loadReviewers():Reviewer[] {
 export function loadSourceApprovals():SourceApproval[] {
   const approvals:SourceApproval[]=require('../../../content/source-approvals.json');
   if(!Array.isArray(approvals)||approvals.some(a=>!a?.id||!a.sourceVersion||!a.evidence||!Array.isArray(a.questionHashes)
-    || ('kind' in a?(a.kind!=='REPOSITORY_DETERMINISTIC'||a.environment!=='development'||!a.authorizedAt||!a.authorization||!a.files):(!a.reviewerId||!a.reviewedAt)))
+    || ('kind' in a?(a.kind!=='REPOSITORY_DETERMINISTIC'||!['development','production'].includes(a.environment)||!a.authorizedAt||!a.authorization||!a.files):(!a.reviewerId||!a.reviewedAt)))
     ||new Set(approvals.map(a=>a.id)).size!==approvals.length)throw new Error('Invalid trusted source approval registry');
   return approvals;
 }

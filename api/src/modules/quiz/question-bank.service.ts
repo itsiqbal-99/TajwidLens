@@ -120,12 +120,11 @@ export class QuestionBankService {
       ),
       g = question.generation;
     return !!(
-      process.env.NODE_ENV !== "production" &&
       g &&
       approval &&
       "kind" in approval &&
       approval.kind === "REPOSITORY_DETERMINISTIC" &&
-      approval.environment === "development" &&
+      (approval.environment === "production" || process.env.NODE_ENV !== "production") &&
       text(approval.authorization, 2000) &&
       text(approval.evidence, 2000) &&
       Number.isFinite(Date.parse(approval.authorizedAt)) &&

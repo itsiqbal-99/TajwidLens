@@ -1,7 +1,7 @@
 [
   {
     "kind": "REPOSITORY_DETERMINISTIC",
-    "environment": "development",
+    "environment": "production",
     "id": "owner-development-2026-10-26-5323ec44",
     "sourceVersion": "5323ec44afc8784a246084406b60e26ac04137ba688dc8d68becb91a5165d9cc",
     "questionHashes": [
@@ -411,8 +411,8 @@
       "api/content/lesson-rule-map.json": "f3ea54151d4926db05c4f8e91656cf0ce71b72023bae3d2c68cd7457edfa09db",
       "api/src/modules/quiz/generation.ts": "9fe38025abb179736f6b7daf8753745ef1d739c76fc13bb1bf9dc11341f99e2e"
     },
-    "authorizedAt": "2026-10-26T11:48:46.550Z",
-    "authorization": "Pemilik proyek menyetujui: Ya, izinkan publikasi otomatis ke development dengan batasan tersebut. Persetujuan pada chat Codex 26 Oktober 2026 mencakup 394 versi, kelulusan 6/7, label validasi otomatis belum review ahli, tanpa reviewer palsu atau pelonggaran karantina.",
-    "evidence": "api/docs/phase-03b/AUTOMATED_QUIZ_ACTIVATION.md; exact generated-manifest.json sourceVersion and 394 question hashes; deterministic source/structure/corpus tests. This is project-owner development authorization, not scientific expert review."
+    "authorizedAt": "2026-10-27T04:34:24.700Z",
+    "authorization": "Pemilik proyek menyetujui aktivasi production pada chat Codex 27 Oktober 2026 untuk 394 versi exact-hash yang sebelumnya aktif di development, dengan label validasi otomatis belum review ahli, tanpa reviewer palsu atau pelonggaran karantina.",
+    "evidence": "api/docs/phase-03b/AUTOMATED_QUIZ_ACTIVATION.md; exact sourceVersion and 394 question hashes; deterministic source/structure/corpus tests; explicit production authorization recorded 27 October 2026. This is project-owner authorization, not scientific expert review."
   }
 ]

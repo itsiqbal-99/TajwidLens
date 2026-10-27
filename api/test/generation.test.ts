@@ -79,7 +79,7 @@ test('deterministic generation, validation, idempotent import and approval gates
     const output=execFileSync(process.execPath,['-r','ts-node/register','scripts/questions.ts','generate','--apply','--dry-run'],{cwd:process.cwd(),env:{...process.env,DATABASE_URL:'deliberately-invalid-no-connection'},encoding:'utf8',timeout:120000});
     assert.match(output,/Preview only/);assert.equal(existsSync(path)?readFileSync(path,'utf8'):null,before);
   });
-  await t.test('explicit development source authorization pins exact versions without inventing expert review',async()=>{
+  await t.test('explicit repository authorization pins exact versions and production scope without inventing expert review',async()=>{
     const db=await assessmentDatabase();try{
       const approval:RepositorySourceApproval={kind:'REPOSITORY_DETERMINISTIC',environment:'development',id:'test-repository-authorization',
         sourceVersion:source.sourceVersion,files:source.files,questionHashes:first.questions.map(questionHash),authorizedAt:'2026-01-01T00:00:00Z',
@@ -93,7 +93,13 @@ test('deterministic generation, validation, idempotent import and approval gates
       assert.equal(feedback(local.snapshot(row),row.id,row.correctAnswer).validation,'AUTOMATED_SOURCE');
       for(const changed of [{...row,explanation:'changed'}, {...row,sourceApprovalId:'unknown'}, {...row,contentVersion:row.contentVersion+1}])assert.ok(local.validate(changed).length);
       const damaged=new QuestionBankService(db,source.corpus,[],[{...approval,files:{...approval.files,'web/src/data/lessons.ts':'0'.repeat(64)}}]);assert.ok(damaged.validate(row).length);
-      const oldEnvironment=process.env.NODE_ENV;try{process.env.NODE_ENV='production';assert.ok(local.validate(row).length);}finally{if(oldEnvironment===undefined)delete process.env.NODE_ENV;else process.env.NODE_ENV=oldEnvironment;}
+      const oldEnvironment=process.env.NODE_ENV;try{
+        process.env.NODE_ENV='production';
+        assert.ok(local.validate(row).length);
+        const production=new QuestionBankService(db,source.corpus,[],[{...approval,environment:'production'}]);
+        assert.equal(production.repositoryVerified(row),true);
+        assert.deepEqual(production.validate(row),[]);
+      }finally{if(oldEnvironment===undefined)delete process.env.NODE_ENV;else process.env.NODE_ENV=oldEnvironment;}
       await db.getRepository(QuizQuestion).update(row.id,{suspended:true,moderation:{at:new Date().toISOString(),by:'test',reason:'Preserve strict quarantine'}});
       await assert.rejects(()=>local.publish(row.id,approval.id),/karantina/);await local.import(questions);
       assert.ok(!(await local.eligible()).some(q=>q.id===row.id));

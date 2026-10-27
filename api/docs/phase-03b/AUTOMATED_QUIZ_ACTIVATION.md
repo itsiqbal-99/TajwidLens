@@ -1,6 +1,6 @@
 # Aktivasi quiz otomatis — 26 Oktober 2026
 
-Status: **AKTIF DI DEVELOPMENT — 394 PUBLISHED, 24/24 MATERI SIAP, DETECTIVE TERSEDIA**.
+Status: **DIOTORISASI UNTUK PRODUCTION — 394 PUBLISHED, 24/24 MATERI SIAP, DETECTIVE TERSEDIA SETELAH KONFIGURASI DEPLOYMENT**.
 
 Permintaan terbaru: melanjutkan pembuatan soal otomatis sesuai masing-masing materi dan anotasi, lalu mengaktifkan Quiz serta Tajwid Detective. Navigasi Referensi dipertahankan.
 
@@ -20,9 +20,9 @@ Kebijakan lama mensyaratkan bukti review ahli untuk publikasi. Peninjauan perset
 
 Pemilik proyek kemudian menjawab secara eksplisit: **“Ya, izinkan publikasi otomatis ke development dengan batasan tersebut.”** Otorisasi itu mencakup **394 versi yang hash-nya dipatok ini**, **development saja**, setelah validasi deterministik, dengan provenance otomatis yang terpisah dari review ahli. Jalur tersebut baru ditambahkan setelah persetujuan ini; penolakan sebelumnya tidak dibypass. UI menyatakan validasi otomatis belum setara review ahli. Kelulusan quiz menghitung pemahaman materi tertulis; tidak membuktikan kemampuan melafalkan bacaan.
 
-Persetujuan tersebut tidak boleh membuat identitas reviewer palsu, mengubah Quran/anotasi, mengizinkan publikasi soal suspended, membuka karantina tanpa provenance valid, mengubah snapshot/nilai lama, atau melakukan deployment production. Versi atau sumber yang berubah memerlukan validasi dan persetujuan versi baru. Risiko: kekeliruan pada materi atau anotasi existing dapat terbawa ke jawaban dan memengaruhi kelulusan materi; laporan pengguna serta karantina tetap tersedia.
+Pada 27 Oktober 2026 pemilik proyek kemudian menyetujui 394 versi exact-hash yang sama untuk production, tetap dengan label validasi otomatis belum review ahli. Persetujuan production tidak membuat identitas reviewer palsu, mengubah Quran/anotasi, mengizinkan soal suspended, membuka karantina tanpa provenance valid, atau mencakup versi baru. Versi atau sumber yang berubah memerlukan validasi dan persetujuan baru. Risiko kekeliruan pada materi atau anotasi existing tetap dapat memengaruhi kelulusan; laporan pengguna serta karantina tetap tersedia.
 
-Registry privat menyimpan jenis `REPOSITORY_DETERMINISTIC`, environment development, waktu pencatatan otorisasi, kutipan persetujuan, bukti pengujian, hash sumber dan seluruh 394 hash versi. `reviewers.json` tetap kosong, `review` soal tetap null. Jalur source/expert-reviewed lama tetap terpisah. Runtime menolak otorisasi repository development ketika NODE_ENV=production.
+Registry privat menyimpan jenis `REPOSITORY_DETERMINISTIC`, environment production, waktu pencatatan otorisasi, kutipan persetujuan, bukti pengujian, hash sumber dan seluruh 394 hash versi. `reviewers.json` tetap kosong, `review` soal tetap null. Jalur source/expert-reviewed lama tetap terpisah. Runtime production hanya menerima approval repository yang secara eksplisit berlingkup production.
 
 SourceVersion yang disetujui: `5323ec44afc8784a246084406b60e26ac04137ba688dc8d68becb91a5165d9cc`.
 

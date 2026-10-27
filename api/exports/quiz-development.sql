@@ -1,5 +1,5 @@
 -- TajwidLens development bank snapshot: 587 immutable question versions.
--- Exported at 2026-10-26T14:18:49.015Z.
+-- Exported at 2026-10-27T04:23:29.497Z.
 -- Private answer keys included. Run TypeORM migrations first. See docs/QUIZ_DATA_TRANSFER.md.
 -- Use only with the matching trusted registries/corpus from the same repository revision.
 BEGIN;
