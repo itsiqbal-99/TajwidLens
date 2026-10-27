@@ -32,7 +32,8 @@ export function setup(app: INestApplication, config: AppConfig) {
   app.use(helmet());
   app.use(cookieParser());
   app.enableCors({
-    origin: config.origin,
+    // origin: config.origin,
+    origin: "*",
     credentials: true,
     methods: ["GET", "POST", "PATCH", "PUT"],
     allowedHeaders: ["Content-Type", "X-TajwidLens-CSRF"],
