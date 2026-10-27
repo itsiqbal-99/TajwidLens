@@ -1,5 +1,7 @@
 # TajwidLens API — Phase 01–03B
 
+Historical screenshots and superseded UI revision notes were removed from the current tree before merging. They remain in Git at commit `321ec250aede52e630992fa5e173b40bdcb21670`. Phase reports describe their original test runs; screenshot filenames in those reports refer to that archive. Browser tests can regenerate screenshots locally, and Git ignores those outputs. Operational guides, test reports, content authorization evidence, and the [Cloudflare readiness audit](docs/deployment/CLOUDFLARE_WORKERS_READINESS.md) are retained.
+
 ## Phase 03B — generated candidates and question reports
 
 Referensi is visible in desktop/mobile navigation. The 26 October expansion has 394 technically validated source-derived questions (240 MCQ, 154 identification). The owner explicitly approved these exact versions for development publication with an automated-validation disclaimer: **24/24 lessons and Detective are available**. No scientific expert review is claimed; the development authorization is rejected in production. Generation/import never create new publication approvals. See [activation and actual coverage](docs/phase-03b/AUTOMATED_QUIZ_ACTIVATION.md) and [content workflow](content/README.md) for commands and guarded review/quarantine.
@@ -84,7 +86,7 @@ Phase 03 reports: [implementation](docs/phase-03/IMPLEMENTATION_REPORT.md), [tes
 
 ## Authentication tests and operations
 
-Google sign-in now finishes through `/auth-complete/`, handing the verified session back to the originating login/register window before closing the popup. Same-tab continuation remains available. A password-account collision can be resolved explicitly from profile with **Hubungkan Google**: current session + current password + matching Google email; there is no automatic email-only merge or schema change. See [account experience](docs/phase-01/ACCOUNT_EXPERIENCE.md).
+Google sign-in now finishes through `/auth-complete/`, handing the verified session back to the originating login/register window before closing the popup. Same-tab continuation remains available. A password-account collision can be resolved explicitly from profile with **Hubungkan Google**: current session + current password + matching Google email; there is no automatic email-only merge or schema change. See account experience (Git archive: 321ec250).
 
 `node scripts/check-profile-layout.cjs` uses an explicit visual-only account fixture to check the profile/navbar at six widths, long names, themes, focus and reduced motion. It does not create or edit live accounts. `AUTH_LAYOUT_FIXTURE=1 node scripts/check-auth-layout.cjs` similarly isolates login/register screenshots from API availability.
 
@@ -96,7 +98,7 @@ Build frontend first with `NEXT_PUBLIC_API_URL=http://localhost:4000`, then run 
 
 `node scripts/check-auth-layout.cjs` checks the already-running local frontend (3000) and API (4000) using headless Edge: official logo, exact hadith, responsive login/register at six widths, active controls and reduced motion. It writes visual evidence to `docs/phase-01/*-redesign-*.png` and never submits forms or changes the database.
 
-In development, a before-hydration bootstrap removes only the app's exact service worker and rebuildable `tajwidlens-pwa-*` caches so old PWA bundles cannot shadow Next dev updates. It does not clear account data, preferences or unrelated workers. Production PWA caching remains enabled. Illustration provenance and generation prompt: [design revision](docs/phase-01/DESIGN_REVISION.md).
+In development, a before-hydration bootstrap removes only the app's exact service worker and rebuildable `tajwidlens-pwa-*` caches so old PWA bundles cannot shadow Next dev updates. It does not clear account data, preferences or unrelated workers. Production PWA caching remains enabled. Illustration provenance and generation prompt: design revision (Git archive: 321ec250).
 
 Optional real PostgreSQL test: set `TEST_DATABASE_URL` to an isolated DB named with `_test` suffix, different from `DATABASE_URL`. It runs forward migrations and a rolled-back persistence check. Do not provide production credentials. This does not replace live Neon, multi-connection race or provider tests.
 

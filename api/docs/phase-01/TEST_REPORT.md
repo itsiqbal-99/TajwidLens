@@ -15,7 +15,7 @@
 - Linking checks cover unauthenticated/CSRF/extra-body rejection, wrong password, mismatched email, missing live session, expired intent, conflicting Google subject, replay, unchanged user count/ID/profile/password and subsequent ordinary Google/password login.
 - Login/register visual fixture: sharp wallpaper covers the full panel, no blur, .94 opacity; six widths PASS with exact logo/hadith, no overflow, pointer reset and reduced motion.
 - Profile/navbar visual fixture: six widths 1440/1280/1024/768/390/320 PASS, long nickname/email, signed-in greeting, guest sign-in link, focus, dark theme and reduced motion. No live user was created/edited for screenshots.
-- Source and screenshots: [Account experience](ACCOUNT_EXPERIENCE.md). The user reports live Google signup/login succeeds; revised real Google consent → main-window handoff still requires the user's fresh retry. Real PostgreSQL integration remains skipped; older reports below are historical.
+- Source and screenshots: Account experience (Git archive: 321ec250). The user reports live Google signup/login succeeds; revised real Google consent → main-window handoff still requires the user's fresh retry. Real PostgreSQL integration remains skipped; older reports below are historical.
 
 ## Latest revision — Architectural Light
 
@@ -23,7 +23,7 @@
 - Isolated pg-mem/API/browser acceptance: 17 PASS / 1 SKIP / 0 failed. Includes full UI registration, login, profile, recovery, logout, guest access, Google popup/fallback and existing manual-account collision policy. Real PostgreSQL test remains skipped.
 - Actual port4000 refused connections during visual QA. Fixture-mode screenshots are explicitly not proof of live Google/API availability. No live user was registered or changed.
 - Final login/register visual fixture checks PASS at 1440/1024/850/768/390/320px, including pointer depth/reset, reduced motion, official logo/exact hadith, enabled controls and password visibility. All four screenshots inspected; final export rebuilt with illustration crop/edge blending.
-- Design scope, provenance and authentication boundary: [Architectural Light](ARCHITECTURAL_LIGHT.md). Prior design reports remain historical.
+- Design scope, provenance and authentication boundary: Architectural Light (Git archive: 321ec250). Prior design reports remain historical.
 
 ## Latest revision — callback isolation / error diagnosis
 

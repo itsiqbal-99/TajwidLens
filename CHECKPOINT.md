@@ -1,3 +1,4 @@
+<!-- Historical UI revision documents referenced below are archived in Git commit 321ec250aede52e630992fa5e173b40bdcb21670. -->
 # TajwidLens — checkpoint untuk melanjutkan dari rumah
 
 ## Dokumentasi teknikal dan transfer bank soal — 26 Oktober 2026

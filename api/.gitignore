@@ -4,3 +4,5 @@ dist/
 .env.*
 !.env.example
 coverage/
+# Regenerable browser-test screenshots, not application assets.
+docs/phase-*/**/*.png

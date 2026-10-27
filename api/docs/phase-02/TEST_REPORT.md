@@ -2,7 +2,7 @@
 
 25 October 2026, Asia/Jakarta. Results refer to local source/static export and the explicitly approved Neon development target. PASS does not imply production deployment or live Google consent.
 
-Latest user-review revision: [dashboard, Taman theme, save feedback and authentication latency](EXPERIENCE_REVISION.md). Final combined suite still 34 PASS / 0 FAIL / 1 optional PostgreSQL SKIP; frontend now 31 PASS. Latest Neon development browser verification also PASS, with 595ms observed logout navigation and exact fixture cleanup.
+Latest user-review revision: dashboard, Taman theme, save feedback and authentication latency (Git archive: 321ec250). Final combined suite still 34 PASS / 0 FAIL / 1 optional PostgreSQL SKIP; frontend now 31 PASS. Latest Neon development browser verification also PASS, with 595ms observed logout navigation and exact fixture cleanup.
 
 ## Baseline and final checks
 
@@ -77,9 +77,9 @@ The optional existing `_test` PostgreSQL suite is separately gated by TEST_DATAB
 
 Desktop and mobile dashboard screenshots were visually inspected: readable hierarchy, primary CTA, counts, completed lesson link and existing navbar/theme retained without overflow. Evidence uses fictional fixture names.
 
-- [Desktop](isolated-dashboard-desktop.png), [mobile](isolated-dashboard-mobile.png), [new learner](isolated-dashboard-new.png), [theme](isolated-dashboard-theme.png), [complete](isolated-dashboard-complete.png).
-- Approved Neon evidence: [desktop](neon-development-dashboard-desktop.png), [mobile](neon-development-dashboard-mobile.png), [complete](neon-development-dashboard-complete.png). Desktop and complete states were also visually inspected.
-- Current auth regression screenshots use `auth-*.png` in this directory; historical Phase 01 screenshots are preserved.
+- Desktop (Git archive: 321ec250), mobile (Git archive: 321ec250), new learner (Git archive: 321ec250), theme (Git archive: 321ec250), complete (Git archive: 321ec250).
+- Approved Neon evidence: desktop (Git archive: 321ec250), mobile (Git archive: 321ec250), complete (Git archive: 321ec250). Desktop and complete states were also visually inspected.
+- Current auth regression screenshots use `auth-*.png` in this directory; historical screenshots are preserved in Git commit 321ec250.
 
 Not verified: real Google consent with a human account, SMTP delivery, physical cross-device/browser engines, assistive-technology review, production deployment/migrations/domains and production load. No new Phase 03 work.
 
