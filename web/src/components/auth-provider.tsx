@@ -2,6 +2,7 @@
 import {createContext,useCallback,useContext,useEffect,useRef,useState} from 'react';
 import {usePathname,useRouter} from 'next/navigation';
 import {Account,ApiError,authApi,AuthCapabilities} from '@/lib/auth-api';
+import {isOAuthCompletion,isOAuthCompletionId,oauthChannel,oauthStorageKey} from '@/lib/oauth-completion';
 
 type AuthState = {
   user:Account|null;loading:boolean;error:string;capabilities:AuthCapabilities|null;capabilitiesError:string;
@@ -19,7 +20,6 @@ export function AuthProvider({children}:{children:React.ReactNode}) {
   const version=useRef(0),ending=useRef(false);
   const sessionRequest=useRef<{version:number;promise:Promise<boolean>}|null>(null);
   const capabilitiesRequest=useRef<Promise<void>|null>(null);
-  const [initialSessionChecked, setInitialSessionChecked] = useState(false);
   const refreshCapabilities=useCallback(()=>{
     if(capabilitiesRequest.current) return capabilitiesRequest.current;
     const promise=authApi<AuthCapabilities>('/auth/status').then(status=>{setCapabilities(status);setCapabilitiesError('');},reason=>{
@@ -59,17 +59,23 @@ export function AuthProvider({children}:{children:React.ReactNode}) {
   useEffect(()=>{
     queueMicrotask(()=>{void refresh();void refreshCapabilities();});
     const restored=(event:PageTransitionEvent)=>{if(event.persisted)void refresh();};
+    const focused=()=>{void refresh(true);};
     window.addEventListener('pageshow',restored);
-    return()=>window.removeEventListener('pageshow',restored);
+    window.addEventListener('focus',focused);
+    return()=>{window.removeEventListener('pageshow',restored);window.removeEventListener('focus',focused);};
   },[refresh,refreshCapabilities]);
+  useEffect(()=>{
+    if(typeof BroadcastChannel==='undefined')return;
+    const channel=new BroadcastChannel(oauthChannel);
+    channel.onmessage=({data})=>{if(isOAuthCompletion(data))void refresh(true);};
+    return()=>channel.close();
+  },[refresh]);
+  useEffect(()=>{
+    const completed=(event:StorageEvent)=>{if(event.key===oauthStorageKey && isOAuthCompletionId(event.newValue))void refresh(true);};
+    window.addEventListener('storage',completed);
+    return()=>window.removeEventListener('storage',completed);
+  },[refresh]);
   useEffect(()=>{if(user)router.prefetch('/login/');},[user,router]);
-  useEffect(() => {
-    // Wait for initial session to be checked after OAuth completion
-    if (initialSessionChecked) {
-      void refresh();
-      void refreshCapabilities();
-    }
-  }, [initialSessionChecked, refresh, refreshCapabilities]);
   return <Context.Provider value={{user,loading,error,capabilities,capabilitiesError,signingOut,refresh,refreshCapabilities,updateAccount,logout}}>{children}</Context.Provider>;
 }
 export const useAuth=()=>useContext(Context);

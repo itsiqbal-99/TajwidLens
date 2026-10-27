@@ -109,6 +109,8 @@ The regression suite covers old and new links, lesson destinations, indexed exam
 
 For GitHub Pages, set `GITHUB_PAGES=true`, `NEXT_PUBLIC_REPO_NAME` to the repository name, and `NEXT_PUBLIC_BASE_PATH` to `/<repository-name>` before building. The existing workflow supplies all three values. `NEXT_PUBLIC_BASE_PATH` is intentionally public because browser-side data and icon requests need the repository prefix.
 
+For Cloudflare Pages production, keep the project root at `web`, build with `npm run build`, and publish `out`. Set build variable `NEXT_PUBLIC_API_URL=https://tajwidlens.pages.dev` and runtime variable `AUTH_API_ORIGIN=https://tajwid-lens-vezh.vercel.app`. The `/api/v1/*` Pages Function is the only dynamic route; static assets remain outside the Workers request quota. The backend must use `FRONTEND_URL=https://tajwidlens.pages.dev` and `API_URL=https://tajwidlens.pages.dev`, and Google must authorize `https://tajwidlens.pages.dev/api/v1/auth/google/callback`.
+
 ## Licensing and attribution
 
 See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and the original license files in `sources/quran-ws-v0.4.3/`. The data pipeline and user interface are documented in [DESIGN_NOTES.md](DESIGN_NOTES.md).

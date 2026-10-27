@@ -1,9 +1,11 @@
-import {expect,it} from 'vitest';
-import {isOAuthCompletion} from './oauth-completion';
+import { expect, it } from "vitest";
+import { isOAuthCompletion, isOAuthCompletionId } from "./oauth-completion";
 
-it('accepts only completion notices with known destinations, never credentials or external redirects',()=>{
-  const message={type:'complete',id:'12345678-abcd-1234-abcd-123456789abc',next:'/dashboard/'};
+it("accepts only credential-free OAuth completion notices", () => {
+  const message = { type: "complete", id: "12345678-abcd-1234-abcd-123456789abc" };
   expect(isOAuthCompletion(message)).toBe(true);
-  expect(isOAuthCompletion({...message,next:'/profile/?welcome=1'})).toBe(false);
-  for(const value of [null,{}, {...message,type:'ack'}, {...message,id:'bad'}, {...message,next:'https://evil.test'}, {...message,next:'/login/'}, {...message,next:'/profile/?token=secret'}]) expect(isOAuthCompletion(value)).toBe(false);
+  for (const value of [null, {}, { ...message, type: "ack" }, { ...message, id: "bad" }, { ...message, token: "secret" }])
+    expect(isOAuthCompletion(value)).toBe(false);
+  expect(isOAuthCompletionId(message.id)).toBe(true);
+  expect(isOAuthCompletionId("token")).toBe(false);
 });

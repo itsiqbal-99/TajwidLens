@@ -43,9 +43,15 @@ export class ApiError extends Error {
   constructor(
     message: string,
     public status: number,
+    public kind: "configuration" | "unauthorized" | "timeout" | "network" | "http" = "http",
   ) {
     super(message);
   }
+}
+
+export function authDiagnostic(outcome: string, status?: number) {
+  if (process.env.NODE_ENV !== "production")
+    console.info("[TajwidLens auth]", { endpoint: "/auth/me", outcome, status });
 }
 export async function authApi<T>(
   path: string,
@@ -56,8 +62,10 @@ export async function authApi<T>(
     throw new ApiError(
       "Konfigurasi layanan akun belum valid. Anda tetap dapat melanjutkan tanpa akun.",
       503,
+      "configuration",
     );
   let response: Response;
+
   try {
     response = await fetch(`${apiUrl}/api/v1${path}`, {
       method: body === undefined ? "GET" : method,
@@ -70,12 +78,19 @@ export async function authApi<T>(
       body: body === undefined ? undefined : JSON.stringify(body),
       signal: AbortSignal.timeout(10000),
     });
-  } catch {
+  } catch (error) {
+    const timeout = error instanceof Error && error.name === "TimeoutError";
+    if (path === "/auth/me") authDiagnostic(timeout ? "timeout" : "network-or-cors");
     throw new ApiError(
-      "Layanan akun sementara tidak dapat dijangkau. Coba lagi atau lanjutkan tanpa akun.",
+      timeout
+        ? "Pemeriksaan sesi terlalu lama. Coba lagi."
+        : "Layanan akun sementara tidak dapat dijangkau. Coba lagi atau lanjutkan tanpa akun.",
       0,
+      timeout ? "timeout" : "network",
     );
   }
+  if (path === "/auth/me")
+    authDiagnostic(response.status === 200 ? "http-200" : response.status === 401 ? "http-401" : "http-error", response.status);
   const data = await response.json().catch(() => ({}));
   if (!response.ok)
     throw new ApiError(
@@ -85,6 +100,7 @@ export async function authApi<T>(
           ? data.message.join(" ")
           : data.message || "Permintaan gagal. Silakan coba lagi.",
       response.status,
+      response.status === 401 ? "unauthorized" : "http",
     );
   return data;
 }

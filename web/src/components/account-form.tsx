@@ -7,7 +7,6 @@ import { ArrowRight, CheckCircle2, Eye, EyeOff, LockKeyhole } from 'lucide-react
 import { Account, apiUrl, authApi } from '@/lib/auth-api';
 import { googleLoginError, safeReturnPath } from '@/lib/auth-navigation';
 import { useAuth } from './auth-provider';
-import { isOAuthCompletion, oauthChannel } from '@/lib/oauth-completion';
 import { ActionFeedback } from './action-feedback';
 
 type Mode = 'login' | 'register' | 'forgot-password' | 'reset-password' | 'verify-email' | 'profile';
@@ -52,8 +51,6 @@ export function AccountForm({ mode }: { mode: Mode }) {
   const [welcome, setWelcome] = useState(false);
   const [routeReady, setRouteReady] = useState(false);
   const working = useRef(false);
-  const completing = useRef(false);
-  const completionIds = useRef(new Set<string>());
   const errorRef = useRef<HTMLParagraphElement>(null);
   const registrationRef = useRef<HTMLDivElement>(null);
   const profile = mode === 'profile';
@@ -80,22 +77,6 @@ export function AccountForm({ mode }: { mode: Mode }) {
     window.addEventListener('pageshow', restore);
     return () => window.removeEventListener('pageshow', restore);
   }, []);
-  useEffect(() => {
-    if (!googleOpened) return;
-    const checkSession = () => { if (!completing.current) void refresh(); };
-    window.addEventListener('focus', checkSession);
-    const channel = typeof BroadcastChannel === 'undefined' ? null : new BroadcastChannel(oauthChannel);
-    if (channel) channel.onmessage = async ({data}) => {
-      if (!isOAuthCompletion(data)) return;
-      channel.postMessage({type:'received',id:data.id});
-      completionIds.current.add(data.id);
-      if (completing.current) return;
-      completing.current = true;
-      if (await refresh(true)) completionIds.current.forEach(id => channel.postMessage({type:'ack',id}));
-      else { completing.current = false;setError('Sesi Google belum tersedia. Periksa pengaturan cookie browser lalu coba lagi.'); }
-    };
-    return () => { window.removeEventListener('focus', checkSession);channel?.close(); };
-  }, [googleOpened, refresh]);
   useEffect(() => {
     if (routeReady && !loading && user && entry && !signingOut) router.replace(destination);
   }, [routeReady, loading, user, entry, destination, router, signingOut]);
@@ -136,8 +117,11 @@ export function AccountForm({ mode }: { mode: Mode }) {
   function googleLogin() {
     if (working.current || !apiUrl || !capabilities?.google) return;
     setError('');
-    completing.current = false;
-    completionIds.current.clear();
+    const url = apiUrl + '/api/v1/auth/google/start';
+    if (navigator.maxTouchPoints > 0 || window.matchMedia?.('(pointer: coarse)').matches) {
+      window.location.assign(url);
+      return;
+    }
     try { window.open(apiUrl + '/api/v1/auth/google/start', '_blank', 'noopener,noreferrer,popup,width=520,height=740'); }
     catch { setError('Browser tidak mengizinkan jendela Google. Gunakan tautan lanjutkan di tab ini.'); }
     setGoogleOpened(true);

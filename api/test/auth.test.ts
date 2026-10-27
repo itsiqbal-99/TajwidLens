@@ -38,6 +38,11 @@ test('configuration fails closed and preserves certificate verification',()=>{
   assert.throws(()=>readConfig({DATABASE_URL:'postgres://localhost/test',NODE_ENV:'production',AUTH_ALLOW_UNVERIFIED_EMAIL:'true'}),/development\/test only/);
   assert.throws(()=>readConfig({DATABASE_URL:'postgres://localhost/test',AUTH_ALLOW_UNVERIFIED_EMAIL:'true'}),/development\/test only/);
   assert.equal(readConfig({DATABASE_URL:'postgres://localhost/test',NODE_ENV:'development',AUTH_ALLOW_UNVERIFIED_EMAIL:'true'}).allowUnverifiedEmail,true);
+  const production=readConfig({DATABASE_URL:'postgres://db.neon.tech/test',NODE_ENV:'production',FRONTEND_URL:'https://tajwidlens.pages.dev',API_URL:'https://tajwidlens.pages.dev'});
+  assert.equal(production.cookieName,'__Host-tajwidlens');
+  assert.equal(production.sameSite,'lax');
+  assert.equal(production.production,true);
+  assert.equal(production.api,'https://tajwidlens.pages.dev');
 });
 
 test('Google claims reject missing identity, unverified email and nonce mismatch',()=>{
@@ -283,6 +288,7 @@ test('API authentication and persistence with migrated PostgreSQL emulator',asyn
         await page.goBack({waitUntil:'domcontentloaded'});await page.waitForURL('**/login/');
         await page.goForward({waitUntil:'load'});await page.waitForURL('**/home/',{waitUntil:'load'});
         await browserExpect(page.getByRole('heading',{name:/Baca Al-Qur/})).toBeVisible();
+        await page.addInitScript(()=>Object.defineProperty(globalThis,'BroadcastChannel',{value:undefined,configurable:true}));
         await page.goto('http://localhost:3101/register/');
         await page.getByLabel('Nama panggilan').fill('Browser');
         await page.getByLabel('Email',{exact:true}).fill('not-an-email');
@@ -469,6 +475,13 @@ test('API authentication and persistence with migrated PostgreSQL emulator',asyn
         await page.getByRole('button',{name:'Masuk dengan Google',exact:true}).click();
         await page.getByRole('alert').filter({hasText:'Browser tidak mengizinkan jendela Google.'}).waitFor();
         await browserExpect(page.getByLabel('Email',{exact:true})).toBeEnabled();
+
+        await page.addInitScript(()=>Object.defineProperty(navigator,'maxTouchPoints',{get:()=>1,configurable:true}));
+        await page.goto('http://localhost:3101/login/');
+        await page.getByRole('button',{name:'Masuk dengan Google',exact:true}).click();
+        await page.waitForURL('**/dashboard/',{timeout:6000});
+        await page.goto('http://localhost:3101/profile/');
+        await page.getByRole('button',{name:'Keluar dari akun'}).click();await page.waitForURL('**/login/');
 
         config.smtpHost=undefined;config.allowUnverifiedEmail=true;
         await page.goto('http://localhost:3101/register/');await page.reload();
