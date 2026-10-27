@@ -26,7 +26,7 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
     <Link href="/learn/" className="back-link"><ArrowLeft size={17} /> Semua materi</Link>
     <div className="lesson-layout">
       <article className="lesson-article">
-        <div className="lesson-hero"><div className="lesson-hero-copy"><span className="eyebrow">{lesson.category.toUpperCase()} / MATERI TAJWID</span><h1>{lesson.title}</h1><p>{lesson.summary}</p></div><LessonVisual category={lesson.category} sample={lesson.focus.sample} index={lessons.findIndex((item) => item.id === lesson.id)} large/></div>
+        <div className="lesson-hero"><div className="lesson-hero-copy"><span className="eyebrow">{lesson.category.toUpperCase()} / MATERI TAJWID</span><h1>{lesson.title}</h1><p>{lesson.summary}</p></div><LessonVisual category={lesson.category} sample={lesson.focus.sample} label={lesson.focus.label} large/></div>
         {foundation&&<LessonStudyContent lessonId={lesson.id}/>}
         <div className="lesson-prose">
           {!foundation&&<>

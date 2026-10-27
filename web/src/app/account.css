@@ -243,3 +243,18 @@
 @media (min-width: 901px) and (max-width: 1000px) {
   .header-actions .account-nav-copy { display: none; }
 }
+/* Entry waits for the existing session check; motion adds no artificial delay. */
+.entry-splash { display: grid; place-items: center; min-height: 100svh; padding: 24px; background: var(--surface); }
+.entry-splash-content { display: flex; flex-direction: column; align-items: center; animation: entry-reveal 320ms ease-out both; }
+.entry-splash-content > img { width: 76px; height: 76px; object-fit: contain; }
+.entry-splash-content > strong { margin-top: 16px; color: var(--text); font-size: 25px; font-weight: 650; letter-spacing: -.8px; }
+.entry-splash-content > strong > span { color: var(--emerald); }
+.entry-splash-track { width: 96px; height: 3px; margin-top: 28px; overflow: hidden; border-radius: 99px; background: var(--border); }
+.entry-splash-track > span { display: block; width: 40%; height: 100%; border-radius: inherit; background: var(--emerald); animation: entry-loading 1.4s cubic-bezier(.45,0,.55,1) infinite; }
+@keyframes entry-reveal { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes entry-loading { from { transform: translateX(-100%); } to { transform: translateX(350%); } }
+@media (prefers-reduced-motion: reduce) {
+  .entry-splash-content, .entry-splash-track > span { animation: none; }
+  .entry-splash-track > span { margin-inline: auto; }
+}
+

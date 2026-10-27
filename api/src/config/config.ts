@@ -3,7 +3,10 @@ import "dotenv/config";
 export function readConfig(env = process.env) {
   const production = env.NODE_ENV === "production";
   const allowUnverifiedEmail = env.AUTH_ALLOW_UNVERIFIED_EMAIL === "true";
-  if (allowUnverifiedEmail && !["development", "test"].includes(env.NODE_ENV || ""))
+  if (
+    allowUnverifiedEmail &&
+    !["development", "test"].includes(env.NODE_ENV || "")
+  )
     throw new Error("AUTH_ALLOW_UNVERIFIED_EMAIL is development/test only");
   const databaseUrl = env.DATABASE_URL;
   if (!databaseUrl) throw new Error("DATABASE_URL is required");
@@ -45,10 +48,7 @@ export function readConfig(env = process.env) {
     origin: frontend.origin,
     api: api.origin,
     cookieName: production ? "__Host-tajwidlens" : "tajwidlens",
-    sameSite:
-      env.COOKIE_SAME_SITE === "none" && production
-        ? ("none" as const)
-        : ("lax" as const),
+    sameSite: "lax" as const,
     googleClientId: env.GOOGLE_CLIENT_ID,
     googleClientSecret: env.GOOGLE_CLIENT_SECRET,
     smtpHost: env.SMTP_HOST,

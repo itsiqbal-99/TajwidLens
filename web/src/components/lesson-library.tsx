@@ -49,7 +49,7 @@ export function LessonLibrary() {
         const index=lessons.findIndex(item=>item.id===lesson.id),status=states?.get(lesson.id);
         return <Link key={lesson.id} href={'/learn/'+lesson.slug+'/'} className={'lesson-row'+(status?' lesson-status-'+status.toLowerCase():'')}>
           <div className="lesson-card-top"><span className="lesson-number">{String(index+1).padStart(2,"0")}</span><ArrowUpRight size={19}/></div>
-          <LessonVisual category={lesson.category} sample={lesson.focus.sample} index={index}/>
+          <LessonVisual category={lesson.category} sample={lesson.focus.sample} label={lesson.focus.label}/>
           <div className="lesson-card-copy"><span className="eyebrow">{lesson.category}</span><h2>{lesson.title}</h2><p>{lesson.summary}</p>
             {status && <span className={'lesson-status-badge status-'+status.toLowerCase()}>{status==='COMPLETED'?<CheckCircle2 size={14}/>:status==='IN_PROGRESS'?<CircleDot size={14}/>:<Circle size={12}/>}<span>{lessonStatusLabel[status]}</span></span>}
           </div>

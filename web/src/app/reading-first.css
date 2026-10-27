@@ -459,31 +459,14 @@ body { font-size: 14px; line-height: 1.65; }
 .lesson-card-copy { padding: 19px 8px 14px; }
 .lesson-card-copy h2 { margin: 7px 0 7px; font-size: 21px; line-height: 1.25; }
 .lesson-card-copy p { font-size: 11.5px; line-height: 1.68; }
-.lesson-visual { position: relative; min-height: 166px; overflow: hidden; border-radius: 7px; background: linear-gradient(145deg,color-mix(in srgb,var(--blue-tint) 74%,var(--surface)),color-mix(in srgb,var(--clay-tint) 72%,var(--surface))); color: var(--forest); isolation: isolate; }
-.lesson-visual svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-.visual-orbit,.visual-wave,.visual-axis { fill: none; vector-effect: non-scaling-stroke; }
-.visual-orbit { stroke: color-mix(in srgb,var(--emerald) 58%,transparent); stroke-width: 1.4; }
-.visual-orbit-two { stroke: color-mix(in srgb,var(--dusty-coral) 62%,transparent); }
-.visual-wave { stroke: var(--gold); stroke-width: 2; }
-.visual-axis { stroke: color-mix(in srgb,var(--border-strong) 65%,transparent); stroke-width: 1; }
-.visual-disc { fill: color-mix(in srgb,var(--surface) 48%,transparent); stroke: color-mix(in srgb,var(--emerald) 42%,transparent); }
-.visual-disc-two { fill: color-mix(in srgb,var(--dusty-coral) 17%,transparent); stroke: color-mix(in srgb,var(--dusty-coral) 46%,transparent); }
-.visual-dot { fill: var(--gold); }
-.lesson-visual-copy { position: absolute; inset: 0; display: grid; align-content: center; justify-items: center; z-index: 1; text-align: center; }
-.lesson-visual-copy > span { margin-bottom: 6px; color: var(--emerald); font-size: 8px; font-weight: 760; letter-spacing: .13em; text-transform: uppercase; }
-.lesson-visual-copy > strong { color: var(--forest); font-size: 39px; line-height: 1.25; text-shadow: 0 1px var(--surface); }
-.lesson-visual-copy > small { position: absolute; right: 14px; bottom: 9px; color: var(--text-secondary); font-family: "Noto Naskh Arabic",serif; font-size: 17px; opacity: .72; }
-.lesson-visual[data-pattern="1"] svg { transform: scaleX(-1); }
-.lesson-visual[data-pattern="2"] .visual-disc-one { transform: translate(52px,-16px); }
-.lesson-visual[data-pattern="3"] .visual-wave { transform: translateY(18px); }
-.lesson-visual[data-category="Dengung"] { background: linear-gradient(145deg,var(--lavender-tint),var(--blue-tint)); }
-.lesson-visual[data-category="Sifat bunyi"] { background: linear-gradient(145deg,var(--gold-tint),var(--clay-tint)); }
-.lesson-visual[data-category="Panjang bacaan"] { background: linear-gradient(145deg,var(--gold-tint),var(--surface-muted)); }
-.lesson-visual[data-category="Konteks bacaan"] { background: linear-gradient(145deg,var(--clay-tint),var(--lavender-tint)); }
+.lesson-visual { display: grid; grid-template-rows: auto 1fr auto; justify-items: center; align-items: center; gap: 10px; min-height: 166px; padding: 16px 20px; border-radius: 7px; background: var(--surface-muted); color: var(--forest); }
+.lesson-visual-icon { color: var(--emerald); opacity: .8; }
+.lesson-visual-sample { max-width: 100%; font-family: "Noto Naskh Arabic",serif; font-size: 30px; font-weight: 500; line-height: 1.85; text-align: center; text-wrap: balance; overflow-wrap: anywhere; }
+.lesson-visual-label { max-width: 100%; color: var(--text-secondary); font-size: 10px; font-weight: 500; line-height: 1.6; text-align: center; text-wrap: balance; }
 .lesson-hero { display: grid; grid-template-columns: minmax(0,1.15fr) minmax(270px,.85fr); gap: clamp(28px,5vw,70px); align-items: center; }
 .lesson-hero-copy { min-width: 0; }
 .lesson-visual-large { min-height: 260px; border: 1px solid var(--border); }
-.lesson-visual-large .lesson-visual-copy > strong { font-size: clamp(48px,6vw,76px); }
+.lesson-visual-large .lesson-visual-sample { font-size: clamp(32px,4vw,48px); }
 .home-learn-shortcut { color: var(--forest); }
 
 /* PWA installation prompt */

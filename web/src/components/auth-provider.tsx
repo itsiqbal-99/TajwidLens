@@ -19,6 +19,7 @@ export function AuthProvider({children}:{children:React.ReactNode}) {
   const version=useRef(0),ending=useRef(false);
   const sessionRequest=useRef<{version:number;promise:Promise<boolean>}|null>(null);
   const capabilitiesRequest=useRef<Promise<void>|null>(null);
+  const [initialSessionChecked, setInitialSessionChecked] = useState(false);
   const refreshCapabilities=useCallback(()=>{
     if(capabilitiesRequest.current) return capabilitiesRequest.current;
     const promise=authApi<AuthCapabilities>('/auth/status').then(status=>{setCapabilities(status);setCapabilitiesError('');},reason=>{
@@ -62,6 +63,13 @@ export function AuthProvider({children}:{children:React.ReactNode}) {
     return()=>window.removeEventListener('pageshow',restored);
   },[refresh,refreshCapabilities]);
   useEffect(()=>{if(user)router.prefetch('/login/');},[user,router]);
+  useEffect(() => {
+    // Wait for initial session to be checked after OAuth completion
+    if (initialSessionChecked) {
+      void refresh();
+      void refreshCapabilities();
+    }
+  }, [initialSessionChecked, refresh, refreshCapabilities]);
   return <Context.Provider value={{user,loading,error,capabilities,capabilitiesError,signingOut,refresh,refreshCapabilities,updateAccount,logout}}>{children}</Context.Provider>;
 }
 export const useAuth=()=>useContext(Context);
