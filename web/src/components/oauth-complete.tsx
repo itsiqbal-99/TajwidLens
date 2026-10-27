@@ -91,7 +91,7 @@ export function OAuthComplete() {
     return <section className="account-page account-card oauth-complete">
       <CheckCircle2 size={38} aria-hidden="true" />
       <h1>Login Google berhasil.</h1>
-      <ActionFeedback state="error">{error}</ActionFeedback>
+      <p className="error-message">{error}</p>
       <p>Sesi tidak valid. <a href={destination} onClick={(e) => e.preventDefault()}>Lanjutkan tanpa akun Google</a></p>
     </section>;
   }
