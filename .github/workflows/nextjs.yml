@@ -40,6 +40,20 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Validate API URL
+        env:
+          NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
+        run: |
+          node -e "
+            const value = process.env.NEXT_PUBLIC_API_URL;
+            console.log("VALUEEEE URLLL", value)
+            if (!value) throw new Error('NEXT_PUBLIC_API_URL is missing');
+            const url = new URL(value);
+            if (url.protocol !== 'https:' || url.pathname !== '/' || url.search || url.hash)
+              throw new Error('NEXT_PUBLIC_API_URL must be an HTTPS origin');
+            console.log('API URL configuration is valid');
+          "
+
       - name: Build Next.js
         run: npm run build
         env:
