@@ -12,6 +12,7 @@ if (isGitHubPages && !basePath) throw new Error("NEXT_PUBLIC_BASE_PATH or NEXT_P
 
 const nextConfig: NextConfig = {
   devIndicators: false,
+  experimental: { agentUpgrade: "security" },
   output: "export",
   trailingSlash: true,
   turbopack: { root: path.resolve(__dirname, '..') },
