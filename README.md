@@ -1,8 +1,10 @@
 <p align="center">
-  <img src="public/showcase/natural-branding.png" alt="TajwidLens — baca Al-Qur'an dan pahami setiap bacaannya" width="100%" />
+  <img src="web/public/showcase/natural-branding.png" alt="TajwidLens — baca Al-Qur'an dan pahami setiap bacaannya" width="100%" />
 </p>
 
 # TajwidLens
+
+Dokumentasi development: [technical flow dan diagram Mermaid](docs/TECHNICAL_FLOW.md), [pemindahan bank soal antar-database](api/docs/QUIZ_DATA_TRANSFER.md).
 
 ## Demo & Source Code
 

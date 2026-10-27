@@ -1,0 +1,1506 @@
+{
+  "source": {
+    "release": "v0.4.3",
+    "corpusVersion": "0.4.2",
+    "commit": "c0d07c02965d7853f8002491f05f90e8b0f24d06",
+    "displayEdition": "KFGQPC UthmanicHafs v3.0 (2026)",
+    "displayEditionSha256": "9e8f389fd43a2b5d159d080c2153cc1b67373663a560bc4fc294267b852d4d88"
+  },
+  "counts": {
+    "accepted": 143049,
+    "excludedRule": 4144,
+    "unmatchedAyah": 62
+  },
+  "rejectedAyahs": [
+    "11:41",
+    "27:20",
+    "36:22",
+    "52:37"
+  ],
+  "surahs": [
+    {
+      "number": 1,
+      "name": "Al-Fatihah",
+      "arabicName": "الفاتحة",
+      "meaning": "Pembuka",
+      "ayahCount": 7
+    },
+    {
+      "number": 2,
+      "name": "Al-Baqara",
+      "arabicName": "البقرة",
+      "meaning": "286 ayat",
+      "ayahCount": 286
+    },
+    {
+      "number": 3,
+      "name": "Aal-i-Imraan",
+      "arabicName": "آل عمران",
+      "meaning": "200 ayat",
+      "ayahCount": 200
+    },
+    {
+      "number": 4,
+      "name": "An-Nisaa",
+      "arabicName": "النساء",
+      "meaning": "176 ayat",
+      "ayahCount": 176
+    },
+    {
+      "number": 5,
+      "name": "Al-Maaida",
+      "arabicName": "المائدة",
+      "meaning": "120 ayat",
+      "ayahCount": 120
+    },
+    {
+      "number": 6,
+      "name": "Al-An'aam",
+      "arabicName": "الأنعام",
+      "meaning": "165 ayat",
+      "ayahCount": 165
+    },
+    {
+      "number": 7,
+      "name": "Al-A'raaf",
+      "arabicName": "الأعراف",
+      "meaning": "206 ayat",
+      "ayahCount": 206
+    },
+    {
+      "number": 8,
+      "name": "Al-Anfaal",
+      "arabicName": "الأنفال",
+      "meaning": "75 ayat",
+      "ayahCount": 75
+    },
+    {
+      "number": 9,
+      "name": "At-Tawba",
+      "arabicName": "التوبة",
+      "meaning": "129 ayat",
+      "ayahCount": 129
+    },
+    {
+      "number": 10,
+      "name": "Yunus",
+      "arabicName": "يونس",
+      "meaning": "109 ayat",
+      "ayahCount": 109
+    },
+    {
+      "number": 11,
+      "name": "Hud",
+      "arabicName": "هود",
+      "meaning": "123 ayat",
+      "ayahCount": 123
+    },
+    {
+      "number": 12,
+      "name": "Yusuf",
+      "arabicName": "يوسف",
+      "meaning": "111 ayat",
+      "ayahCount": 111
+    },
+    {
+      "number": 13,
+      "name": "Ar-Ra'd",
+      "arabicName": "الرعد",
+      "meaning": "43 ayat",
+      "ayahCount": 43
+    },
+    {
+      "number": 14,
+      "name": "Ibrahim",
+      "arabicName": "ابراهيم",
+      "meaning": "52 ayat",
+      "ayahCount": 52
+    },
+    {
+      "number": 15,
+      "name": "Al-Hijr",
+      "arabicName": "الحجر",
+      "meaning": "99 ayat",
+      "ayahCount": 99
+    },
+    {
+      "number": 16,
+      "name": "An-Nahl",
+      "arabicName": "النحل",
+      "meaning": "128 ayat",
+      "ayahCount": 128
+    },
+    {
+      "number": 17,
+      "name": "Al-Israa",
+      "arabicName": "الإسراء",
+      "meaning": "111 ayat",
+      "ayahCount": 111
+    },
+    {
+      "number": 18,
+      "name": "Al-Kahf",
+      "arabicName": "الكهف",
+      "meaning": "110 ayat",
+      "ayahCount": 110
+    },
+    {
+      "number": 19,
+      "name": "Maryam",
+      "arabicName": "مريم",
+      "meaning": "98 ayat",
+      "ayahCount": 98
+    },
+    {
+      "number": 20,
+      "name": "Taa-Haa",
+      "arabicName": "طه",
+      "meaning": "135 ayat",
+      "ayahCount": 135
+    },
+    {
+      "number": 21,
+      "name": "Al-Anbiyaa",
+      "arabicName": "الأنبياء",
+      "meaning": "112 ayat",
+      "ayahCount": 112
+    },
+    {
+      "number": 22,
+      "name": "Al-Hajj",
+      "arabicName": "الحج",
+      "meaning": "78 ayat",
+      "ayahCount": 78
+    },
+    {
+      "number": 23,
+      "name": "Al-Muminoon",
+      "arabicName": "المؤمنون",
+      "meaning": "118 ayat",
+      "ayahCount": 118
+    },
+    {
+      "number": 24,
+      "name": "An-Noor",
+      "arabicName": "النور",
+      "meaning": "64 ayat",
+      "ayahCount": 64
+    },
+    {
+      "number": 25,
+      "name": "Al-Furqaan",
+      "arabicName": "الفرقان",
+      "meaning": "77 ayat",
+      "ayahCount": 77
+    },
+    {
+      "number": 26,
+      "name": "Ash-Shu'araa",
+      "arabicName": "الشعراء",
+      "meaning": "227 ayat",
+      "ayahCount": 227
+    },
+    {
+      "number": 27,
+      "name": "An-Naml",
+      "arabicName": "النمل",
+      "meaning": "93 ayat",
+      "ayahCount": 93
+    },
+    {
+      "number": 28,
+      "name": "Al-Qasas",
+      "arabicName": "القصص",
+      "meaning": "88 ayat",
+      "ayahCount": 88
+    },
+    {
+      "number": 29,
+      "name": "Al-Ankaboot",
+      "arabicName": "العنكبوت",
+      "meaning": "69 ayat",
+      "ayahCount": 69
+    },
+    {
+      "number": 30,
+      "name": "Ar-Room",
+      "arabicName": "الروم",
+      "meaning": "60 ayat",
+      "ayahCount": 60
+    },
+    {
+      "number": 31,
+      "name": "Luqman",
+      "arabicName": "لقمان",
+      "meaning": "34 ayat",
+      "ayahCount": 34
+    },
+    {
+      "number": 32,
+      "name": "As-Sajda",
+      "arabicName": "السجدة",
+      "meaning": "30 ayat",
+      "ayahCount": 30
+    },
+    {
+      "number": 33,
+      "name": "Al-Ahzaab",
+      "arabicName": "الأحزاب",
+      "meaning": "73 ayat",
+      "ayahCount": 73
+    },
+    {
+      "number": 34,
+      "name": "Saba",
+      "arabicName": "سبإ",
+      "meaning": "54 ayat",
+      "ayahCount": 54
+    },
+    {
+      "number": 35,
+      "name": "Faatir",
+      "arabicName": "فاطر",
+      "meaning": "45 ayat",
+      "ayahCount": 45
+    },
+    {
+      "number": 36,
+      "name": "Yaseen",
+      "arabicName": "يس",
+      "meaning": "83 ayat",
+      "ayahCount": 83
+    },
+    {
+      "number": 37,
+      "name": "As-Saaffaat",
+      "arabicName": "الصافات",
+      "meaning": "182 ayat",
+      "ayahCount": 182
+    },
+    {
+      "number": 38,
+      "name": "Saad",
+      "arabicName": "ص",
+      "meaning": "88 ayat",
+      "ayahCount": 88
+    },
+    {
+      "number": 39,
+      "name": "Az-Zumar",
+      "arabicName": "الزمر",
+      "meaning": "75 ayat",
+      "ayahCount": 75
+    },
+    {
+      "number": 40,
+      "name": "Al-Ghaafir",
+      "arabicName": "غافر",
+      "meaning": "85 ayat",
+      "ayahCount": 85
+    },
+    {
+      "number": 41,
+      "name": "Fussilat",
+      "arabicName": "فصلت",
+      "meaning": "54 ayat",
+      "ayahCount": 54
+    },
+    {
+      "number": 42,
+      "name": "Ash-Shura",
+      "arabicName": "الشورى",
+      "meaning": "53 ayat",
+      "ayahCount": 53
+    },
+    {
+      "number": 43,
+      "name": "Az-Zukhruf",
+      "arabicName": "الزخرف",
+      "meaning": "89 ayat",
+      "ayahCount": 89
+    },
+    {
+      "number": 44,
+      "name": "Ad-Dukhaan",
+      "arabicName": "الدخان",
+      "meaning": "59 ayat",
+      "ayahCount": 59
+    },
+    {
+      "number": 45,
+      "name": "Al-Jaathiya",
+      "arabicName": "الجاثية",
+      "meaning": "37 ayat",
+      "ayahCount": 37
+    },
+    {
+      "number": 46,
+      "name": "Al-Ahqaf",
+      "arabicName": "الأحقاف",
+      "meaning": "35 ayat",
+      "ayahCount": 35
+    },
+    {
+      "number": 47,
+      "name": "Muhammad",
+      "arabicName": "محمد",
+      "meaning": "38 ayat",
+      "ayahCount": 38
+    },
+    {
+      "number": 48,
+      "name": "Al-Fath",
+      "arabicName": "الفتح",
+      "meaning": "29 ayat",
+      "ayahCount": 29
+    },
+    {
+      "number": 49,
+      "name": "Al-Hujuraat",
+      "arabicName": "الحجرات",
+      "meaning": "18 ayat",
+      "ayahCount": 18
+    },
+    {
+      "number": 50,
+      "name": "Qaaf",
+      "arabicName": "ق",
+      "meaning": "45 ayat",
+      "ayahCount": 45
+    },
+    {
+      "number": 51,
+      "name": "Adh-Dhaariyat",
+      "arabicName": "الذاريات",
+      "meaning": "60 ayat",
+      "ayahCount": 60
+    },
+    {
+      "number": 52,
+      "name": "At-Tur",
+      "arabicName": "الطور",
+      "meaning": "49 ayat",
+      "ayahCount": 49
+    },
+    {
+      "number": 53,
+      "name": "An-Najm",
+      "arabicName": "النجم",
+      "meaning": "62 ayat",
+      "ayahCount": 62
+    },
+    {
+      "number": 54,
+      "name": "Al-Qamar",
+      "arabicName": "القمر",
+      "meaning": "55 ayat",
+      "ayahCount": 55
+    },
+    {
+      "number": 55,
+      "name": "Ar-Rahmaan",
+      "arabicName": "الرحمن",
+      "meaning": "78 ayat",
+      "ayahCount": 78
+    },
+    {
+      "number": 56,
+      "name": "Al-Waaqia",
+      "arabicName": "الواقعة",
+      "meaning": "96 ayat",
+      "ayahCount": 96
+    },
+    {
+      "number": 57,
+      "name": "Al-Hadid",
+      "arabicName": "الحديد",
+      "meaning": "29 ayat",
+      "ayahCount": 29
+    },
+    {
+      "number": 58,
+      "name": "Al-Mujaadila",
+      "arabicName": "المجادلة",
+      "meaning": "22 ayat",
+      "ayahCount": 22
+    },
+    {
+      "number": 59,
+      "name": "Al-Hashr",
+      "arabicName": "الحشر",
+      "meaning": "24 ayat",
+      "ayahCount": 24
+    },
+    {
+      "number": 60,
+      "name": "Al-Mumtahana",
+      "arabicName": "الممتحنة",
+      "meaning": "13 ayat",
+      "ayahCount": 13
+    },
+    {
+      "number": 61,
+      "name": "As-Saff",
+      "arabicName": "الصف",
+      "meaning": "14 ayat",
+      "ayahCount": 14
+    },
+    {
+      "number": 62,
+      "name": "Al-Jumu'a",
+      "arabicName": "الجمعة",
+      "meaning": "11 ayat",
+      "ayahCount": 11
+    },
+    {
+      "number": 63,
+      "name": "Al-Munaafiqoon",
+      "arabicName": "المنافقون",
+      "meaning": "11 ayat",
+      "ayahCount": 11
+    },
+    {
+      "number": 64,
+      "name": "At-Taghaabun",
+      "arabicName": "التغابن",
+      "meaning": "18 ayat",
+      "ayahCount": 18
+    },
+    {
+      "number": 65,
+      "name": "At-Talaaq",
+      "arabicName": "الطلاق",
+      "meaning": "12 ayat",
+      "ayahCount": 12
+    },
+    {
+      "number": 66,
+      "name": "At-Tahrim",
+      "arabicName": "التحريم",
+      "meaning": "12 ayat",
+      "ayahCount": 12
+    },
+    {
+      "number": 67,
+      "name": "Al-Mulk",
+      "arabicName": "الملك",
+      "meaning": "30 ayat",
+      "ayahCount": 30
+    },
+    {
+      "number": 68,
+      "name": "Al-Qalam",
+      "arabicName": "القلم",
+      "meaning": "52 ayat",
+      "ayahCount": 52
+    },
+    {
+      "number": 69,
+      "name": "Al-Haaqqa",
+      "arabicName": "الحاقة",
+      "meaning": "52 ayat",
+      "ayahCount": 52
+    },
+    {
+      "number": 70,
+      "name": "Al-Ma'aarij",
+      "arabicName": "المعارج",
+      "meaning": "44 ayat",
+      "ayahCount": 44
+    },
+    {
+      "number": 71,
+      "name": "Nooh",
+      "arabicName": "نوح",
+      "meaning": "28 ayat",
+      "ayahCount": 28
+    },
+    {
+      "number": 72,
+      "name": "Al-Jinn",
+      "arabicName": "الجن",
+      "meaning": "28 ayat",
+      "ayahCount": 28
+    },
+    {
+      "number": 73,
+      "name": "Al-Muzzammil",
+      "arabicName": "المزمل",
+      "meaning": "20 ayat",
+      "ayahCount": 20
+    },
+    {
+      "number": 74,
+      "name": "Al-Muddaththir",
+      "arabicName": "المدثر",
+      "meaning": "56 ayat",
+      "ayahCount": 56
+    },
+    {
+      "number": 75,
+      "name": "Al-Qiyaama",
+      "arabicName": "القيامة",
+      "meaning": "40 ayat",
+      "ayahCount": 40
+    },
+    {
+      "number": 76,
+      "name": "Al-Insaan",
+      "arabicName": "الانسان",
+      "meaning": "31 ayat",
+      "ayahCount": 31
+    },
+    {
+      "number": 77,
+      "name": "Al-Mursalaat",
+      "arabicName": "المرسلات",
+      "meaning": "50 ayat",
+      "ayahCount": 50
+    },
+    {
+      "number": 78,
+      "name": "An-Naba",
+      "arabicName": "النبإ",
+      "meaning": "40 ayat",
+      "ayahCount": 40
+    },
+    {
+      "number": 79,
+      "name": "An-Naazi'aat",
+      "arabicName": "النازعات",
+      "meaning": "46 ayat",
+      "ayahCount": 46
+    },
+    {
+      "number": 80,
+      "name": "Abasa",
+      "arabicName": "عبس",
+      "meaning": "42 ayat",
+      "ayahCount": 42
+    },
+    {
+      "number": 81,
+      "name": "At-Takwir",
+      "arabicName": "التكوير",
+      "meaning": "29 ayat",
+      "ayahCount": 29
+    },
+    {
+      "number": 82,
+      "name": "Al-Infitaar",
+      "arabicName": "الإنفطار",
+      "meaning": "19 ayat",
+      "ayahCount": 19
+    },
+    {
+      "number": 83,
+      "name": "Al-Mutaffifin",
+      "arabicName": "المطففين",
+      "meaning": "36 ayat",
+      "ayahCount": 36
+    },
+    {
+      "number": 84,
+      "name": "Al-Inshiqaaq",
+      "arabicName": "الإنشقاق",
+      "meaning": "25 ayat",
+      "ayahCount": 25
+    },
+    {
+      "number": 85,
+      "name": "Al-Burooj",
+      "arabicName": "البروج",
+      "meaning": "22 ayat",
+      "ayahCount": 22
+    },
+    {
+      "number": 86,
+      "name": "At-Taariq",
+      "arabicName": "الطارق",
+      "meaning": "17 ayat",
+      "ayahCount": 17
+    },
+    {
+      "number": 87,
+      "name": "Al-A'laa",
+      "arabicName": "الأعلى",
+      "meaning": "19 ayat",
+      "ayahCount": 19
+    },
+    {
+      "number": 88,
+      "name": "Al-Ghaashiya",
+      "arabicName": "الغاشية",
+      "meaning": "26 ayat",
+      "ayahCount": 26
+    },
+    {
+      "number": 89,
+      "name": "Al-Fajr",
+      "arabicName": "الفجر",
+      "meaning": "30 ayat",
+      "ayahCount": 30
+    },
+    {
+      "number": 90,
+      "name": "Al-Balad",
+      "arabicName": "البلد",
+      "meaning": "20 ayat",
+      "ayahCount": 20
+    },
+    {
+      "number": 91,
+      "name": "Ash-Shams",
+      "arabicName": "الشمس",
+      "meaning": "15 ayat",
+      "ayahCount": 15
+    },
+    {
+      "number": 92,
+      "name": "Al-Lail",
+      "arabicName": "الليل",
+      "meaning": "21 ayat",
+      "ayahCount": 21
+    },
+    {
+      "number": 93,
+      "name": "Ad-Dhuhaa",
+      "arabicName": "الضحى",
+      "meaning": "11 ayat",
+      "ayahCount": 11
+    },
+    {
+      "number": 94,
+      "name": "Ash-Sharh",
+      "arabicName": "الشرح",
+      "meaning": "8 ayat",
+      "ayahCount": 8
+    },
+    {
+      "number": 95,
+      "name": "At-Tin",
+      "arabicName": "التين",
+      "meaning": "8 ayat",
+      "ayahCount": 8
+    },
+    {
+      "number": 96,
+      "name": "Al-Alaq",
+      "arabicName": "العلق",
+      "meaning": "19 ayat",
+      "ayahCount": 19
+    },
+    {
+      "number": 97,
+      "name": "Al-Qadr",
+      "arabicName": "القدر",
+      "meaning": "5 ayat",
+      "ayahCount": 5
+    },
+    {
+      "number": 98,
+      "name": "Al-Bayyina",
+      "arabicName": "البينة",
+      "meaning": "8 ayat",
+      "ayahCount": 8
+    },
+    {
+      "number": 99,
+      "name": "Az-Zalzala",
+      "arabicName": "الزلزلة",
+      "meaning": "8 ayat",
+      "ayahCount": 8
+    },
+    {
+      "number": 100,
+      "name": "Al-Aadiyaat",
+      "arabicName": "العاديات",
+      "meaning": "11 ayat",
+      "ayahCount": 11
+    },
+    {
+      "number": 101,
+      "name": "Al-Qaari'a",
+      "arabicName": "القارعة",
+      "meaning": "11 ayat",
+      "ayahCount": 11
+    },
+    {
+      "number": 102,
+      "name": "At-Takaathur",
+      "arabicName": "التكاثر",
+      "meaning": "8 ayat",
+      "ayahCount": 8
+    },
+    {
+      "number": 103,
+      "name": "Al-Asr",
+      "arabicName": "العصر",
+      "meaning": "3 ayat",
+      "ayahCount": 3
+    },
+    {
+      "number": 104,
+      "name": "Al-Humaza",
+      "arabicName": "الهمزة",
+      "meaning": "9 ayat",
+      "ayahCount": 9
+    },
+    {
+      "number": 105,
+      "name": "Al-Fil",
+      "arabicName": "الفيل",
+      "meaning": "5 ayat",
+      "ayahCount": 5
+    },
+    {
+      "number": 106,
+      "name": "Quraish",
+      "arabicName": "قريش",
+      "meaning": "4 ayat",
+      "ayahCount": 4
+    },
+    {
+      "number": 107,
+      "name": "Al-Maa'un",
+      "arabicName": "الماعون",
+      "meaning": "7 ayat",
+      "ayahCount": 7
+    },
+    {
+      "number": 108,
+      "name": "Al-Kawthar",
+      "arabicName": "الكوثر",
+      "meaning": "3 ayat",
+      "ayahCount": 3
+    },
+    {
+      "number": 109,
+      "name": "Al-Kaafiroon",
+      "arabicName": "الكافرون",
+      "meaning": "6 ayat",
+      "ayahCount": 6
+    },
+    {
+      "number": 110,
+      "name": "An-Nasr",
+      "arabicName": "النصر",
+      "meaning": "3 ayat",
+      "ayahCount": 3
+    },
+    {
+      "number": 111,
+      "name": "Al-Masad",
+      "arabicName": "المسد",
+      "meaning": "5 ayat",
+      "ayahCount": 5
+    },
+    {
+      "number": 112,
+      "name": "Al-Ikhlas",
+      "arabicName": "الإخلاص",
+      "meaning": "Ikhlas",
+      "ayahCount": 4
+    },
+    {
+      "number": 113,
+      "name": "Al-Falaq",
+      "arabicName": "الفلق",
+      "meaning": "Waktu Subuh",
+      "ayahCount": 5
+    },
+    {
+      "number": 114,
+      "name": "An-Nas",
+      "arabicName": "الناس",
+      "meaning": "Manusia",
+      "ayahCount": 6
+    }
+  ],
+  "files": [
+    {
+      "surah": 1,
+      "file": "1.json",
+      "sha256": "13cc40400d5ae8c6cc50d85022eaec6135fc54300303968382159cd37a0e1383",
+      "bytes": 8048
+    },
+    {
+      "surah": 2,
+      "file": "2.json",
+      "sha256": "c0e507cadd52deeadfb1e276971290c7d97914c4bfccae4c3631c0c198f256c0",
+      "bytes": 1452650
+    },
+    {
+      "surah": 3,
+      "file": "3.json",
+      "sha256": "bd7d8ccf4989f969167ae544976c599ebbcac183223187b11837e213afaa4193",
+      "bytes": 823930
+    },
+    {
+      "surah": 4,
+      "file": "4.json",
+      "sha256": "a8344116d0d70b3799c37558bab2a618ecabecc03e067a738945877cfc87939b",
+      "bytes": 931635
+    },
+    {
+      "surah": 5,
+      "file": "5.json",
+      "sha256": "a781b3ffb47633a0ba6581bb74766ca701beddca6636daa7f70b319508d477a5",
+      "bytes": 672098
+    },
+    {
+      "surah": 6,
+      "file": "6.json",
+      "sha256": "fd84e9f29e096ec4ee4b11828875f58cc7b70c71cb4164b6ba38dfe26dd12223",
+      "bytes": 722011
+    },
+    {
+      "surah": 7,
+      "file": "7.json",
+      "sha256": "8d4a719a3cab3d93b834ea6c5d82eb54cc9797258acb84ed3d54c8968c478bbf",
+      "bytes": 831456
+    },
+    {
+      "surah": 8,
+      "file": "8.json",
+      "sha256": "9468b9e03ab6bc6cbe010b4839da2e2ff9f070609dadd1dcad447434d6fb5eb1",
+      "bytes": 296444
+    },
+    {
+      "surah": 9,
+      "file": "9.json",
+      "sha256": "78e4f88dcd2cb87558447ddd6e066b67d042f6bb531ad52fd1c7fdfa6f3c58b4",
+      "bytes": 616189
+    },
+    {
+      "surah": 10,
+      "file": "10.json",
+      "sha256": "9814d599424a47cce87faf7b161594b81428085b68c7b2911c8fa0fc9627270d",
+      "bytes": 428469
+    },
+    {
+      "surah": 11,
+      "file": "11.json",
+      "sha256": "41764bd1ee8e2001ea09db82cb76efa2d4c2e2a9a9046952a82f82566aad16f5",
+      "bytes": 469466
+    },
+    {
+      "surah": 12,
+      "file": "12.json",
+      "sha256": "bfc46e3a81b581a7cac4a3c5f90cda7d8e5527e869698bf475c2ce4c482ad040",
+      "bytes": 422740
+    },
+    {
+      "surah": 13,
+      "file": "13.json",
+      "sha256": "96e2a645a26154b5a2311a7e97be3369897f0af85e5764016947ad776f14767e",
+      "bytes": 196937
+    },
+    {
+      "surah": 14,
+      "file": "14.json",
+      "sha256": "057140d618d339d9b5e31479587bd39f0d90a5315570f2253334ac8892f47807",
+      "bytes": 202154
+    },
+    {
+      "surah": 15,
+      "file": "15.json",
+      "sha256": "2162d6b22f101b1211b2a2ccb8c28e72c3ad73a7bed62ecb4a00e05381bd2f11",
+      "bytes": 163244
+    },
+    {
+      "surah": 16,
+      "file": "16.json",
+      "sha256": "a090cd9598bf4d68ae5362ffa595cd2a183203cba9835774616256690241667e",
+      "bytes": 426862
+    },
+    {
+      "surah": 17,
+      "file": "17.json",
+      "sha256": "e9878530ffdd103e28ef150a0c0b7c63ce18c2e69ea3b153bf1f0b850dd03441",
+      "bytes": 370767
+    },
+    {
+      "surah": 18,
+      "file": "18.json",
+      "sha256": "00673fa0574e12c3b2647c70d1ec432de150643a937fd97bf5bb959e2b570b73",
+      "bytes": 376954
+    },
+    {
+      "surah": 19,
+      "file": "19.json",
+      "sha256": "1f9ec136848df54c81812d8e3f55cddf061be8aa833e1bd141c13ea219b5c6f4",
+      "bytes": 210484
+    },
+    {
+      "surah": 20,
+      "file": "20.json",
+      "sha256": "9b1502d69fcefc7a1899120c82a6e397b96808148d2d8049826dbc8241cbb0f1",
+      "bytes": 307055
+    },
+    {
+      "surah": 21,
+      "file": "21.json",
+      "sha256": "cc755a93ff49c1eae866ac5ed7e223ee752702a86882d460d4008ae4fe43cd5b",
+      "bytes": 296957
+    },
+    {
+      "surah": 22,
+      "file": "22.json",
+      "sha256": "9f53609c37e9c32967e699aa0a44d3fa11f2bf96a85c5d62e454195a1b42097d",
+      "bytes": 299746
+    },
+    {
+      "surah": 23,
+      "file": "23.json",
+      "sha256": "b87cefe02960e3fc77eb1f1382fa68e2f62d469c00ed00ebb69460240a9c23a2",
+      "bytes": 265656
+    },
+    {
+      "surah": 24,
+      "file": "24.json",
+      "sha256": "db483f263e7184e9a2d96d72a0a6d0deaf216586143d4943c88b729c672a6357",
+      "bytes": 317460
+    },
+    {
+      "surah": 25,
+      "file": "25.json",
+      "sha256": "1cae83d44da781ffdca20f02fe0bae109504db5f3c6bf2bc15cec392686e7eb5",
+      "bytes": 216732
+    },
+    {
+      "surah": 26,
+      "file": "26.json",
+      "sha256": "9664704d78e8306df3a8d61418dd0c41c0b762ce0e4e3e115d27139a8d93e7b5",
+      "bytes": 314950
+    },
+    {
+      "surah": 27,
+      "file": "27.json",
+      "sha256": "8d44f3643c0a4d5b808edf3294ccb8288e5580cb9e0f72d9c9d33e97e17091f0",
+      "bytes": 277991
+    },
+    {
+      "surah": 28,
+      "file": "28.json",
+      "sha256": "b80bb6f2d4e790496de09867443b2146c23d7b8827a79a5a2be2a8a98ab0d9cf",
+      "bytes": 336103
+    },
+    {
+      "surah": 29,
+      "file": "29.json",
+      "sha256": "36610328ece699322991060145c6c2558f9a781844dae67817a81afc91cab9e2",
+      "bytes": 233280
+    },
+    {
+      "surah": 30,
+      "file": "30.json",
+      "sha256": "cca05f5347daf2aa14116a80c7acc2a4941f75c16f5e0c9be72e3ab72425d2c6",
+      "bytes": 195169
+    },
+    {
+      "surah": 31,
+      "file": "31.json",
+      "sha256": "b05eea2b2baccc15d951ae6400f402b4d6e0549ccf1def9a9523fdc1ad26322c",
+      "bytes": 118699
+    },
+    {
+      "surah": 32,
+      "file": "32.json",
+      "sha256": "0ae04ca3b19b00f3be9b8adee78082f7ef37f9901933f5edde0df7ab8113682d",
+      "bytes": 91650
+    },
+    {
+      "surah": 33,
+      "file": "33.json",
+      "sha256": "7b3bbadc8b08e8209afebc52401a15cd838c2d738ac1c6407e4229ad0d5bc842",
+      "bytes": 318826
+    },
+    {
+      "surah": 34,
+      "file": "34.json",
+      "sha256": "f9ebf2ae3d4bca1065cb0dcee942a2aedc790cdd4e17b8d783f61985016530c1",
+      "bytes": 206526
+    },
+    {
+      "surah": 35,
+      "file": "35.json",
+      "sha256": "b32841839ef77c8d73b59e0f7e29fe582dcb46e8effe5e7a26de60795f0eca6a",
+      "bytes": 181859
+    },
+    {
+      "surah": 36,
+      "file": "36.json",
+      "sha256": "4670051ae032dc387770bf07c56c77ad0dd6f77c3940305b996f556401605456",
+      "bytes": 182713
+    },
+    {
+      "surah": 37,
+      "file": "37.json",
+      "sha256": "fc23e93c54d568bc3d56356442a297899df76d11ebe6c064055e28442c5937c9",
+      "bytes": 216658
+    },
+    {
+      "surah": 38,
+      "file": "38.json",
+      "sha256": "d17ff5cce0f8998d1fd6b7ffb583de2c470250597f4a65c7483e403180f353c8",
+      "bytes": 177651
+    },
+    {
+      "surah": 39,
+      "file": "39.json",
+      "sha256": "78f635174f16be8756d21f9d473269e1386940e5c0d846b527c24bcff7ee1c29",
+      "bytes": 267381
+    },
+    {
+      "surah": 40,
+      "file": "40.json",
+      "sha256": "85f2d4841c33eb19492331acfe5c6a37321dce67f43ceaac177a9da21d297028",
+      "bytes": 277967
+    },
+    {
+      "surah": 41,
+      "file": "41.json",
+      "sha256": "8358cc8facad6d26406140cb91d8c29c17785b15e8d82325e144c7b9eff0dcd1",
+      "bytes": 193837
+    },
+    {
+      "surah": 42,
+      "file": "42.json",
+      "sha256": "f2ab8643e55e1b62da446d933bdc5bc46589b2986aa133d78476d2573a1030ad",
+      "bytes": 201634
+    },
+    {
+      "surah": 43,
+      "file": "43.json",
+      "sha256": "8f399878e2c4d687d9e307d6336db557eb9b31d8189447fde90d66d7fc08805b",
+      "bytes": 209746
+    },
+    {
+      "surah": 44,
+      "file": "44.json",
+      "sha256": "8d44340d57a1f3837b14074949866f53a64ca57139d2fee8bb653c5d2bf5f139",
+      "bytes": 87566
+    },
+    {
+      "surah": 45,
+      "file": "45.json",
+      "sha256": "5ac72b09ab8476d88ef405762a9509ca85e2a2eedcf58e837b2cbdc5eb9184e5",
+      "bytes": 116755
+    },
+    {
+      "surah": 46,
+      "file": "46.json",
+      "sha256": "5653ef9d2fcf8b52fcc40eb85b6da5da8b8076133d210bc8764d0b0c69b49fe6",
+      "bytes": 157375
+    },
+    {
+      "surah": 47,
+      "file": "47.json",
+      "sha256": "400fb20143c7f52caa0dcf243d5fa41925d08eb22472a8e342cd53888a3f9556",
+      "bytes": 132224
+    },
+    {
+      "surah": 48,
+      "file": "48.json",
+      "sha256": "76c694af75567cdd49ee1e187c98654ba74a54a949d59409b63d4a9c67636b9c",
+      "bytes": 137150
+    },
+    {
+      "surah": 49,
+      "file": "49.json",
+      "sha256": "10be18157801368d6756928b56e3aaa42a327c79c4b4da0660cde62e44c2566b",
+      "bytes": 87881
+    },
+    {
+      "surah": 50,
+      "file": "50.json",
+      "sha256": "8b23fb5e5713ba04fdf6095989d48a8e237861639f5dd33805eb59790395fa22",
+      "bytes": 90687
+    },
+    {
+      "surah": 51,
+      "file": "51.json",
+      "sha256": "733b755cf32d9f8c6d40783b51d8fdab4406f2a4b93d3cd0e214b40c2c80a12e",
+      "bytes": 91444
+    },
+    {
+      "surah": 52,
+      "file": "52.json",
+      "sha256": "52cb6c088ade0ce8d259ace53fa871bc16131907fe62b301ac56cd451daf2bc6",
+      "bytes": 77301
+    },
+    {
+      "surah": 53,
+      "file": "53.json",
+      "sha256": "f3100568c9d8d736fa17b810e3da9af6b74b1dfbdc9e0cc4fe7bfd13def8bc86",
+      "bytes": 74824
+    },
+    {
+      "surah": 54,
+      "file": "54.json",
+      "sha256": "a707f178d11e7f0ffb0dbe883a11131e75e985863e9c9701cdafeba087c4f1de",
+      "bytes": 87229
+    },
+    {
+      "surah": 55,
+      "file": "55.json",
+      "sha256": "c998f888b5a184d81b4a7ea58f40f7872cf7365a52124dd0a403f5e6a479c840",
+      "bytes": 84799
+    },
+    {
+      "surah": 56,
+      "file": "56.json",
+      "sha256": "398a33770fcb4d4379be4adb50953d6449cf3e7b060f633d221bf1d7284185be",
+      "bytes": 105075
+    },
+    {
+      "surah": 57,
+      "file": "57.json",
+      "sha256": "4c377f41bff08bb694a31c13af6ac420c0efcd864dc1ae077a77924e6fe17539",
+      "bytes": 141485
+    },
+    {
+      "surah": 58,
+      "file": "58.json",
+      "sha256": "c9e7215e8523d46fb95783e9c54874ba2ea4251d487a66aad7fa9f0405fae1ca",
+      "bytes": 106795
+    },
+    {
+      "surah": 59,
+      "file": "59.json",
+      "sha256": "65d5260d43ee5840b22771b6eb97cc5707243700b0842995708769563b673c42",
+      "bytes": 111844
+    },
+    {
+      "surah": 60,
+      "file": "60.json",
+      "sha256": "de2e1325ce55b65a3e716c3c4dc42149946808201b318c38da9a55229bb29f9f",
+      "bytes": 85784
+    },
+    {
+      "surah": 61,
+      "file": "61.json",
+      "sha256": "bf5f846af804c62d6423c69c7138ab20f5cefce7591b8cb5465a080e9fc961dd",
+      "bytes": 55712
+    },
+    {
+      "surah": 62,
+      "file": "62.json",
+      "sha256": "2c31e0acdd1caf48455597da0e8037dc07a641f090eb72f04ea0054de3bf32a5",
+      "bytes": 41274
+    },
+    {
+      "surah": 63,
+      "file": "63.json",
+      "sha256": "d6b544c02ed8010e88928fecf1af3eddc358c526cf6a075ad03e821c892f7440",
+      "bytes": 44588
+    },
+    {
+      "surah": 64,
+      "file": "64.json",
+      "sha256": "fad3e841ad7698c8eaac1e82604e4080048710970d371cc16a106e6a2da3000e",
+      "bytes": 57285
+    },
+    {
+      "surah": 65,
+      "file": "65.json",
+      "sha256": "a5bd772fcddd778c1612dbd917f8092e90ff2b2e01d205aed1cd2eb9e0efa1c4",
+      "bytes": 67960
+    },
+    {
+      "surah": 66,
+      "file": "66.json",
+      "sha256": "8fcb907f2a4c591cd205ec2d105d71a6bf923a1d34f33404050d102fa990767b",
+      "bytes": 62636
+    },
+    {
+      "surah": 67,
+      "file": "67.json",
+      "sha256": "ddbdee4245b7c4f8805a238c84d630e10a201c9c62bee38662e35d9b32e3f7e3",
+      "bytes": 78751
+    },
+    {
+      "surah": 68,
+      "file": "68.json",
+      "sha256": "ca22e18517ef27b489118a8e9a6df86a71e541ec5a5e58ba3d836669b620711b",
+      "bytes": 73738
+    },
+    {
+      "surah": 69,
+      "file": "69.json",
+      "sha256": "f23dba45e853f92a8b3a4d98fe6ba7727f7c7bf5d759a8723205c8f30947c45b",
+      "bytes": 67024
+    },
+    {
+      "surah": 70,
+      "file": "70.json",
+      "sha256": "dc3a785b217702cc7b0b27e3335e692baf6b18b1dd6c459dae7a2d32d2045b49",
+      "bytes": 54688
+    },
+    {
+      "surah": 71,
+      "file": "71.json",
+      "sha256": "6c77bbcb50166a6b6cfcc4740b10e954524344a9c065bb4e9d9c57545e916d3e",
+      "bytes": 58711
+    },
+    {
+      "surah": 72,
+      "file": "72.json",
+      "sha256": "ccbf2b1c3250cd6b360371268d1d1f89fcf4154b6621b7fda30784e9262e6207",
+      "bytes": 66242
+    },
+    {
+      "surah": 73,
+      "file": "73.json",
+      "sha256": "44757c7cb8f9a2bdb38cf8e1009385fff42260e6e949435310f6f448399a3cc0",
+      "bytes": 50597
+    },
+    {
+      "surah": 74,
+      "file": "74.json",
+      "sha256": "8c26e95fc388304503456d83d45a89d8145880f7d02afc2d69b5a23f83d3fac5",
+      "bytes": 56226
+    },
+    {
+      "surah": 75,
+      "file": "75.json",
+      "sha256": "6df75a024bbaaee3d551debf7ed3eecebaaa9672bd5d0535886385e5f17ff1c7",
+      "bytes": 38172
+    },
+    {
+      "surah": 76,
+      "file": "76.json",
+      "sha256": "8a97f1a162844381ecfe1833c9099cf2086a46584c8c042f231b3789001c25f3",
+      "bytes": 71167
+    },
+    {
+      "surah": 77,
+      "file": "77.json",
+      "sha256": "fac4ed50dff42b8f808d7c5f9db90668f70e65c6540249d3927b29867b742cb1",
+      "bytes": 50262
+    },
+    {
+      "surah": 78,
+      "file": "78.json",
+      "sha256": "9fbb1f725d1425061ce267486d5240b6a016bf9c34f39374ba02640fd97dc25e",
+      "bytes": 48092
+    },
+    {
+      "surah": 79,
+      "file": "79.json",
+      "sha256": "4d9e73c6adc42f9d11f0831d35658eb9c3b6c713fd56b1c164cb6bf4b373a1da",
+      "bytes": 43617
+    },
+    {
+      "surah": 80,
+      "file": "80.json",
+      "sha256": "24cda42287ffdbf74a7d6aeb7f60878977df62a231c7f9715d5a17d3ed37b2fa",
+      "bytes": 35434
+    },
+    {
+      "surah": 81,
+      "file": "81.json",
+      "sha256": "8521c03090d2ddf14b273be01205a9ac5840402eb25186c6c001a2d2d357f79f",
+      "bytes": 22544
+    },
+    {
+      "surah": 82,
+      "file": "82.json",
+      "sha256": "0d449e9938c6a2df748e7337a99cab1cfbf54d43073b2edd48fa2b64b83f40a8",
+      "bytes": 18390
+    },
+    {
+      "surah": 83,
+      "file": "83.json",
+      "sha256": "1da26ea615657356ab80e27ca182d7152fc37e5d54a1d98598409694ed9c960c",
+      "bytes": 41764
+    },
+    {
+      "surah": 84,
+      "file": "84.json",
+      "sha256": "d18999fe10953c7305e6a640c4a0bc49271b63edfcb850256ec73b0c35d76d75",
+      "bytes": 24114
+    },
+    {
+      "surah": 85,
+      "file": "85.json",
+      "sha256": "4bcfc1c98a4d4df47665fe7ee3cee80db92885ab5a32e8eaa51d8aaa6f090866",
+      "bytes": 22231
+    },
+    {
+      "surah": 86,
+      "file": "86.json",
+      "sha256": "028f89280bd9d8b6b798f06a7cd7d81ecdcbefc3bb865a72d7d18ef709891ad2",
+      "bytes": 17515
+    },
+    {
+      "surah": 87,
+      "file": "87.json",
+      "sha256": "737e3d99a43bad5662e607d4d890cccbdd080495f6909777e3967a528fc44150",
+      "bytes": 15605
+    },
+    {
+      "surah": 88,
+      "file": "88.json",
+      "sha256": "e3c986fdd0fffc74007e3e887c0458e7a5f1a3233f3adbb577cacd8e6e2c67ea",
+      "bytes": 22616
+    },
+    {
+      "surah": 89,
+      "file": "89.json",
+      "sha256": "18f75f0e2c9bbc709b4f4f61749cfc84ec0de02c91e3386c73065adc368b0878",
+      "bytes": 28129
+    },
+    {
+      "surah": 90,
+      "file": "90.json",
+      "sha256": "4ddc9257c8df8e828ccaf49db8f64296dabf1928f6e592b50e7807d7ad3dbedc",
+      "bytes": 17427
+    },
+    {
+      "surah": 91,
+      "file": "91.json",
+      "sha256": "a70371e7f34b03792aea601d43aef6a4d8503050ae3fda77df89c44e25463b14",
+      "bytes": 14004
+    },
+    {
+      "surah": 92,
+      "file": "92.json",
+      "sha256": "d20ae45626b921573c7c73408bffef02c4dc7473a552f17a3a88b8b3eeafd1fc",
+      "bytes": 16326
+    },
+    {
+      "surah": 93,
+      "file": "93.json",
+      "sha256": "8f4a4df10049aa68a41894c799f1ef275852ff27e4a06159cc25ff6905d5cfeb",
+      "bytes": 9160
+    },
+    {
+      "surah": 94,
+      "file": "94.json",
+      "sha256": "5820e1490ef4d0ede3b0d0b9c29e90f1300b1a39f99746161dd0f3327ff7568c",
+      "bytes": 5050
+    },
+    {
+      "surah": 95,
+      "file": "95.json",
+      "sha256": "d00b47eb1e1a93f35053cf4ba5d4a955daf7304528cf22e386b1fb0b5aa30b79",
+      "bytes": 7316
+    },
+    {
+      "surah": 96,
+      "file": "96.json",
+      "sha256": "0dccb846e67a4ca87e8ace29f92f448f320e70c7e87f1688eec21f7b23a3873d",
+      "bytes": 15066
+    },
+    {
+      "surah": 97,
+      "file": "97.json",
+      "sha256": "205346db8eb685bfac209664930ef7948fb2b5394c606abe0f6453ae246d3ef9",
+      "bytes": 6191
+    },
+    {
+      "surah": 98,
+      "file": "98.json",
+      "sha256": "c659910b2c85d252d6fc140b807c9d3bc0ef9502e4b2b4359bca92dc879ddf63",
+      "bytes": 20599
+    },
+    {
+      "surah": 99,
+      "file": "99.json",
+      "sha256": "9ac161eec1f2ff7b09ad64bc9a39781e5b52bd859364b1d405a37deecf99c451",
+      "bytes": 10115
+    },
+    {
+      "surah": 100,
+      "file": "100.json",
+      "sha256": "3aebe99c73547a5d94c9a92709bb3781de82e8c7868843855a1a86a4bdbab8c0",
+      "bytes": 10416
+    },
+    {
+      "surah": 101,
+      "file": "101.json",
+      "sha256": "3092629b3efaf773389d697bbd9693b5e05656a2ec1cb496d1b67df4fe033036",
+      "bytes": 9012
+    },
+    {
+      "surah": 102,
+      "file": "102.json",
+      "sha256": "ef610ac767fdae1bb3f4018f1fa4a2e091863d1e53dafc2348275f9097e3b2dc",
+      "bytes": 5818
+    },
+    {
+      "surah": 103,
+      "file": "103.json",
+      "sha256": "7790c6707a4949f663bc5845571dc12b593e588b2dd779b9dca98e8372cf11fc",
+      "bytes": 4891
+    },
+    {
+      "surah": 104,
+      "file": "104.json",
+      "sha256": "31083cbc59ee7f8b649fd689e3f126dd930fc936996e6a5f8e44994eb740475c",
+      "bytes": 6886
+    },
+    {
+      "surah": 105,
+      "file": "105.json",
+      "sha256": "5e4dae432c6a4625c3108dc189832512e5246733b3c3c17ac3d0975881c1bd7a",
+      "bytes": 5737
+    },
+    {
+      "surah": 106,
+      "file": "106.json",
+      "sha256": "6baa3247022aecdd9048d7ad667754b19c1a2a883cd1f9e2b80ec592de447eed",
+      "bytes": 5181
+    },
+    {
+      "surah": 107,
+      "file": "107.json",
+      "sha256": "d8c5b4f079f42017cefbc72676aef5acc6fed72c7f8c46ccc536e167abf96978",
+      "bytes": 5902
+    },
+    {
+      "surah": 108,
+      "file": "108.json",
+      "sha256": "feb93fca65c85d67e99cc5498d5748971a08a0dd9513f6aa2d8f19d44bc048f9",
+      "bytes": 2484
+    },
+    {
+      "surah": 109,
+      "file": "109.json",
+      "sha256": "38760ee31e749bc40cbd0d3420bac0b07141bfb983953b358e1300da054da915",
+      "bytes": 5740
+    },
+    {
+      "surah": 110,
+      "file": "110.json",
+      "sha256": "30938dc37881724d13786a736d8dada334ebbe793afb6127971ca5943a905471",
+      "bytes": 3950
+    },
+    {
+      "surah": 111,
+      "file": "111.json",
+      "sha256": "d2fbb0ea0edb751f571bb74cb2a5a886d8bc88d7eeea9c79e8c40d6135754c01",
+      "bytes": 4951
+    },
+    {
+      "surah": 112,
+      "file": "112.json",
+      "sha256": "5c137d965f98b213231f68f398cf3bbfdfccc6d4d2903153b48d48b2112a672c",
+      "bytes": 2706
+    },
+    {
+      "surah": 113,
+      "file": "113.json",
+      "sha256": "ea9f928f0c9a654aed56e2284d8c6885c6ac8205e06114b20fc1dba93931191a",
+      "bytes": 5132
+    },
+    {
+      "surah": 114,
+      "file": "114.json",
+      "sha256": "27039e228df355332755820ccabd93942789b2b6ac36e1b414e29fd02ddd9c5e",
+      "bytes": 4396
+    }
+  ]
+}

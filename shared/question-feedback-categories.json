@@ -1,0 +1,9 @@
+{
+  "INCORRECT_ANSWER":"Jawaban yang dianggap benar ternyata salah",
+  "INACCURATE_EXPLANATION":"Penjelasan kurang tepat",
+  "HIGHLIGHT_MISMATCH":"Bagian ayat yang ditandai tidak sesuai",
+  "CONFUSING_QUESTION":"Pertanyaan membingungkan",
+  "PROBLEMATIC_OPTIONS":"Pilihan jawaban bermasalah",
+  "QURAN_TEXT_REFERENCE":"Kesalahan teks atau referensi Al-Quran",
+  "OTHER":"Lainnya"
+}
