@@ -1,21 +1,25 @@
 import { Controller, Get, Module } from "@nestjs/common";
 import { APP_GUARD } from "@nestjs/core";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
+import { DataSource } from "typeorm";
+import { SkipThrottle, ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import dataSource from "./database/data-source";
 import { AuthModule } from "./modules/auth/auth.module";
 import { UsersModule } from "./modules/users/users.module";
 import { LearningModule } from "./modules/learning/learning.module";
 import {QuizModule} from './modules/quiz/quiz.module';
+import {PostgresThrottlerStorage} from './common/postgres-throttler.storage';
+import {ReadinessService} from './common/readiness.service';
 
 @Controller("health")
 class HealthController {
-  @Get() health() {
+  constructor(private readiness:ReadinessService) {}
+  @Get() @SkipThrottle() health() {
     return { status: "ok" };
   }
+  @Get('readiness') ready() {return this.readiness.check();}
 }
 
-// shortcut: rate limits are per process; use shared storage before running multiple replicas.
 @Module({
   imports: [
     TypeOrmModule.forRoot(dataSource.options),
@@ -23,9 +27,16 @@ class HealthController {
     UsersModule,
     LearningModule,
     QuizModule,
-    ThrottlerModule.forRoot([{ ttl: 60000, limit: 20 }]),
+    ThrottlerModule.forRootAsync({
+      inject:[DataSource],
+      useFactory:(db:DataSource)=>({
+        throttlers:[{ttl:60000,limit:20}],
+        storage:new PostgresThrottlerStorage(db),
+        getTracker:(req:Record<string,any>)=>String(req.headers['x-tajwidlens-client-ip'] || req.ip),
+      }),
+    }),
   ],
   controllers: [HealthController],
-  providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
+  providers: [ReadinessService,{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
 export class AppModule {}

@@ -101,7 +101,7 @@ test('assessment API: ownership, server grading, snapshots, guest and replay',as
       assert.ok(eligible.mock.calls.length>0);
       assert.ok(eligible.mock.calls.every(call=>typeof call.arguments[0]==='string'));
       eligible.mock.restore();
-      assert.equal(next.storage,'guest');assert.ok(challenge.question.verse);
+      assert.equal(next.storage,'guest');assert.ok(challenge.question.verse);assert.ok(challenge.question.options.length>=3);
       assert.doesNotMatch(JSON.stringify(challenge),/correctAnswer|explanation|ruleId/);
       const row=await db.getRepository(QuizQuestion).findOneByOrFail({id:challenge.question.id});
       const feedback=await detective.answer(null,challenge.token,row.correctAnswer);assert.equal(feedback.saved,false);assert.equal(feedback.feedback.correct,true);

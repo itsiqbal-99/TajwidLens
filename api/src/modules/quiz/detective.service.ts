@@ -120,10 +120,11 @@ export class DetectiveService {
       const pool = (await this.bank.eligible(lessonId, this.db.manager)).filter(
         (q) => q.type === "TAJWID_IDENTIFICATION",
       );
-      fallback ??= pool[0];
       const alternatives = pool.filter((q) => q.id !== previousId);
-      if (alternatives.length) {
-        question = shuffled(alternatives)[0];
+      fallback ??= alternatives[0] ?? pool[0];
+      const harder = alternatives.filter((q) => q.options.length >= 3);
+      if (harder.length) {
+        question = shuffled(harder)[0];
         break;
       }
     }

@@ -41,7 +41,7 @@ const friendlyLabels: Record<string, string> = {
   "madd-muttasil": "Mad Wajib Muttasil",
   "madd-iwad": "Mad Iwad",
   "madd-silah-sughra": "Mad Silah Pendek (Qasirah)",
-  "madd-tabee-kalimi": "Mad Thabi’i",
+  "madd-tabee-kalimi": "Mad Thabi’i (Mad Asli)",
   "seven-alefs": "Alif yang Dibaca Saat Berhenti",
   "seven-alefs-khulf": "Alif Khusus Saat Berhenti",
   "idgham-shafawi-meem": "Idgham Mimi",

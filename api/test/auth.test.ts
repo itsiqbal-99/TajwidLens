@@ -34,11 +34,13 @@ test('configuration fails closed and preserves certificate verification',()=>{
   const config=readConfig({DATABASE_URL:'postgres://localhost/test?sslmode=no-verify'});
   assert.ok(!config.databaseUrl.includes('sslmode'));
   assert.throws(()=>readConfig({DATABASE_URL:'postgres://localhost/test',NODE_ENV:'production'}),/HTTPS/);
+  assert.throws(()=>readConfig({DATABASE_URL:'postgres://db.neon.tech/test',NODE_ENV:'production',FRONTEND_URL:'https://tajwidlens.pages.dev',API_URL:'https://tajwidlens.pages.dev'}),/API_PROXY_SECRET/);
+  assert.throws(()=>readConfig({DATABASE_URL:'postgres://db.neon.tech/test',NODE_ENV:'production',FRONTEND_URL:'https://tajwidlens.pages.dev',API_URL:'https://tajwidlens.pages.dev',API_PROXY_SECRET:'p'.repeat(32)}),/QUIZ_CHALLENGE_SECRET/);
   assert.deepEqual(readConfig({DATABASE_URL:'postgres://db.neon.tech/test'}).ssl,{rejectUnauthorized:true});
   assert.throws(()=>readConfig({DATABASE_URL:'postgres://localhost/test',NODE_ENV:'production',AUTH_ALLOW_UNVERIFIED_EMAIL:'true'}),/development\/test only/);
   assert.throws(()=>readConfig({DATABASE_URL:'postgres://localhost/test',AUTH_ALLOW_UNVERIFIED_EMAIL:'true'}),/development\/test only/);
   assert.equal(readConfig({DATABASE_URL:'postgres://localhost/test',NODE_ENV:'development',AUTH_ALLOW_UNVERIFIED_EMAIL:'true'}).allowUnverifiedEmail,true);
-  const production=readConfig({DATABASE_URL:'postgres://db.neon.tech/test',NODE_ENV:'production',FRONTEND_URL:'https://tajwidlens.pages.dev',API_URL:'https://tajwidlens.pages.dev'});
+  const production=readConfig({DATABASE_URL:'postgres://db.neon.tech/test',NODE_ENV:'production',FRONTEND_URL:'https://tajwidlens.pages.dev',API_URL:'https://tajwidlens.pages.dev',API_PROXY_SECRET:'p'.repeat(32),QUIZ_CHALLENGE_SECRET:'q'.repeat(32)});
   assert.equal(production.cookieName,'__Host-tajwidlens');
   assert.equal(production.sameSite,'lax');
   assert.equal(production.production,true);
@@ -89,6 +91,7 @@ test('API authentication and persistence with migrated PostgreSQL emulator',asyn
   try {
     await t.test('CSRF, validation, and unauthorized ownership',async()=>{
       await api.post('/api/v1/auth/register').send(account).expect(403);
+      await api.post('/api/v1/auth/register').field('email','test@example.com').expect(415);
       await post('/auth/register',{...account,password:'short'}).expect(400);
       await api.get('/api/v1/users/me').expect(401);
     });

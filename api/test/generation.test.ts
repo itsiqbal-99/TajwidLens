@@ -23,6 +23,10 @@ test('deterministic generation, validation, idempotent import and approval gates
     assert.equal(new Set(first.questions.map(q=>q.id)).size,316);assert.equal(new Set(first.questions.map(generationFingerprint)).size,316);
     assert.ok(first.questions.every(q=>q.reviewStatus==='DRAFT'&&q.review===null));
     assert.ok(first.questions.every(q=>q.options.every(o=>!/^option-\d+$/.test(o.id))));
+    const detective=first.questions.filter(q=>q.type==='TAJWID_IDENTIFICATION');
+    assert.ok(detective.every(q=>q.options.every(o=>!/[\u0600-\u06ff]/u.test(o.label))));
+    assert.ok(detective.some(q=>q.options.some(o=>o.label==="Mad thabi'i (mad asli)")));
+    assert.ok(detective.some(q=>q.options.some(o=>o.label==='Ra tafkhim (dibaca tebal)')));
     assert.equal(first.questions.filter(q=>q.lessonId==='qalqalah').length,8);assert.equal(first.questions.filter(q=>q.lessonId==='mad-arid'&&q.quran).length,0);
     for(const lesson of lessonCatalog){const pool=first.questions.filter(q=>q.lessonId===lesson.id),selection=selectQuestions(pool);assert.ok(pool.length>=8);assert.equal(selection.length,7);
       assert.equal(new Set(selection.map(q=>q.id)).size,7);if(pool.some(q=>q.quran))assert.equal(new Set(selection.map(q=>q.type)).size,2);}

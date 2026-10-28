@@ -29,12 +29,43 @@ export function readConfig(env = process.env) {
     throw new Error("GOOGLE_CLIENT_SECRET required");
   if (env.SMTP_HOST && (!env.SMTP_FROM || !env.SMTP_USER || !env.SMTP_PASSWORD))
     throw new Error("SMTP configuration incomplete");
+  const proxySecret = env.API_PROXY_SECRET;
+  if (
+    production &&
+    (!proxySecret || Buffer.byteLength(proxySecret, "utf8") < 32)
+  )
+    throw new Error("API_PROXY_SECRET must contain at least 32 random bytes");
+  const quizChallengeSecret = env.QUIZ_CHALLENGE_SECRET;
+  if (
+    production &&
+    (!quizChallengeSecret ||
+      Buffer.byteLength(quizChallengeSecret, "utf8") < 32)
+  )
+    throw new Error(
+      "QUIZ_CHALLENGE_SECRET must contain at least 32 random bytes",
+    );
+  if (
+    quizChallengeSecret &&
+    Buffer.byteLength(quizChallengeSecret, "utf8") < 32
+  )
+    throw new Error(
+      "QUIZ_CHALLENGE_SECRET must contain at least 32 random bytes",
+    );
   const port = Number(env.PORT || 4000);
   const smtpPort = Number(env.SMTP_PORT || 587);
+  const databasePoolMax = Number(
+    env.DATABASE_POOL_MAX || (production ? 3 : 10),
+  );
   if (
     ![port, smtpPort].every((n) => Number.isInteger(n) && n > 0 && n <= 65535)
   )
     throw new Error("Invalid port");
+  if (
+    !Number.isInteger(databasePoolMax) ||
+    databasePoolMax < 1 ||
+    databasePoolMax > 20
+  )
+    throw new Error("DATABASE_POOL_MAX must be between 1 and 20");
   return {
     production,
     allowUnverifiedEmail,
@@ -56,6 +87,9 @@ export function readConfig(env = process.env) {
     smtpUser: env.SMTP_USER,
     smtpPassword: env.SMTP_PASSWORD,
     smtpFrom: env.SMTP_FROM,
+    proxySecret,
+    quizChallengeSecret,
+    databasePoolMax,
   };
 }
 export type AppConfig = ReturnType<typeof readConfig>;

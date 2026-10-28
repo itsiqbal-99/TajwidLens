@@ -61,7 +61,7 @@ const topicLabels = {
 const categoryLabels = {
   "izhar-halqi": "Izhar halqi", "idgham-bi-ghunnah": "Idgham dengan dengung", "idgham-bila-ghunnah": "Idgham tanpa dengung",
   iqlab: "Iqlab", "ikhfa-haqiqi": "Ikhfa haqiqi", "idgham-shafawi": "Idgham mimi", "ikhfa-shafawi": "Ikhfa syafawi",
-  "izhar-shafawi": "Izhar syafawi", mushaddadatan: "Ghunnah musyaddadah", "madd-tabee": "Mad alami",
+  "izhar-shafawi": "Izhar syafawi", mushaddadatan: "Ghunnah musyaddadah", "madd-tabee": "Mad thabi'i (mad asli)",
   "madd-far-hamz": "Mad karena hamzah", "madd-lazim": "Mad lazim", "leen-letters": "Huruf lin", "qalqalah-ranks": "Qalqalah",
   "raa-rules": "Hukum ra", "lam-jalalah": "Lam jalalah", "tafkheem-ranks": "Tingkatan tafkhim", "mutamathilain-sagheer": "Pertemuan huruf sejenis",
   "mutajanisain-sagheer": "Pertemuan huruf semakraj", "ikhfa-ghunnah-quality": "Sifat dengung ikhfa"

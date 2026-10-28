@@ -32,6 +32,14 @@ const groups:Record<string,{field:'categoryId'|'hukumId';values:string[];scope:s
   mad:{field:'categoryId',values:['madd-tabee','leen-letters','madd-far-hamz','madd-lazim'],scope:'kategori mad dari pilihan berikut'},
   raa:{field:'hukumId',values:['raa-tafkheem','raa-tarqeeq'],scope:'ketebalan bunyi ra'},
 };
+const detectiveLabels:Record<string,string>={
+  'izhar-halqi':'Izhar halqi','idgham-bi-ghunnah':'Idgham bighunnah (dengan dengung)','idgham-bila-ghunnah':'Idgham bilaghunnah (tanpa dengung)',
+  iqlab:'Iqlab','ikhfa-haqiqi':'Ikhfa haqiqi','idgham-shafawi':'Idgham mimi','ikhfa-shafawi':'Ikhfa syafawi','izhar-shafawi':'Izhar syafawi',
+  'noon-mushaddadah':'Ghunnah pada nun bertasydid','meem-mushaddadah':'Ghunnah pada mim bertasydid',
+  'madd-tabee':"Mad thabi'i (mad asli)",'leen-letters':'Huruf lin','madd-far-hamz':"Mad far'i karena hamzah",'madd-lazim':'Mad lazim',
+  'raa-tafkheem':'Ra tafkhim (dibaca tebal)','raa-tarqeeq':'Ra tarqiq (dibaca tipis)',
+};
+const detectiveLabel=(rule:GenerationRule,field:'categoryId'|'hukumId')=>detectiveLabels[rule[field]]??rule.category;
 function uuid(name:string){
   const hash=createHash('sha1').update(Buffer.from('15288d4d40e14b8cb607900cf75240b2','hex')).update(name).digest();
   hash[6]=(hash[6]&15)|80;hash[8]=(hash[8]&63)|128;
@@ -102,10 +110,11 @@ export function generateCandidates(source:GenerationSources,previous:readonly Qu
       const lesson=source.lessons.find(l=>l.id===map.lessonId)!;
       const generation=provenance('ANNOTATION_V1','web/src/data/tajweed-rules-generated.json',rule.id,rule.ruleAr);
       generation.annotationSource={provider:'Quran.ws Tajweed',commit:source.commit,payloadSha256:file.sha256,confidence:'NOT_PROVIDED'};
-      const content={lessonId:lesson.id,conceptId:rule[group.field],conceptLabel:group.field==='hukumId'?rule.hukumAr:rule.category,type:'TAJWID_IDENTIFICATION' as const,
+      const label=detectiveLabel(rule,group.field);
+      const content={lessonId:lesson.id,conceptId:rule[group.field],conceptLabel:label,type:'TAJWID_IDENTIFICATION' as const,
         prompt:`Pada kelompok ${group.scope}, pilih hukum yang sesuai dengan bagian ayat yang ditandai.`,
-        options:optionRules.map(r=>({id:r[group.field],label:group.field==='hukumId'?r.hukumAr:r.category})),correctAnswer:rule[group.field],
-        explanation:`Bagian yang ditandai merujuk pada ${group.field==='hukumId'?rule.hukumAr:rule.category}. ${lesson.condition}\n\nCara membacanya: ${lesson.pronunciation}\n\nYang perlu dihindari: ${lesson.commonMistake} Pilihan hukum lain harus diperiksa dari pemicunya sendiri; tidak cukup menyamakan semua huruf yang bertanda.`,
+        options:optionRules.map(r=>({id:r[group.field],label:detectiveLabel(r,group.field)})),correctAnswer:rule[group.field],
+        explanation:`Bagian yang ditandai merujuk pada ${label}. ${lesson.condition}\n\nCara membacanya: ${lesson.pronunciation}\n\nYang perlu dihindari: ${lesson.commonMistake} Pilihan hukum lain harus diperiksa dari pemicunya sendiri; tidak cukup menyamakan semua huruf yang bertanda.`,
         sources:[{title:'Quran.ws Tajweed '+rule.id,location:'corpus '+quran.corpusVersion+' · annotation '+annotation.id+' · payload SHA-256 '+file.sha256,url:'https://github.com/quran-ws/quran-tajweed/tree/'+source.commit},
           ...referencesByLesson.get(lesson.id)!,
           {title:'TajwidLens — '+lesson.title,location:'web/src/data/lessons.ts#'+lesson.id+'.condition · SHA-256 '+source.files['web/src/data/lessons.ts']}],quran,generation};

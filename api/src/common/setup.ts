@@ -11,6 +11,7 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppConfig } from "../config/config";
+import { timingSafeEqual } from "node:crypto";
 
 @Catch()
 class SafeErrors implements ExceptionFilter {
@@ -31,6 +32,22 @@ export function setup(app: INestApplication, config: AppConfig) {
   app.setGlobalPrefix("api/v1");
   app.use(helmet());
   app.use(cookieParser());
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    if (req.is("multipart/form-data")) {
+      res.status(415).json({ message: "Jenis konten tidak didukung." });
+      return;
+    }
+    if (config.production && req.path !== "/api/v1/health") {
+      const supplied = req.headers["x-tajwidlens-proxy"];
+      const expected = config.proxySecret!;
+      if (typeof supplied !== "string" || supplied.length !== expected.length ||
+        !timingSafeEqual(Buffer.from(supplied), Buffer.from(expected))) {
+        res.status(403).json({ message: "Permintaan tidak diizinkan." });
+        return;
+      }
+    }
+    next();
+  });
   app.enableCors({
     origin: config.origin,
     credentials: true,
@@ -58,17 +75,19 @@ export function setup(app: INestApplication, config: AppConfig) {
     }),
   );
   app.useGlobalFilters(new SafeErrors());
-  const document = SwaggerModule.createDocument(
-    app,
-    new DocumentBuilder()
-      .setTitle("TajwidLens API")
-      .setVersion("1")
-      .setDescription(
-        "Writes require allowed Origin, application/json, and X-TajwidLens-CSRF: 1. Session cookie expires after 7 days.",
-      )
-      .addCookieAuth(config.cookieName)
-      .build(),
-  );
-  SwaggerModule.setup("api/docs", app, document);
-  return document;
+  if (!config.production) {
+    const document = SwaggerModule.createDocument(
+      app,
+      new DocumentBuilder()
+        .setTitle("TajwidLens API")
+        .setVersion("1")
+        .setDescription(
+          "Writes require allowed Origin, application/json, and X-TajwidLens-CSRF: 1. Session cookie expires after 7 days.",
+        )
+        .addCookieAuth(config.cookieName)
+        .build(),
+    );
+    SwaggerModule.setup("api/docs", app, document);
+    return document;
+  }
 }

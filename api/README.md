@@ -26,7 +26,21 @@ Use Neon PostgreSQL, with verified TLS. Both pooled runtime and direct migration
 
 Production: use HTTPS frontend/API subdomains under one site, e.g. `app.example.com` / `api.example.com`, with `COOKIE_SAME_SITE=lax`. Unrelated GitHub Pages/API domains require `COOKIE_SAME_SITE=none` and remain subject to browser third-party cookie blocking. Prefer custom domains before launch. CORS permits exactly the configured frontend origin. `FRONTEND_URL` may include a GitHub Pages repository base path.
 
-The frontend repository currently deploys to GitHub Pages; no Cloudflare deployment configuration was found or changed. Cloudflare Pages can serve the existing `web/out` output, with the API hosted separately. The Node API is not a Cloudflare Pages Function.
+### Final production release order
+
+Do not promote a deployment that fails any step:
+
+1. Generate two different random secrets of at least 32 bytes. Store `API_PROXY_SECRET` in both Cloudflare Pages and the API host; store `QUIZ_CHALLENGE_SECRET` only in the API host.
+2. Confirm Cloudflare Pages has `AUTH_API_ORIGIN=https://tajwid-lens-vezh.vercel.app` and the frontend build has `NEXT_PUBLIC_API_URL=https://tajwidlens.pages.dev`.
+3. Deploy the Pages Function first. It can safely send the new internal headers to the old API.
+4. Run `npm run migration:run` once with the reviewed production migration-owner URL. Confirm `SharedRateLimits1793000000000` was applied; this command is never run automatically.
+5. Restore the pooled runtime `DATABASE_URL`, keep `DATABASE_POOL_MAX=3`, verify corpus paths, and deploy the API.
+6. From `api/`, set `FRONTEND_URL=https://tajwidlens.pages.dev` and run `npm run readiness:check`. It must report 24 lessons and Detective ready.
+7. Complete one real Google login, one Quiz, one guest Detective answer, one authenticated Detective answer, logout, and a mobile same-tab OAuth check before promotion.
+
+If steps 3–5 must be rolled back, roll back the application deployments only. The additive `rate_limits` table can remain; do not run destructive migration rollback against production.
+
+The production frontend is served by Cloudflare Pages from `web/out`. Its Pages Function proxies `/api/v1/*` to the Node API hosted separately. Configure the same 32-byte-or-longer `API_PROXY_SECRET` in Cloudflare Pages and the API; production API startup fails closed without it. Direct production API requests are rejected, except the liveness endpoint.
 
 Google Cloud: configure a Web application OAuth client with exact redirect URI `API_URL/api/v1/auth/google/callback`. Supply `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`. The provider identity is validated server-side, including audience/issuer/signature/expiry through Google's library and nonce in application code. Email collisions require the existing sign-in method, then explicit authenticated linking from profile; email-only automatic linking is not allowed.
 
@@ -50,9 +64,9 @@ Sessions are random 256-bit opaque secrets, stored only as SHA-256 hashes. Produ
 
 Password hashing: Argon2id, 19 MiB memory, two iterations, one lane. Passwords 12–128 characters. Email normalization: trim/lowercase, unique database constraint. Tokens are random, hashed, expiring, single use, consumed in a transaction with a user-row lock. Verification TTL 24 hours; password reset 30 minutes. Reset links use URL fragments to avoid server query logs; frontend removes the fragment after reading it.
 
-Rate limits: 20 requests per endpoint/IP/minute, in memory. Run one replica until shared limiter storage is configured. Proxy trust is disabled deliberately: behind a reverse proxy clients share its IP limit until a reviewed trust policy is added. Do not blindly trust forwarded headers. Schedule deletion of expired rows (`sessions`, `auth_tokens`, `oauth_attempts`) operationally; expired rows never authorize access.
+Rate limits: 20 requests per endpoint/client IP/minute in shared PostgreSQL storage. Only the authenticated Cloudflare proxy can set the internal client-IP header; arbitrary forwarded headers are not trusted. Apply `SharedRateLimits1793000000000` before promoting this version. Schedule deletion of expired rows (`sessions`, `auth_tokens`, `oauth_attempts`, and expired `rate_limits`) operationally; expired rows never authorize access.
 
-Use a runtime database role with SELECT/INSERT/UPDATE/DELETE on these tables, without DDL or role management; use a separate migration owner. Avoid logging SQL, cookies, authorization codes, body fields or email URLs at your ingress. Application error responses omit database/stack details. Health is liveness, not readiness.
+Use a runtime database role with SELECT/INSERT/UPDATE/DELETE on these tables, including `rate_limits`, without DDL or role management; use a separate migration owner. Avoid logging SQL, cookies, authorization codes, body fields or email URLs at your ingress. Application error responses omit database/stack details. `/api/v1/health` is liveness. `/api/v1/health/readiness` verifies the database, migration state, corpus, all 24 quizzes, and Detective; run `npm run readiness:check` through the frontend origin before promotion.
 
 ## Learning progress and assessment (Phase 03)
 
@@ -62,7 +76,7 @@ Existing completion keeps its original timestamp and gains LEGACY_SELF_REPORTED 
 
 New static UI routes: /quiz/, public /detective/ and private /reviews/. Detective guests receive feedback without persistent user/session/attempt/review/progress writes. Signed challenges last ten minutes. Authenticated mistakes can be practiced through optional Replay; practice never changes original quiz scores or lesson completion. Existing Taman/Samudra/Zamrud/Senja themes and auth behavior are retained.
 
-**Actual bank and reviewer registry are empty: 0/24 lesson quizzes ready; Detective unavailable.** No synthetic questions are imported into the application database. See [question audit](docs/phase-03/QUESTION_BANK_AUDIT.md) and [content workflow](content/README.md). A qualified human must approve each version with review evidence before publication; automated checks only prove technical integrity.
+The repository contains an explicitly authorized 394-version deterministic bank for production, covering 24/24 lesson quizzes and Detective. The production database must contain those unchanged versions; readiness fails closed otherwise. This remains automated source validation, not expert tajwid review, and the frontend disclosure must remain visible. See [question audit](docs/phase-03/QUESTION_BANK_AUDIT.md) and [content workflow](content/README.md).
 
 Commands from api:
 
@@ -78,7 +92,7 @@ The old verify-learning-neon script forwards to the current assessment verifier;
 
 Review the target before migration. Migration never runs at application startup and synchronize stays false. Phase 03 rollback takes an exclusive lock and refuses any assessment or verified-progress data. Use a reviewed forward migration for populated deployments. Do not apply production migrations without explicit approval.
 
-Backend artifacts must include the trusted content/reviewers.json and unchanged reader index/payload assets, or configure QUIZ_CORPUS_INDEX and QUIZ_CORPUS_DIRECTORY. Identification offsets use the reader's KFGQPC edition, never the separate Tanzil file. Production Detective requires QUIZ_CHALLENGE_SECRET (stable random value, at least 32 bytes, shared between instances); without it practice is unavailable. Development uses an ephemeral key. Corpus assets are read-only data.
+Backend artifacts must include the trusted content/reviewers.json and unchanged reader index/payload assets, or configure QUIZ_CORPUS_INDEX and QUIZ_CORPUS_DIRECTORY. Identification offsets use the reader's KFGQPC edition, never the separate Tanzil file. Production startup requires QUIZ_CHALLENGE_SECRET (stable random value, at least 32 bytes, shared between instances). Development uses an ephemeral key. Corpus assets are read-only data. Keep `DATABASE_POOL_MAX` small (default 3 in production) and use Neon's pooled runtime URL.
 
 The exact 394-version repository approval is authorized for production but remains automated validation, not expert tajwid review. Production must deploy `content/source-approvals.json` unchanged, keep the frontend disclosure visible, configure a stable `QUIZ_CHALLENGE_SECRET`, and package the reader corpus paths above. Any changed question hash or source version fails closed and requires a new explicit approval.
 

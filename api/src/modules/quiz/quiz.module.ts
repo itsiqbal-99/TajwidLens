@@ -29,8 +29,7 @@ export function loadSourceApprovals():SourceApproval[] {
   {provide:QUESTION_REVIEWERS,useFactory:loadReviewers},
   {provide:SOURCE_APPROVALS,useFactory:loadSourceApprovals},
   {provide:DETECTIVE_KEY,inject:[CONFIG],useFactory:(config:AppConfig)=>{
-    const configured=process.env.QUIZ_CHALLENGE_SECRET;
-    if(configured && Buffer.byteLength(configured,'utf8')<32)throw new Error('QUIZ_CHALLENGE_SECRET must contain at least 32 random bytes');
+    const configured=config.quizChallengeSecret;
     return configured?Buffer.from(configured,'utf8'):config.production?null:randomBytes(32);
-  }}],exports:[QuestionBankService,QuizService]})
+  }}],exports:[QuestionBankService,QuizService,QuizCorpus]})
 export class QuizModule {}

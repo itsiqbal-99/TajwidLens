@@ -38,7 +38,35 @@ TajwidLens is a static, Indonesian-language learning companion for reading the Q
 - A direct **Belajar tajwid** shortcut in the home hero, in addition to the complete learning-path section.
 - Installable PWA experience for Android and iOS, including a web app manifest, home-screen icons, an Android install prompt, iOS installation guidance, and offline caching for the application shell.
 - Responsive keyboard focus states and reduced-motion support.
-- Static export with no account, analytics dependency, API server, or runtime Quran API request.
+- Static frontend export with optional Google/email accounts, Neon-backed learning progress, Quiz, Tajwid Detective, and no runtime Quran API request.
+
+### Tajwid Detective
+
+Tajwid Detective sekarang memiliki dua mode yang saling melengkapi:
+
+1. **Fokus satu tanda** — pengguna diberi satu potongan ayat dan memilih hukum tajwid yang sedang ditanyakan. Jawaban diperiksa oleh server, lalu aplikasi menampilkan alasan dan cara membacanya.
+2. **Telusuri satu ayat · Menengah** — aplikasi memilih ayat secara acak dari seluruh korpus Al-Qur'an (bukan hanya Al-Falaq). Pengguna mengeklik setiap penanda hukum pada ayat, memilih jawabannya, lalu melihat progres dan hasil untuk setiap tanda.
+
+Mode kedua dirancang seperti permainan pencarian: ayat, surah, dan kumpulan tandanya berubah pada setiap percobaan. Warna penanda dibuat kontras dari tema aktif dengan aksen oranye-koral, sehingga pertanyaan mudah ditemukan tanpa menghilangkan keterbacaan teks Arab. Animasi tetap menghormati preferensi `prefers-reduced-motion`.
+
+Semua pilihan hukum di Detective menggunakan istilah bahasa Indonesia yang ramah pemula. Contoh: **Mad thabi'i (mad asli)**, **ikhfa**, **idgham**, **iqlab**, dan **ghunnah pada nun/mim bertasydid**. Istilah teknis dan sumber aturan tetap tersedia di bagian penjelasan agar pengguna dapat belajar bertahap.
+
+### Alur belajar interaktif
+
+```text
+Pilih surah/ayat → baca penanda warna → buka penjelasan →
+latih lewat Quiz → ulangi kesalahan lewat Mistake Replay → lanjutkan progres
+```
+
+- **Quiz pelajaran** berisi pertanyaan yang dievaluasi server; nilai lulus ditentukan oleh penilaian aplikasi.
+- **Mistake Replay** mengumpulkan soal yang pernah salah untuk akun yang masuk, sehingga latihan berikutnya lebih terarah.
+- **Question Feedback** memungkinkan pengguna melaporkan soal yang ambigu atau bermasalah.
+- Progres pelajaran dan status belajar tersimpan untuk akun yang masuk; fitur baca ayat dan Detective tetap dapat dicoba sebagai tamu.
+- Gunakan tombol **Bingung Cara Bacanya** untuk berpindah dari pertanyaan sehari-hari ke ayat, aturan, dan contoh yang relevan.
+
+### Istilah dan visual
+
+Nama hukum pada antarmuka diprioritaskan dalam bahasa Indonesia dan memakai padanan yang umum dipakai di kelas tajwid. Label sumber, ID aturan, dan pola Arab disimpan di bagian teknis yang dapat dibuka bila diperlukan. Peta hukum, highlight bertumpuk, lensa penanda, tab mode, umpan balik benar/salah, dan indikator progres dibuat responsif untuk mouse, sentuhan, dan keyboard.
 
 ## Tajweed data policy
 
