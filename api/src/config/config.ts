@@ -16,11 +16,15 @@ export function readConfig(env = process.env) {
   // URL SSL parameters can override pg certificate verification.
   for (const key of [...db.searchParams.keys()])
     if (key.startsWith("ssl")) db.searchParams.delete(key);
-  const frontend = new URL(env.FRONTEND_URL || "http://localhost:3000");
+  const frontends = (env.FRONTEND_URL || "http://localhost:3000")
+    .split(",")
+    .map((value) => new URL(value.trim()));
+  const frontend = frontends[0];
   const api = new URL(env.API_URL || "http://localhost:4000");
   if (
     production &&
-    (frontend.protocol !== "https:" || api.protocol !== "https:")
+    (frontends.some((url) => url.protocol !== "https:") ||
+      api.protocol !== "https:")
   )
     throw new Error("HTTPS required");
   const localDb = ["localhost", "127.0.0.1", "[::1]"].includes(db.hostname);
@@ -77,6 +81,7 @@ export function readConfig(env = process.env) {
         : (false as const),
     frontend: frontend.toString().replace(/\/$/, ""),
     origin: frontend.origin,
+    origins: [...new Set(frontends.map((url) => url.origin))],
     api: api.origin,
     cookieName: production ? "__Host-tajwidlens" : "tajwidlens",
     sameSite: "lax" as const,

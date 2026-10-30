@@ -24,7 +24,7 @@ async function browserCheck(database:DataSource,config:ReturnType<typeof readCon
   // Establish the small test pool before timing UI assertions on the remote development DB.
   await Promise.all(Array.from({length:3},()=>database.query('SELECT 1')));
   const {assessmentBrowserAcceptance}=await import('../test/assessment-browser');
-  const testConfig={...config,frontend:'http://localhost:3103',origin:'http://localhost:3103',api:'http://localhost:4103'};
+  const testConfig={...config,frontend:'http://localhost:3103',origin:'http://localhost:3103',origins:['http://localhost:3103'],api:'http://localhost:4103'};
   const {app,module}=await assessmentApp(database,testConfig);
   try{await assessmentBrowserAcceptance(app,database,module.get(QuizService),module.get(LearningService));}finally{await app.close();}
 }

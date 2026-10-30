@@ -45,6 +45,9 @@ test('configuration fails closed and preserves certificate verification',()=>{
   assert.equal(production.sameSite,'lax');
   assert.equal(production.production,true);
   assert.equal(production.api,'https://tajwidlens.pages.dev');
+  const multiple=readConfig({DATABASE_URL:'postgres://localhost/test',FRONTEND_URL:'https://tajwidlens.pages.dev, https://itsiqbal-99.github.io/'});
+  assert.equal(multiple.frontend,'https://tajwidlens.pages.dev');
+  assert.deepEqual(multiple.origins,['https://tajwidlens.pages.dev','https://itsiqbal-99.github.io']);
 });
 
 test('Google claims reject missing identity, unverified email and nonce mismatch',()=>{
@@ -77,7 +80,7 @@ test('Google failures expose only safe categories and never log credentials',asy
 
 test('API authentication and persistence with migrated PostgreSQL emulator',async t=>{
   const db=await assessmentDatabase();
-  const config=readConfig({DATABASE_URL:'postgres://localhost/test',FRONTEND_URL:'http://localhost:3101',API_URL:'http://localhost:4101',GOOGLE_CLIENT_ID:'test-client',GOOGLE_CLIENT_SECRET:'test-only'});
+  const config=readConfig({DATABASE_URL:'postgres://localhost/test',FRONTEND_URL:'http://localhost:3101,https://itsiqbal-99.github.io/',API_URL:'http://localhost:4101',GOOGLE_CLIENT_ID:'test-client',GOOGLE_CLIENT_SECRET:'test-only'});
   const mails:{email:string;kind:string;token:string}[]=[];
   const requestLimit=process.env.E2E === 'true' ? 200 : 20;
   const mailer={assertAvailable(){},async send(email:string,kind:string,token:string){mails.push({email,kind,token});}};
@@ -91,6 +94,8 @@ test('API authentication and persistence with migrated PostgreSQL emulator',asyn
   try {
     await t.test('CSRF, validation, and unauthorized ownership',async()=>{
       await api.post('/api/v1/auth/register').send(account).expect(403);
+      await api.options('/api/v1/auth/register').set('Origin','https://itsiqbal-99.github.io').set('Access-Control-Request-Method','POST').expect('Access-Control-Allow-Origin','https://itsiqbal-99.github.io').expect(204);
+      await api.post('/api/v1/auth/register').set('Origin','https://itsiqbal-99.github.io').set('X-TajwidLens-CSRF','1').send({...account,password:'short'}).expect(400);
       await api.post('/api/v1/auth/register').field('email','test@example.com').expect(415);
       await post('/auth/register',{...account,password:'short'}).expect(400);
       await api.get('/api/v1/users/me').expect(401);

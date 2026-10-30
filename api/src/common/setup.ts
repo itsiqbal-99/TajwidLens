@@ -49,7 +49,7 @@ export function setup(app: INestApplication, config: AppConfig) {
     next();
   });
   app.enableCors({
-    origin: config.origin,
+    origin: config.origins,
     credentials: true,
     methods: ["GET", "POST", "PATCH", "PUT"],
     allowedHeaders: ["Content-Type", "X-TajwidLens-CSRF"],
@@ -58,7 +58,7 @@ export function setup(app: INestApplication, config: AppConfig) {
     res.setHeader("Cache-Control", "no-store");
     if (
       !["GET", "HEAD", "OPTIONS"].includes(req.method) &&
-      (req.headers.origin !== config.origin ||
+      (!config.origins.includes(req.headers.origin || "") ||
         req.headers["x-tajwidlens-csrf"] !== "1" ||
         !req.is("application/json"))
     ) {

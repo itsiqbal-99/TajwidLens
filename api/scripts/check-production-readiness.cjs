@@ -1,7 +1,7 @@
-const origin=process.env.FRONTEND_URL;
+const origin=process.env.FRONTEND_URL?.split(',')[0].trim();
 if(!origin)throw new Error('FRONTEND_URL is required');
 const parsed=new URL(origin);
-if(parsed.protocol!=='https:'||parsed.origin!==origin.replace(/\/$/,''))throw new Error('FRONTEND_URL must be an HTTPS origin');
+if(parsed.protocol!=='https:'||parsed.origin!==origin.replace(/\/$/,''))throw new Error('The primary FRONTEND_URL must be an HTTPS origin');
 
 async function main(){
   const controller=new AbortController();

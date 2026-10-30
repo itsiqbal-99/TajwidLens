@@ -24,7 +24,7 @@ Keep `api/` and `shared/` as siblings in the backend deployment artifact: learni
 
 Use Neon PostgreSQL, with verified TLS. Both pooled runtime and direct migration connection URLs are supported; prefer a direct connection for migration jobs. URL SSL flags are stripped so they cannot disable certificate validation. No `synchronize`, no destructive rollback. Schema uses `gen_random_uuid()` (modern PostgreSQL).
 
-Production: use HTTPS frontend/API subdomains under one site, e.g. `app.example.com` / `api.example.com`, with `COOKIE_SAME_SITE=lax`. Unrelated GitHub Pages/API domains require `COOKIE_SAME_SITE=none` and remain subject to browser third-party cookie blocking. Prefer custom domains before launch. CORS permits exactly the configured frontend origin. `FRONTEND_URL` may include a GitHub Pages repository base path.
+Production: use HTTPS frontend/API subdomains under one site, e.g. `app.example.com` / `api.example.com`, with `COOKIE_SAME_SITE=lax`. Unrelated GitHub Pages/API domains remain subject to browser third-party cookie blocking. Prefer custom domains before launch. CORS permits exactly the comma-separated origins in `FRONTEND_URL`; the first URL remains the OAuth redirect target and may include a repository base path. Example: `FRONTEND_URL=https://tajwidlens.pages.dev,https://itsiqbal-99.github.io/`.
 
 ### Final production release order
 
@@ -35,7 +35,7 @@ Do not promote a deployment that fails any step:
 3. Deploy the Pages Function first. It can safely send the new internal headers to the old API.
 4. Run `npm run migration:run` once with the reviewed production migration-owner URL. Confirm `SharedRateLimits1793000000000` was applied; this command is never run automatically.
 5. Restore the pooled runtime `DATABASE_URL`, keep `DATABASE_POOL_MAX=3`, verify corpus paths, and deploy the API.
-6. From `api/`, set `FRONTEND_URL=https://tajwidlens.pages.dev` and run `npm run readiness:check`. It must report 24 lessons and Detective ready.
+6. From `api/`, set `FRONTEND_URL=https://tajwidlens.pages.dev,https://itsiqbal-99.github.io/` and run `npm run readiness:check`. It must report 24 lessons and Detective ready.
 7. Complete one real Google login, one Quiz, one guest Detective answer, one authenticated Detective answer, logout, and a mobile same-tab OAuth check before promotion.
 
 If steps 3–5 must be rolled back, roll back the application deployments only. The additive `rate_limits` table can remain; do not run destructive migration rollback against production.
@@ -56,7 +56,7 @@ When email delivery is intentionally enabled later, the existing SMTP transport 
 
 ## API and security
 
-OpenAPI UI: `/api/docs`, JSON: `/api/docs-json`. Request DTOs, account/message responses and error statuses are documented. Mutating calls require `Origin: FRONTEND_URL origin`, `Content-Type: application/json`, and `X-TajwidLens-CSRF: 1`, plus credentials. No wildcard origins. The custom header requires a preflight; the server also checks origin independently of CORS.
+OpenAPI UI: `/api/docs`, JSON: `/api/docs-json`. Request DTOs, account/message responses and error statuses are documented. Mutating calls require an origin listed in `FRONTEND_URL`, `Content-Type: application/json`, and `X-TajwidLens-CSRF: 1`, plus credentials. No wildcard origins. The custom header requires a preflight; the server also checks origin independently of CORS.
 
 Sessions are random 256-bit opaque secrets, stored only as SHA-256 hashes. Production cookies are Secure, HttpOnly, host-only (`__Host-`), and expire in seven days; the database enforces expiry. Login rotates the current browser session. Logout revokes it, reset revokes all sessions. Other browser sessions remain valid until reset/expiry. Password login requires verified email except for the explicit development/test flag. Public Quran/learning routes never require an account.
 
