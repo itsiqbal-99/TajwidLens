@@ -40,7 +40,7 @@ Do not promote a deployment that fails any step:
 
 If steps 3–5 must be rolled back, roll back the application deployments only. The additive `rate_limits` table can remain; do not run destructive migration rollback against production.
 
-The production frontend is served by Cloudflare Pages from `web/out`. Its Pages Function proxies `/api/v1/*` to the Node API hosted separately. Configure the same 32-byte-or-longer `API_PROXY_SECRET` in Cloudflare Pages and the API; production API startup fails closed without it. Direct production API requests are rejected, except the liveness endpoint.
+The production frontend is served by Cloudflare Pages from `web/out`. Its Pages Function proxies `/api/v1/*` to the Node API hosted separately. Configure the same 32-byte-or-longer `API_PROXY_SECRET` in Cloudflare Pages and the API; requests from origins outside the configured `FRONTEND_URL` list still require that proxy header. Whitelisted frontend origins may call the API directly; keep the exact origin list narrow.
 
 Google Cloud: configure a Web application OAuth client with exact redirect URI `API_URL/api/v1/auth/google/callback`. Supply `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`. The provider identity is validated server-side, including audience/issuer/signature/expiry through Google's library and nonce in application code. Email collisions require the existing sign-in method, then explicit authenticated linking from profile; email-only automatic linking is not allowed.
 

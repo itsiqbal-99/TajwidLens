@@ -40,8 +40,9 @@ export function setup(app: INestApplication, config: AppConfig) {
     if (config.production && req.path !== "/api/v1/health") {
       const supplied = req.headers["x-tajwidlens-proxy"];
       const expected = config.proxySecret!;
-      if (typeof supplied !== "string" || supplied.length !== expected.length ||
-        !timingSafeEqual(Buffer.from(supplied), Buffer.from(expected))) {
+      const directFrontend = config.origins.includes(req.headers.origin || "");
+      if (!directFrontend && (typeof supplied !== "string" || supplied.length !== expected.length ||
+        !timingSafeEqual(Buffer.from(supplied), Buffer.from(expected)))) {
         res.status(403).json({ message: "Permintaan tidak diizinkan." });
         return;
       }
